@@ -39,3 +39,10 @@
 - **GitHub Actions での動画自動レンダリング (`mens_sweat_care_video.mp4`)**:
   - `workflow_dispatch` 入力によりクラウド上で VOICEVOX 合成からレンダリングまで自動実行。
 
+## Gemini Gem「爆モテメンズラボ 動画原稿生成ディレクター」設定指示書実装 (2026-07-16 追加)
+- **目的と概要**:
+  - テーマ（青ひげ、毛穴ケアなど）を入力するだけで、構成案・準備すべき素材リスト・そしてそのまま実行できる完全版 `video_config_*.json` を一瞬で出力するカスタム AI アシスタント (Gem) 設定書を作成。
+- **配置先とArtifact提供**:
+  - リポジトリ内 `gemini_gem_instructions.md` および Artifact `gemini_gem_prompt.md` に完全なインストラクション（Persona, Task, Context, Format の4要素対応版）を保存。
+
+
