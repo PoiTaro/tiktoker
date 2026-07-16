@@ -1,0 +1,102 @@
+{
+  "id": "mens-sweat-care-2026",
+  "title": "夏の汗＆ニオイ 最速撃退スキンケア - 爆モテメンズラボ第二弾",
+  "brand": "爆モテメンズラボ",
+  "headerTag": "夏の汗・ニオイ対策",
+  "footerNote": "夏の3大鉄則：こまめに拭き取る・直塗り制汗・さらさら保湿\n※実感には個人差があります",
+  "footerYear": 2026,
+  "speakerId": 13,
+  "speedScale": 1.05,
+  "intonationScale": 1.15,
+  "pitchScale": 0.02,
+  "leadSilenceSeconds": 0.55,
+  "tailSilenceSeconds": 0.3,
+  "scenePaddingSeconds": 0.6,
+  "autoRender": false,
+  "outputVideo": "mens_sweat_care_video.mp4",
+  "scenes": [
+    {
+      "id": "scene1",
+      "type": "title",
+      "mainLogo": "爆モテメンズラボ",
+      "tagline": "夏の汗＆ニオイ<br />最速撃退スキンケア",
+      "narration": "夏の猛暑、汗とベタつきを放置していませんか？爆モテメンズラボ、今回は夏の汗とニオイを最速で撃退する王道ケアをご紹介します！"
+    },
+    {
+      "id": "scene2",
+      "type": "standard",
+      "title": "夏の汗と皮脂が<br />悪臭・テカリの原因",
+      "subtitle": "放置すれば雑菌が大繁殖！<br />清潔感が一瞬でゼロに",
+      "image": "images/sweat_mechanism.png",
+      "narration": "夏の猛暑でドバドバ出る汗と皮脂。そのまま放置すると雑菌が一気に増殖して、不快な悪臭や顔面のテカリといった大惨事を引き起こすんです。"
+    },
+    {
+      "id": "scene3",
+      "type": "standard",
+      "title": "対策１：日中のリフレッシュ<br />王道フェイシャルペーパー",
+      "subtitle": "こまめに皮脂と汗を拭き取り<br />清潔さらさら肌をキープ",
+      "image": "images/fresh_skin.png",
+      "narration": "第一の対策は、日中のこまめな拭き取り。外出先や仕事合間に、ベタつく汗と皮脂をサッと拭き取って、常にさらさらな状態をキープしましょう。"
+    },
+    {
+      "id": "scene4",
+      "type": "feature",
+      "num": "おすすめ汗拭きシート",
+      "numClass": "green",
+      "title": "ギャツビー<br />フェイシャルペーパー",
+      "subtitle": "天然コットン100％で優しく<br />皮脂汚れとアブラを根こそぎオフ",
+      "image": "images/real_gatsby.jpg",
+      "narration": "おすすめは、ギャツビーのフェイシャルペーパー。天然コットン100パーセントの肌触りで、アブラや汚れをゴッソリ拭き取り、爽快な清潔感を取り戻せます。"
+    },
+    {
+      "id": "scene5",
+      "type": "standard",
+      "title": "対策２：お出かけ前の<br />直塗り薬用デオドラント",
+      "subtitle": "汗ジミ・ワキガ・悪臭を<br />朝の直塗りで1日中シャットアウト",
+      "image": "images/sweat_mechanism.png",
+      "narration": "第二の対策は、外出前の直塗りデオドラントケア。汗をかいてから対策するのではなく、朝一に有効成分をしっかり塗り込んで、悪臭の元をブロックします。"
+    },
+    {
+      "id": "scene6",
+      "type": "feature",
+      "num": "王道薬用制汗剤",
+      "numClass": "green",
+      "title": "デオナチュレ<br />男ソフトストーンW",
+      "subtitle": "医薬部外品の有効成分<br />焼ミョウバンがニオイを元から防ぐ",
+      "image": "images/real_deonatulle.jpg",
+      "narration": "イチオシは、デオナチュレ 男ソフトストーンダブル。有効成分の焼ミョウバンが毛穴を引き締め、朝塗るだけで夜まで汗とニオイを徹底的に防いでくれます。"
+    },
+    {
+      "id": "scene7",
+      "type": "standard",
+      "title": "対策３：夏の紫外線＆保湿<br />ひんやりさらさらスキンケア",
+      "subtitle": "汗をかく夏こそ保湿が必須<br />乾燥ダメージとアブラの悪循環を防ぐ",
+      "image": "images/fresh_skin.png",
+      "narration": "そして第三の対策が、夏のさらさら保湿ケア。汗をかくからと保湿をサボると余計にアブラが出ます。夏専用の軽いスキンケアで肌を整えましょう。"
+    },
+    {
+      "id": "scene8",
+      "type": "feature",
+      "num": "夏向けオールインワン",
+      "numClass": "green",
+      "title": "ウーノ (UNO)<br />UVパーフェクトジェル",
+      "subtitle": "これ1つで朝の保湿・UVカット・<br />テカリ防止まで完了する優れもの",
+      "image": "images/real_uno_uv.jpg",
+      "narration": "おすすめは、ウーノのUVパーフェクトジェル。これ一つで潤い補給はもちろん、夏の強力な紫外線カットとテカリ防止まで一気にこなす優れものです。"
+    },
+    {
+      "id": "scene9",
+      "type": "standard",
+      "title": "夏の汗対策の3大鉄則",
+      "subtitle": "１. こまめにシートで拭き取る<br />２. 朝の直塗りでニオイ封鎖<br />３. さらさら保湿で皮脂抑制",
+      "image": "images/fresh_skin.png",
+      "narration": "夏の汗対策の三大鉄則。日中はシートで拭き取る、朝の直塗りでニオイを封鎖する、そしてさらさら保湿で余分な皮脂を抑える。この三つが重要です。"
+    },
+    {
+      "id": "scene10",
+      "type": "epilogue",
+      "title": "さらさら清潔メンズで<br />この夏最高の自分に！",
+      "subtitle": "爆モテメンズラボ"
+    }
+  ]
+}

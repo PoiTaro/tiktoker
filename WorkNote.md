@@ -27,3 +27,15 @@
   - `ubuntu-latest` ランナー上で `ffmpeg`, `ffprobe`, 日本語フォント (`fonts-noto-cjk` 等) および Node.js v20 を自動導入。
   - バックグラウンドで公式 Docker コンテナ (`voicevox/voicevox_engine:cpu-ubuntu20.04-latest`) を立ち上げ、`/version` エンドポイントでの起動確認待機ループを実装。
   - ナレーション付き動画の自動レンダリングと Artifact (`generated-mp4-video`) でのダウンロード提供を実現。
+
+## 爆モテメンズラボ第二弾「夏の汗＆ニオイ 最速撃退スキンケア」構築 (2026-07-16 追加)
+- **原稿構成 (`video_config_sweat.json`)**:
+  - 夏の猛暑による汗・皮脂と雑菌増殖メカニズムから、日中の拭き取り・朝の直塗り・夏専用保湿の「3大鉄則」を解説する全10シーン。
+- **実在商品高画質写真およびミニマルAIイラストの配置 (`images/`)**:
+  - `images/sweat_mechanism.png`, `images/fresh_skin.png` (無印良品風ミニマル図解イラスト)
+  - `images/real_gatsby.jpg` (ギャツビー フェイシャルペーパー / Amazon SL1200 高画質)
+  - `images/real_deonatulle.jpg` (デオナチュレ 男ソフトストーンW / Amazon SL1200 高画質)
+  - `images/real_uno_uv.jpg` (ウーノ UVパーフェクトジェル / Amazon SL1200 高画質)
+- **GitHub Actions での動画自動レンダリング (`mens_sweat_care_video.mp4`)**:
+  - `workflow_dispatch` 入力によりクラウド上で VOICEVOX 合成からレンダリングまで自動実行。
+
