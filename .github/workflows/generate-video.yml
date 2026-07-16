@@ -28,13 +28,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install System Dependencies & Japanese Fonts
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg ffprobe fonts-noto-cjk fonts-noto-color-emoji libgbm-dev libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libxkbcommon-x11-0 libxcomposite1 libxdamage1 libxrandr2
+          sudo apt-get install -y ffmpeg fonts-noto-cjk fonts-noto-color-emoji libgbm-dev libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libxkbcommon-x11-0 libxcomposite1 libxdamage1 libxrandr2
+
 
       - name: Install npm dependencies
         run: npm ci || npm install
