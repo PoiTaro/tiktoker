@@ -1,0 +1,57 @@
+{
+  "title": "Antigravity Intro - MUJI Style Template",
+  "brand": "爆モテメンズラボ",
+  "headerTag": "紹介動画",
+  "footerNote": "自然に、自律し、コードを紡ぐ。\nAI Coding Assistant by DeepMind",
+  "footerYear": "2026",
+  "speakerId": 13,
+  "speedScale": 1.02,
+  "intonationScale": 1.15,
+  "pitchScale": 0.02,
+  "leadSilenceSeconds": 0.55,
+  "tailSilenceSeconds": 0.3,
+  "scenePaddingSeconds": 0.6,
+  "outputVideo": "antigravity_template_video.mp4",
+  "autoRender": false,
+  "scenes": [
+    {
+      "id": "scene1",
+      "type": "title",
+      "mainLogo": "Antigravity",
+      "tagline": "思考する、AIエージェント。",
+      "narration": "思考する、AIエージェント。アンチグラビティ。"
+    },
+    {
+      "id": "scene2",
+      "type": "feature",
+      "num": "その壱",
+      "title": "自律的な思考と、<br />確かな設計。",
+      "subtitle": "コードの背景と文脈を深く理解する。<br />リサーチから実装、デバッグまで自律して完結する力。",
+      "narration": "コードの文脈を深く理解し、自律的に設計と実装を行います。"
+    },
+    {
+      "id": "scene3",
+      "type": "feature",
+      "num": "その弐",
+      "numClass": "green",
+      "title": "細部へ宿る、<br />美意識と機能。",
+      "subtitle": "無駄を削ぎ落とした、余白のあるレイアウト。<br />使う人の心を動かす上質なUIと、堅牢なコード構築。",
+      "narration": "無駄を削ぎ落とした美しさ。洗練されたUIとデザインを構築します。"
+    },
+    {
+      "id": "scene4",
+      "type": "feature",
+      "num": "その参",
+      "title": "コードから、<br />映像を生み出す。",
+      "subtitle": "HyperFramesとのシームレスな連携。<br />ウェブから動画コンポジションまで、多彩なメディア表現。",
+      "narration": "そして、コードから映像を生み出す。ハイパーフレームスによる動画生成まで。"
+    },
+    {
+      "id": "scene5",
+      "type": "epilogue",
+      "title": "心地よい開発体験を、<br />ともに。",
+      "subtitle": "Antigravity",
+      "narration": "心地よい開発体験を、ともに。"
+    }
+  ]
+}

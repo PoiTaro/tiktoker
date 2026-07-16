@@ -1,0 +1,108 @@
+{
+  "title": "男ニキビの治し方 最速撃退スキンケア - 爆モテメンズラボ第一弾",
+  "brand": "爆モテメンズラボ",
+  "headerTag": "男ニキビ完全攻略",
+  "footerNote": "清潔感あふれるクリア肌へ。\nBaku-mote Men's Lab Skincare Routine",
+  "footerYear": "2026",
+  "speakerId": 13,
+  "speedScale": 1.02,
+  "intonationScale": 1.15,
+  "pitchScale": 0.02,
+  "leadSilenceSeconds": 0.55,
+  "tailSilenceSeconds": 0.3,
+  "scenePaddingSeconds": 0.6,
+  "outputVideo": "mens_acne_skincare_video.mp4",
+  "autoRender": true,
+  "scenes": [
+    {
+      "id": "scene1",
+      "type": "title",
+      "mainLogo": "男ニキビの治し方",
+      "tagline": "最速で清潔肌へ導く、王道スキンケア",
+      "narration": "男ニキビを最速で治す、王道のスキンケア・ルーティン。爆モテメンズラボ第一弾、徹底解説します。"
+    },
+    {
+      "id": "scene2",
+      "type": "feature",
+      "num": "原因とメカニズム",
+      "numClass": "green",
+      "title": "過剰な皮脂と、<br />乾燥による悪循環。",
+      "subtitle": "男性は女性の2倍の皮脂量。水分不足でバリア機能が落ち、<br />毛穴が詰まることでアクネ菌が爆発的に増殖します。",
+      "image": "images/acne_mechanism.png",
+      "narration": "男ニキビの最大の原因は過剰な皮脂と乾燥。水分不足で毛穴が詰まり、アクネ菌が一気に増殖してしまいます。"
+    },
+    {
+      "id": "scene3",
+      "type": "feature",
+      "num": "Step 01 洗顔",
+      "title": "摩擦ゼロの、<br />濃密きめ細かな泡。",
+      "subtitle": "ゴシゴシ手でこする洗顔は絶対NG。<br />泡の力だけで、毛穴の奥の余分な皮脂と汚れを包み込みます。",
+      "image": "images/bubble_wash.png",
+      "narration": "ファーストステップは洗顔。ゴシゴシこするのは厳禁です。きめ細かい濃密泡で、皮脂汚れをやさしく洗い流します。"
+    },
+    {
+      "id": "scene4",
+      "type": "feature",
+      "num": "おすすめ薬用洗顔",
+      "numClass": "green",
+      "title": "オルビス ミスター<br />フォーミングウォッシュ",
+      "subtitle": "医薬部外品。炭とモロッコ溶岩クレイをダブル配合。<br />頑固な汚れを吸着し、ニキビと肌荒れを根本から予防します。",
+      "image": "images/real_orbis_wash.jpg",
+      "narration": "おすすめの洗顔料は、オルビスミスター・フォーミングウォッシュ。医薬部外品の濃密泡が、ニキビと肌荒れを防ぎます。"
+    },
+    {
+      "id": "scene5",
+      "type": "feature",
+      "num": "Step 02 保湿",
+      "title": "洗顔後30秒以内の、<br />徹底した水分補給。",
+      "subtitle": "化粧水で水分を届け、バリア機能を最適化。<br />肌を潤すことでターンオーバーを促し、皮脂の過剰分泌を抑えます。",
+      "image": "images/moisture_care.png",
+      "narration": "セカンドステップは保湿。洗顔後三十秒以内にたっぷりの化粧水で潤し、肌のバリア機能を最高潮に高めます。"
+    },
+    {
+      "id": "scene6",
+      "type": "feature",
+      "num": "おすすめローション",
+      "numClass": "green",
+      "title": "オルビス ミスター<br />エッセンスローション",
+      "subtitle": "医薬部外品・美容液一体型ローション。<br />これ1本で潤いをキープし、ベタつかない清潔なクリア肌へ。",
+      "image": "images/real_orbis_lotion.jpg",
+      "narration": "おすすめはオルビスミスター・エッセンスローション。医薬部外品のオールインワン設計で、清潔な肌へ導きます。"
+    },
+    {
+      "id": "scene7",
+      "type": "feature",
+      "num": "ニキビ跡＆毛穴ケア",
+      "title": "メラノCC<br />薬用しみ集中対策美容液",
+      "subtitle": "活性型ビタミンC誘導体がダイレクトに浸透。<br />ニキビを予防しながら、気になる跡や黒ずみ毛穴をなめらかに。",
+      "image": "images/real_melanocc.jpg",
+      "narration": "さらにニキビ跡や毛穴の黒ずみには、メラノ・シー・シーの薬用美容液。ビタミンシー誘導体が肌の奥まで浸透します。"
+    },
+    {
+      "id": "scene8",
+      "type": "feature",
+      "num": "赤ニキビ治療薬",
+      "numClass": "green",
+      "title": "ペアアクネクリームW<br />第2類医薬品",
+      "subtitle": "すでにできてしまった赤ニキビにはこれ。<br />W有効成分で炎症を鎮め、アクネ菌を強力に殺菌・治療します。",
+      "image": "images/real_pairacne.jpg",
+      "narration": "すでにできてしまった赤ニキビには、第ニ類医薬品・ペアアクネクリームダブル。炎症を鎮めて強力に殺菌します。"
+    },
+    {
+      "id": "scene9",
+      "type": "feature",
+      "num": "最大の鉄則",
+      "title": "絶対に手で触らない。<br />悪化時は皮膚科へ。",
+      "subtitle": "指先の雑菌や刺激は、深刻なクレーター跡の元。<br />長引く炎症や繰り返す場合は迷わず皮膚科を受診しましょう。",
+      "image": "images/acne_mechanism.png",
+      "narration": "そして最大の鉄則は、絶対にニキビを触らないこと。長引く場合は、迷わず皮膚科で保険診療を受けましょう。"
+    },
+    {
+      "id": "scene10",
+      "type": "epilogue",
+      "title": "清潔感あふれる肌は、<br />男の最高の武器。",
+      "subtitle": "BAKU-MOTE MEN'S LAB",
+      "narration": "清潔感あふれる肌は、男の最高の武器。今日から毎日のスキンケアを始めましょう。"
+    }
+  ]
+}

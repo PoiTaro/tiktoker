@@ -1,0 +1,69 @@
+{
+  "title": "GPT-5.6 性能解説 - 公式仕様＆ベンチマーク (1分尺)",
+  "brand": "爆モテメンズラボ",
+  "headerTag": "最新モデル解説",
+  "footerNote": "Sol / Terra / Luna 3つのティアで展開。\nNext Generation Multimodal & Reasoning AI",
+  "footerYear": "2026",
+  "speakerId": 13,
+  "speedScale": 1.02,
+  "intonationScale": 1.15,
+  "pitchScale": 0.02,
+  "leadSilenceSeconds": 0.55,
+  "tailSilenceSeconds": 0.3,
+  "scenePaddingSeconds": 0.6,
+  "outputVideo": "gpt56_explainer_video.mp4",
+  "autoRender": true,
+  "scenes": [
+    {
+      "id": "scene1",
+      "type": "title",
+      "mainLogo": "GPT-5.6",
+      "tagline": "3ティアで構成される、AIの新境地。",
+      "narration": "二千二十六年七月にリリースされた最新AI、ジーピーティー、ゴテンロク。その驚異の性能を一分で解説します。"
+    },
+    {
+      "id": "scene2",
+      "type": "feature",
+      "num": "モデル構成",
+      "numClass": "green",
+      "title": "Sol、Terra、Luna。<br />3つのラインナップ。",
+      "subtitle": "最上位の推論モデル「Sol」、バランス型の「Terra」、<br />そして最速・最安を誇る「Luna」が用途ごとに最適化。",
+      "image": "images/reasoning.png",
+      "narration": "最大の革新は三つのモデル構成。最上位のソル、バランス型のテラ、最速のルナが、あらゆる用途に最適化されています。"
+    },
+    {
+      "id": "scene3",
+      "type": "feature",
+      "num": "コーディング性能",
+      "title": "Terminal-Bench<br />驚異の 88.8%。",
+      "subtitle": "コマンドライン操作とツール連携のベンチマークで最高峰へ。<br />長時間のエージェント開発を自律して完結する力。",
+      "image": "images/coding.png",
+      "narration": "特に最上位ソルは、ターミナルベンチマークで八十八・八パーセントを記録。長時間の自律的な開発作業を完璧にこなします。"
+    },
+    {
+      "id": "scene4",
+      "type": "feature",
+      "num": "新推論モード",
+      "numClass": "green",
+      "title": "Max 推論努力と、<br />Ultra 並列エージェント。",
+      "subtitle": "思考時間を増やし難問を解き明かす「Max モード」。<br />複数のサブエージェントが連携して高速解決する「Ultra モード」。",
+      "image": "images/multimodal.png",
+      "narration": "さらに思考を深めるマックス推論モードと、複数のエージェントを並列動作させるウルトラモードを新搭載しました。"
+    },
+    {
+      "id": "scene5",
+      "type": "feature",
+      "num": "ベンチマーク達成",
+      "title": "エージェント最終試験<br />スコア 53.6 を達成。",
+      "subtitle": "100万トークンの文脈と、高いコスト効率。<br />従来のフロンティアモデルを大きく引き離す到達点。",
+      "narration": "エージェント試験においても他社を圧倒するスコアをマーク。トークン効率も高まり、次世代標準となりました。"
+    },
+    {
+      "id": "scene6",
+      "type": "epilogue",
+      "title": "新たな知性の選択肢。<br />GPT-5.6",
+      "subtitle": "Sol / Terra / Luna",
+      "narration": "圧倒的な性能と選択肢を兼ね備えた、ジーピーティー、ゴテンロク。ぜひ体感してください。"
+    }
+  ]
+}

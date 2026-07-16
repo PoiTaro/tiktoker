@@ -1,0 +1,9 @@
+node_modules/
+output/
+*.mp4
+!video_*.json
+.DS_Store
+*.log
+audio/
+screenshot_*.png
+

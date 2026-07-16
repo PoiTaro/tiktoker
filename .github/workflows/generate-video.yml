@@ -1,0 +1,77 @@
+name: Generate HyperFrames Video
+
+on:
+  workflow_dispatch:
+    inputs:
+      config_file:
+        description: 'Video config JSON file path'
+        required: true
+        default: 'video_config_acne.json'
+      output_filename:
+        description: 'Output MP4 filename'
+        required: false
+        default: 'output_video.mp4'
+  push:
+    paths:
+      - 'video_config_*.json'
+      - 'images/**'
+      - 'generate_video.mjs'
+      - 'style.css'
+
+jobs:
+  render-video:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install System Dependencies & Japanese Fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg ffprobe fonts-noto-cjk fonts-noto-color-emoji libgbm-dev libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libxkbcommon-x11-0 libxcomposite1 libxdamage1 libxrandr2
+
+      - name: Install npm dependencies
+        run: npm ci || npm install
+
+      - name: Start VOICEVOX ENGINE (CPU version in background)
+        run: |
+          docker run -d --name voicevox -p 50021:50021 voicevox/voicevox_engine:cpu-ubuntu20.04-latest
+          echo "Waiting for VOICEVOX Engine to be ready..."
+          for i in $(seq 1 30); do
+            if curl -s http://127.0.0.1:50021/version > /dev/null; then
+              echo "✅ VOICEVOX Engine ready!"
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Cache Audio files
+        uses: actions/cache@v4
+        with:
+          path: audio/
+          key: ${{ runner.os }}-audio-${{ hashFiles('**/*.json', 'generate_video.mjs') }}
+          restore-keys: |
+            ${{ runner.os }}-audio-
+
+      - name: Generate and Render Video
+        run: |
+          CONFIG_FILE="${{ github.event.inputs.config_file || 'video_config_acne.json' }}"
+          OUTPUT_NAME="${{ github.event.inputs.output_filename || 'output_video.mp4' }}"
+          echo "Executing video generation with config: $CONFIG_FILE, output: $OUTPUT_NAME"
+          node generate_video.mjs --config "$CONFIG_FILE" --render --output "$OUTPUT_NAME"
+
+      - name: Upload Video Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-mp4-video
+          path: |
+            *.mp4
+            output/*.mp4
+          retention-days: 7

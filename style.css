@@ -1,0 +1,254 @@
+:root {
+  --bg-color: #F7F5F0;
+  --text-main: #2C2C2C;
+  --text-sub: #706B63;
+  --accent-red: #8B1E25;
+  --accent-green: #1C3B2B;
+  --border-color: #E3DFD7;
+  
+  --font-serif: "Noto Serif JP", serif;
+  --font-sans: "Noto Sans JP", "Inter", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  position: relative;
+  width: 1080px;
+  height: 1920px;
+  background-color: var(--bg-color);
+  overflow: hidden;
+}
+
+/* Base Frame / Background Grid & Lines */
+.frame-border {
+  position: absolute;
+  top: 80px;
+  bottom: 80px;
+  left: 80px;
+  right: 80px;
+  border: 1px solid var(--border-color);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.frame-corner {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: var(--text-main);
+  z-index: 2;
+}
+.corner-tl { top: 80px; left: 80px; border-top: 1px solid; border-left: 1px solid; }
+.corner-tr { top: 80px; right: 80px; border-top: 1px solid; border-right: 1px solid; }
+.corner-bl { bottom: 80px; left: 80px; border-bottom: 1px solid; border-left: 1px solid; }
+.corner-br { bottom: 80px; right: 80px; border-bottom: 1px solid; border-right: 1px solid; }
+
+/* Header & Footer (Static Track) */
+.static-header {
+  position: absolute;
+  top: 110px;
+  left: 120px;
+  right: 120px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+.header-tag {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  letter-spacing: 0.15em;
+  color: var(--text-sub);
+}
+.header-brand {
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--text-main);
+  text-transform: uppercase;
+}
+
+.static-footer {
+  position: absolute;
+  bottom: 110px;
+  left: 120px;
+  right: 120px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-top: 1px solid var(--border-color);
+  padding-top: 24px;
+  z-index: 10;
+}
+.footer-note {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  letter-spacing: 0.1em;
+  color: var(--text-sub);
+  line-height: 1.6;
+}
+.footer-right {
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.15em;
+  color: var(--text-sub);
+}
+
+/* Clips / Scenes Base */
+.clip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1080px;
+  height: 1920px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 180px 140px;
+  z-index: 5;
+  box-sizing: border-box;
+}
+
+/* Scene Typography & Layout */
+.scene-container {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.scene-num {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 24px;
+  letter-spacing: 0.2em;
+  color: var(--accent-red);
+  margin-bottom: 36px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--accent-red);
+}
+
+.scene-num.green {
+  color: var(--accent-green);
+  border-bottom-color: var(--accent-green);
+}
+
+.scene-title {
+  font-family: var(--font-serif);
+  font-size: 80px;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0.1em;
+  color: var(--text-main);
+  margin-bottom: 50px;
+}
+
+.scene-subtitle {
+  font-family: var(--font-serif);
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1.8;
+  letter-spacing: 0.08em;
+  color: var(--text-sub);
+}
+
+/* Auto-balancing typography & layout when image is present */
+.scene-container.has-image .scene-num {
+  margin-bottom: 20px;
+}
+
+.scene-container.has-image .scene-title {
+  font-size: 60px;
+  line-height: 1.3;
+  margin-bottom: 24px;
+}
+
+.scene-container.has-image .scene-subtitle {
+  font-size: 26px;
+  line-height: 1.65;
+}
+
+/* Scene 1: Title Specifics */
+.main-logo {
+  font-family: "Inter", sans-serif;
+  font-size: 110px;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  color: var(--text-main);
+  margin-bottom: 40px;
+}
+
+.divider-line {
+  width: 120px;
+  height: 2px;
+  background-color: var(--accent-red);
+  margin-bottom: 50px;
+}
+
+.tagline {
+  font-family: var(--font-serif);
+  font-size: 44px;
+  line-height: 1.6;
+  letter-spacing: 0.12em;
+  color: var(--text-sub);
+}
+
+/* Scene 5: Epilogue Specifics */
+.closing-text {
+  font-size: 80px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #2c2a26;
+  margin-bottom: 40px;
+  letter-spacing: -0.01em;
+}
+
+.closing-sub {
+  font-size: 32px;
+  color: #7d7568;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* Scene Image Cards (MUJI Style Perfectly Centered Minimal Graphic Container) */
+.scene-image-wrapper {
+  margin-top: 32px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.scene-image {
+  width: 780px;
+  max-width: 100%;
+  height: 520px;
+  object-fit: contain;
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(85, 78, 68, 0.15);
+  box-shadow: 0 16px 40px rgba(44, 42, 38, 0.08);
+  display: block;
+  margin: 0 auto;
+}
