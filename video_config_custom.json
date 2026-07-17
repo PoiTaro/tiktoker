@@ -1,0 +1,105 @@
+{
+  "id": "mens-shaving-care-2026",
+  "title": "カミソリ負けを最速で撃退する王道シェービング",
+  "brand": "爆モテメンズラボ",
+  "headerTag": "男の髭剃り・肌荒れ対策",
+  "footerNote": "今日の3大鉄則:ジェルで保護・高機能刃で剃る・鎮静保湿\n※実感には個人差があります",
+  "footerYear": 2026,
+  "speakerId": 13,
+  "speedScale": 1.05,
+  "intonationScale": 1.15,
+  "pitchScale": 0.02,
+  "leadSilenceSeconds": 0.55,
+  "tailSilenceSeconds": 0.3,
+  "scenePaddingSeconds": 0.6,
+  "autoRender": false,
+  "outputVideo": "mens_shaving_video.mp4",
+  "scenes": [
+    {
+      "id": "scene-1-title",
+      "type": "title",
+      "title": "カミソリ負けを<br />最速で撃退する<br />王道シェービング",
+      "subtitle": "爆モテメンズラボ",
+      "image": "images/mechanism_illustration.png",
+      "narration": "髭剃りのたびに肌が赤くなるカミソリ負け。それを放置すると、清潔感が消え去るだけでなく、一生消えない色素沈着の原因になります！"
+    },
+    {
+      "id": "scene-2-mechanism",
+      "type": "standard",
+      "title": "なぜ肌が<br />荒れるのか？",
+      "subtitle": "摩擦と角質の削ぎ落とし",
+      "image": "images/mechanism_illustration.png",
+      "narration": "カミソリ負けの最大の原因は、髭と一緒に肌表面の角質まで削ぎ落としてしまうこと。バリア機能が崩壊し、雑菌が繁殖して赤みやニキビを引き起こすんです。"
+    },
+    {
+      "id": "scene-3-prep",
+      "type": "standard",
+      "title": "鉄則１:<br />摩擦をゼロにする",
+      "subtitle": "プレシェーブで髭を柔らかく",
+      "image": "images/shaving_prep_illustration.png",
+      "narration": "解決のファーストステップは、摩擦を極限まで減らすこと。洗顔後の温かい肌に、専用のジェルをたっぷり塗って髭を柔らかくするのが絶対の鉄則です。"
+    },
+    {
+      "id": "scene-4-item1",
+      "type": "feature",
+      "num": "01",
+      "numClass": "green",
+      "title": "サクセス<br />薬用シェービングジェル",
+      "subtitle": "肌を守るスキンケアタイプ",
+      "image": "images/real_success_gel.jpg",
+      "narration": "おすすめアイテム一つ目は、サクセスの薬用シェービングジェル、スキンケアタイプ。抗炎症成分配合で剃るたびに肌を保護し、刃の滑りが劇的に変わります！"
+    },
+    {
+      "id": "scene-5-technique",
+      "type": "standard",
+      "title": "鉄則２:<br />刃の性能に頼る",
+      "subtitle": "切れ味と優しさの両立",
+      "image": "images/shaving_technique_illustration.png",
+      "narration": "セカンドステップは、カミソリ自体のアップデート。安物のカミソリや、何ヶ月も替えていない古い刃は今すぐ捨ててください。毛流れに沿って優しく剃るのがコツです。"
+    },
+    {
+      "id": "scene-6-item2",
+      "type": "feature",
+      "num": "02",
+      "numClass": "green",
+      "title": "ジレット<br />プログライド",
+      "subtitle": "極薄5枚刃で摩擦レス",
+      "image": "images/real_gillette_proglide.jpg",
+      "narration": "おすすめ二つ目は、王道中の王道、ジレットのプログライド。極薄の5枚刃と滑らかなスムーサーが、肌への負担を最小限に抑えつつ、圧倒的な深剃りを実現します。"
+    },
+    {
+      "id": "scene-7-aftercare",
+      "type": "standard",
+      "title": "鉄則３:<br />鎮静と超保湿",
+      "subtitle": "ダメージ肌を急速回復",
+      "image": "images/aftercare_illustration.png",
+      "narration": "そしてプラスワンケア。髭剃り後の肌は、軽度の火傷をしているのと同じ状態です。アルコールフリーで、炎症を抑える鎮静特化の保湿アイテムでフタをしましょう。"
+    },
+    {
+      "id": "scene-8-item3",
+      "type": "feature",
+      "num": "03",
+      "numClass": "green",
+      "title": "ニベアメン<br />センシティブローション",
+      "subtitle": "敏感肌用アフターシェーブ",
+      "image": "images/real_niveamen_lotion.jpg",
+      "narration": "おすすめ三つ目は、ニベアメンのセンシティブローション。ヒアルロン酸配合の低刺激処方で、ヒリヒリする肌にスーッと浸透し、嫌な赤みを防いでくれます！"
+    },
+    {
+      "id": "scene-9-summary",
+      "type": "standard",
+      "title": "今回の<br />3大鉄則",
+      "subtitle": "ジェル・高機能刃・鎮静保湿",
+      "image": "images/three_rules_illustration.png",
+      "narration": "まとめ！髭剃り荒れを防ぐ3大鉄則は、専用ジェルで摩擦を減らし、高機能な刃で優しく剃って、鎮静ローションで即保湿！これだけで肌の透明感が爆上がりします。"
+    },
+    {
+      "id": "scene-10-epilogue",
+      "type": "epilogue",
+      "title": "清潔感あふれる<br />肌で最高の自分へ！",
+      "subtitle": "爆モテメンズラボ",
+      "image": "images/epilogue_illustration.png",
+      "narration": "カミソリ負けを克服して、至近距離でも戦える最強のモテ肌を手に入れましょう！チャンネル登録といいね、よろしくお願いします！"
+    }
+  ]
+}
