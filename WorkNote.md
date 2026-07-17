@@ -55,6 +55,10 @@
 - **バックエンド (`gas/Code.gs, SETUP_GUIDE.md`)**:
   - `doPost/doGet` で CORS/リダイレクトに対応した GitHub API (`/contents/`, `/dispatches`, `/runs`, `/artifacts`) 中継処理を実装。
   - スプレッドシート連動による生成履歴自動ログ記録。
+  - **デプロイ・稼働確認済みの本番 GAS ウェブアプリ URL (`2026-07-17 設定完了`)**:
+    - `https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec`
+    - `webui/index.html` および `webui/app.js` のデフォルト値として完全にバインド済み。
+
 
 
 

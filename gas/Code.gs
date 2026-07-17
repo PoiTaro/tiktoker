@@ -3,8 +3,20 @@
  * スマホ Web UI からのリクエストを受け、GitHub API と連携してファイルプッシュ＆Actions起動＆ステータス確認を行います。
  */
 
+/**
+ * 【初期設定用関数】これを一度実行するだけでスクリプトプロパティが一斉登録されます。
+ */
+function setupMyPropertiesOnce() {
+  PropertiesService.getScriptProperties().setProperties({
+    "GITHUB_TOKEN": "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",
+    "REPO_NAME": "PoiTaro/tiktoker"
+  });
+  console.log("✓ GITHUB_TOKEN と REPO_NAME プロパティの設定が正常に完了しました！");
+}
+
 // デフォルト設定 (プロパティサービスから取得。未設定時のフォールバック値)
 const DEFAULT_REPO = "PoiTaro/tiktoker";
+
 const WORKFLOW_ID = "generate-video.yml";
 const BRANCH = "main";
 
@@ -24,7 +36,10 @@ function getConfig() {
 function doGet(e) {
   const action = e.parameter ? e.parameter.action : "";
   
-  if (action === "status") {
+  if (action === "init") {
+    setupMyPropertiesOnce();
+    return createJsonResponse({ status: "ok", message: "✓ GITHUB_TOKEN and REPO_NAME setup completed successfully!" });
+  } else if (action === "status") {
     return createJsonResponse(checkActionsStatus());
   } else if (action === "test") {
     return createJsonResponse({ status: "ok", message: "GAS Backend is online!" });

@@ -5,7 +5,7 @@
 
 // アプリケーション状態管理
 const state = {
-  gasUrl: localStorage.getItem("bakumote_gas_url") || "",
+  gasUrl: localStorage.getItem("bakumote_gas_url") || "https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec",
   configData: null,          // パースされた原稿 JSON オブジェクト
   imageSlots: new Map(),     // 画像スロット情報 { "images/xxx.png": { scenes: [1, 2], base64: null } }
   pollingInterval: null      // Actions ステータス自動更新用タイマー
