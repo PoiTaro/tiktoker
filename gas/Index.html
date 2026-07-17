@@ -732,6 +732,12 @@ header.app-header {
  * スマホで快適に操作できるSPA状態管理・双方向データ同期・自動リサイズ・GAS API通信を実行します。
  */
 
+// グローバルエラーキャッチ＆画面表示（スマホでのトラブルシューティングを瞬時に解決）
+window.addEventListener("error", (e) => {
+  console.error("Global Error:", e.error || e.message);
+  showToast("⚠️ 内部エラー: " + (e.message || "処理に失敗しました"));
+});
+
 // アプリケーション状態管理
 const state = {
   gasUrl: localStorage.getItem("bakumote_gas_url") || "https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec",
@@ -742,16 +748,35 @@ const state = {
 
 // DOM ロード時の初期化
 document.addEventListener("DOMContentLoaded", () => {
-  initUI();
-  initEventListeners();
+  try {
+    initUI();
+    initEventListeners();
+    console.log("✓ Controller initialized successfully");
+  } catch (err) {
+    console.error("Init Error:", err);
+    showToast("⚠️ 初期化エラー: " + err.message);
+  }
 });
 
 /**
  * UIと保存済み設定の初期設定
  */
 function initUI() {
-  if (state.gasUrl) {
-    document.getElementById("input-gas-url").value = state.gasUrl;
+  const gasInput = document.getElementById("input-gas-url");
+  if (gasInput && state.gasUrl) {
+    gasInput.value = state.gasUrl;
+  }
+}
+
+/**
+ * 安全に要素へイベントリスナーを登録するヘルパー
+ */
+function safeAddListener(id, event, handler) {
+  const elem = document.getElementById(id);
+  if (elem) {
+    elem.addEventListener(event, handler);
+  } else {
+    console.warn(`Element with id '${id}' not found for event '${event}'`);
   }
 }
 
@@ -761,16 +786,17 @@ function initUI() {
 function initEventListeners() {
   // ⚙️ GAS設定アコーディオン開閉
   const configCard = document.getElementById("config-card");
-  document.getElementById("btn-toggle-config").addEventListener("click", () => {
-    configCard.classList.toggle("hidden");
+  safeAddListener("btn-toggle-config", "click", () => {
+    if (configCard) configCard.classList.toggle("hidden");
   });
-  document.getElementById("btn-close-config").addEventListener("click", () => {
-    configCard.classList.add("hidden");
+  safeAddListener("btn-close-config", "click", () => {
+    if (configCard) configCard.classList.add("hidden");
   });
 
   // GAS URL 保存＆テスト接続
-  document.getElementById("btn-save-config").addEventListener("click", async () => {
-    const urlInput = document.getElementById("input-gas-url").value.trim();
+  safeAddListener("btn-save-config", "click", async () => {
+    const urlInputElem = document.getElementById("input-gas-url");
+    const urlInput = urlInputElem ? urlInputElem.value.trim() : "";
     if (!urlInput) {
       showToast("GAS ウェブアプリの URL を入力してください");
       return;
@@ -780,12 +806,11 @@ function initEventListeners() {
     showToast("保存しました！テスト接続中...");
 
     try {
-      // GET でテスト接続
       const res = await fetch(`${urlInput}?action=test`);
       const data = await res.json();
       if (data.status === "ok") {
         showToast("✓ GAS バックエンドに正常接続しました！");
-        configCard.classList.add("hidden");
+        if (configCard) configCard.classList.add("hidden");
       } else {
         showToast("⚠️ 接続できましたが応答が正しくありません");
       }
@@ -802,45 +827,51 @@ function initEventListeners() {
       
       btn.classList.add("active");
       const tabId = btn.getAttribute("data-tab");
-      document.getElementById(tabId).classList.add("active");
+      const targetContent = document.getElementById(tabId);
+      if (targetContent) targetContent.classList.add("active");
     });
   });
 
   // クリップボードからペースト
-  document.getElementById("btn-paste-clipboard").addEventListener("click", async () => {
+  safeAddListener("btn-paste-clipboard", "click", async () => {
     try {
       const text = await navigator.clipboard.readText();
       if (text) {
-        document.getElementById("textarea-json-raw").value = text;
-        showToast("クリップボードから貼り付けました！");
+        const textarea = document.getElementById("textarea-json-raw");
+        if (textarea) textarea.value = text;
+        showToast("📋 クリップボードから貼り付けました！解析中...");
         parseAndRenderJson();
       }
     } catch (err) {
-      showToast("⚠️ クリップボード読み取り権限が必要です。手動でペーストしてください。");
+      showToast("⚠️ クリップボード読み取り権限がありません。下の枠に指で直接貼り付けてください。");
     }
   });
 
   // ファイルからJSON読み込み
-  document.getElementById("input-json-file").addEventListener("change", (e) => {
+  safeAddListener("input-json-file", "change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (event) => {
-      document.getElementById("textarea-json-raw").value = event.target.result;
-      showToast("JSON ファイルを読み込みました！");
+      const textarea = document.getElementById("textarea-json-raw");
+      if (textarea) textarea.value = event.target.result;
+      showToast("📁 JSON ファイルを読み込みました！解析中...");
       parseAndRenderJson();
     };
     reader.readAsText(file);
   });
 
   // JSON 解析ボタン
-  document.getElementById("btn-parse-json").addEventListener("click", parseAndRenderJson);
+  safeAddListener("btn-parse-json", "click", () => {
+    console.log("btn-parse-json clicked!");
+    parseAndRenderJson();
+  });
 
   // プッシュ＆Actions起動ボタン
-  document.getElementById("btn-push-trigger").addEventListener("click", pushAndTriggerWorkflow);
+  safeAddListener("btn-push-trigger", "click", pushAndTriggerWorkflow);
 
   // Actions ステータス確認ボタン
-  document.getElementById("btn-check-status").addEventListener("click", () => {
+  safeAddListener("btn-check-status", "click", () => {
     checkActionsStatus(true);
   });
 }
@@ -849,22 +880,37 @@ function initEventListeners() {
  * JSON 解析とエディタカード＆画像スロットの自動展開
  */
 function parseAndRenderJson() {
-  const rawText = document.getElementById("textarea-json-raw").value.trim();
+  const textarea = document.getElementById("textarea-json-raw");
+  const rawText = textarea ? textarea.value.trim() : "";
+  
   if (!rawText) {
-    showToast("JSON データが入力されていません");
+    showToast("⚠️ JSON データが入力されていません。テキストを貼り付けてください。");
     return;
   }
 
   try {
-    const data = JSON.parse(rawText);
+    // 文字列内に余分な前後の文章がある場合でも {...} のJSONブロックを確実に自動抽出するスマートパーサー
+    let jsonString = rawText;
+    const firstBrace = rawText.indexOf('{');
+    const lastBrace = rawText.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      jsonString = rawText.substring(firstBrace, lastBrace + 1);
+    }
+
+    const data = JSON.parse(jsonString);
     state.configData = data;
 
     // メタデータの反映
-    document.getElementById("meta-title").value = data.title || "";
-    if (data.outputVideo) {
-      document.getElementById("meta-output-filename").value = data.outputVideo;
+    const metaTitle = document.getElementById("meta-title");
+    if (metaTitle) metaTitle.value = data.title || "";
+
+    const metaOut = document.getElementById("meta-output-filename");
+    if (metaOut && data.outputVideo) {
+      metaOut.value = data.outputVideo;
     }
-    document.getElementById("meta-editor-area").style.display = "block";
+
+    const metaArea = document.getElementById("meta-editor-area");
+    if (metaArea) metaArea.style.display = "block";
 
     // シーンカードの生成
     renderScenesEditor(data.scenes || []);
@@ -873,12 +919,21 @@ function parseAndRenderJson() {
     extractAndRenderImageSlots(data.scenes || []);
 
     // バッジ件数の更新
-    document.getElementById("badge-scene-count").textContent = (data.scenes || []).length;
-    document.getElementById("badge-img-count").textContent = state.imageSlots.size;
+    const badgeScene = document.getElementById("badge-scene-count");
+    if (badgeScene) badgeScene.textContent = (data.scenes || []).length;
 
-    showToast("✓ JSON を展開し画像スロットを抽出しました！");
+    const badgeImg = document.getElementById("badge-img-count");
+    if (badgeImg) badgeImg.textContent = state.imageSlots.size;
+
+    showToast("✓ JSONの解析とカード展開に成功しました！");
+    
+    // 画面を少しスクロールしてエディタカードを分かりやすく見せる
+    if (metaArea) {
+      metaArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   } catch (err) {
-    showToast("❌ JSON の構文エラー: " + err.message);
+    console.error("JSON Parse Error:", err);
+    showToast("❌ JSON 構文エラー: " + err.message + "（構文やカンマをご確認ください）");
   }
 }
 
@@ -887,6 +942,7 @@ function parseAndRenderJson() {
  */
 function renderScenesEditor(scenes) {
   const container = document.getElementById("scenes-editor-list");
+  if (!container) return;
   container.innerHTML = "";
 
   scenes.forEach((scene, index) => {
@@ -902,17 +958,20 @@ function renderScenesEditor(scenes) {
     `;
     card.appendChild(header);
 
-    // タイトル (改行を <br /> でやりとりするため調整)
+    // タイトル
     const titleGroup = document.createElement("div");
     titleGroup.className = "form-group";
     titleGroup.innerHTML = `
       <label class="form-label">画面タイトル (改行は &lt;br /&gt;)</label>
       <input type="text" class="form-input scene-input-title" value="${escapeHtml(scene.title || "")}">
     `;
-    titleGroup.querySelector("input").addEventListener("input", (e) => {
-      scene.title = e.target.value;
-      syncJsonTextarea();
-    });
+    const titleInput = titleGroup.querySelector("input");
+    if (titleInput) {
+      titleInput.addEventListener("input", (e) => {
+        scene.title = e.target.value;
+        syncJsonTextarea();
+      });
+    }
     card.appendChild(titleGroup);
 
     // サブタイトル (あれば表示・編集)
@@ -923,10 +982,13 @@ function renderScenesEditor(scenes) {
         <label class="form-label">サブタイトル (subtitle)</label>
         <input type="text" class="form-input scene-input-sub" value="${escapeHtml(scene.subtitle || "")}">
       `;
-      subGroup.querySelector("input").addEventListener("input", (e) => {
-        scene.subtitle = e.target.value;
-        syncJsonTextarea();
-      });
+      const subInput = subGroup.querySelector("input");
+      if (subInput) {
+        subInput.addEventListener("input", (e) => {
+          scene.subtitle = e.target.value;
+          syncJsonTextarea();
+        });
+      }
       card.appendChild(subGroup);
     }
 
@@ -938,10 +1000,13 @@ function renderScenesEditor(scenes) {
       <label class="form-label" style="color:var(--accent-primary);">🗣️ ナレーションセリフ (narration)</label>
       <textarea class="form-textarea scene-input-nar" style="min-height:75px;">${escapeHtml(scene.narration || "")}</textarea>
     `;
-    narGroup.querySelector("textarea").addEventListener("input", (e) => {
-      scene.narration = e.target.value;
-      syncJsonTextarea();
-    });
+    const narTextarea = narGroup.querySelector("textarea");
+    if (narTextarea) {
+      narTextarea.addEventListener("input", (e) => {
+        scene.narration = e.target.value;
+        syncJsonTextarea();
+      });
+    }
     card.appendChild(narGroup);
 
     container.appendChild(card);
@@ -953,8 +1018,11 @@ function renderScenesEditor(scenes) {
  */
 function syncJsonTextarea() {
   if (!state.configData) return;
-  state.configData.title = document.getElementById("meta-title").value;
-  document.getElementById("textarea-json-raw").value = JSON.stringify(state.configData, null, 2);
+  const metaTitle = document.getElementById("meta-title");
+  if (metaTitle) state.configData.title = metaTitle.value;
+  
+  const textarea = document.getElementById("textarea-json-raw");
+  if (textarea) textarea.value = JSON.stringify(state.configData, null, 2);
 }
 
 /**
@@ -963,7 +1031,6 @@ function syncJsonTextarea() {
 function extractAndRenderImageSlots(scenes) {
   state.imageSlots.clear();
 
-  // シーンごとに image を抽出
   scenes.forEach((scene, idx) => {
     if (scene.image) {
       if (!state.imageSlots.has(scene.image)) {
@@ -978,6 +1045,7 @@ function extractAndRenderImageSlots(scenes) {
   });
 
   const container = document.getElementById("images-slot-list");
+  if (!container) return;
   container.innerHTML = "";
 
   if (state.imageSlots.size === 0) {
@@ -985,7 +1053,6 @@ function extractAndRenderImageSlots(scenes) {
     return;
   }
 
-  // スロットごとにカードを構築
   state.imageSlots.forEach((slotData, filename) => {
     const card = document.createElement("div");
     card.className = "card image-slot-card";
@@ -994,7 +1061,7 @@ function extractAndRenderImageSlots(scenes) {
     
     card.innerHTML = `
       <div class="slot-info">
-        <span class="slot-filename">🖼️ ${filename}</span>
+        <span class="slot-filename">🖼️ ${escapeHtml(filename)}</span>
         <span class="slot-scenes">${sceneNumList}</span>
       </div>
       <label class="preview-area" id="preview-${filename.replace(/[^a-zA-Z0-9]/g, "_")}">
@@ -1002,17 +1069,18 @@ function extractAndRenderImageSlots(scenes) {
           <i>📷</i>
           <span>タップしてカメラ／写真から<br>このスロットに画像を割り当て</span>
         </div>
-        <input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="${filename}">
+        <input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="${escapeHtml(filename)}">
       </label>
     `;
 
-    // ファイル選択＆ Canvas 自動リサイズ・ Base64 圧縮のバインド
     const fileInput = card.querySelector(".slot-file-input");
-    fileInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      processImageFile(file, filename, card.querySelector(".preview-area"));
-    });
+    if (fileInput) {
+      fileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        processImageFile(file, filename, card.querySelector(".preview-area"));
+      });
+    }
 
     container.appendChild(card);
   });
@@ -1026,18 +1094,17 @@ function processImageFile(file, slotFilename, previewElement) {
   reader.onload = (e) => {
     const img = new Image();
     img.onload = () => {
-      // 最大幅・高さを設定してリサイズ (長辺最大 1200px)
-      const maxDim = 1200;
+      const MAX_SIZE = 1200;
       let w = img.width;
       let h = img.height;
 
-      if (w > maxDim || h > maxDim) {
+      if (w > MAX_SIZE || h > MAX_SIZE) {
         if (w > h) {
-          h = Math.round((h * maxDim) / w);
-          w = maxDim;
+          h = Math.round((h * MAX_SIZE) / w);
+          w = MAX_SIZE;
         } else {
-          w = Math.round((w * maxDim) / h);
-          h = maxDim;
+          w = Math.round((w * MAX_SIZE) / h);
+          h = MAX_SIZE;
         }
       }
 
@@ -1047,19 +1114,30 @@ function processImageFile(file, slotFilename, previewElement) {
       const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, w, h);
 
-      // JPEG/PNG のフォーマット判断と Base64 生成
-      const isPng = slotFilename.toLowerCase().endsWith(".png");
-      const mimeType = isPng ? "image/png" : "image/jpeg";
-      const base64DataUrl = canvas.toDataURL(mimeType, isPng ? 0.95 : 0.88);
-
-      // 状態とプレビュー表示を更新
+      const base64Data = canvas.toDataURL("image/jpeg", 0.85);
       const slot = state.imageSlots.get(slotFilename);
-      if (slot) {
-        slot.base64 = base64DataUrl;
+      if (slot) slot.base64 = base64Data;
+
+      if (previewElement) {
+        previewElement.innerHTML = `
+          <img src="${base64Data}" alt="preview">
+          <div style="font-size:11px; color:#10B981; font-weight:700; margin-top:8px;">✓ 画像を準備しました (圧縮済: ${w}x${h})</div>
+          <input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="${escapeHtml(slotFilename)}">
+        `;
+
+        const newFileInput = previewElement.querySelector(".slot-file-input");
+        if (newFileInput) {
+          newFileInput.addEventListener("change", (event) => {
+            const newFile = event.target.files[0];
+            if (newFile) processImageFile(newFile, slotFilename, previewElement);
+          });
+        }
       }
 
-      previewElement.innerHTML = `<img src="${base64DataUrl}" alt="${slotFilename}">`;
-      showToast(`✓ ${slotFilename} を割り当てました！`);
+      showToast(`✓ 「${slotFilename}」をセットしました！`);
+    };
+    img.onerror = () => {
+      showToast("❌ 画像の読み込みに失敗しました");
     };
     img.src = e.target.result;
   };
@@ -1067,178 +1145,156 @@ function processImageFile(file, slotFilename, previewElement) {
 }
 
 /**
- * GAS エンドポイントへ全画像＆ JSON を一括 POST し、 Actions を開始
+ * 全画像データと更新された JSON を GAS バックエンドへプッシュ＆ Actions トリガー
  */
 async function pushAndTriggerWorkflow() {
-  if (!state.gasUrl) {
-    showToast("⚠️ ⚙️ GAS バックエンド設定で URL を保存してください！");
-    document.getElementById("config-card").classList.remove("hidden");
-    return;
-  }
-
   if (!state.configData) {
-    showToast("⚠️ 先に JSON を展開してください");
+    showToast("⚠️ 先に JSON データを解析・編集してください");
     return;
   }
 
-  // 同期して最新の JSON 文字列を取得
-  syncJsonTextarea();
-  const jsonString = document.getElementById("textarea-json-raw").value;
-  const jsonFilename = document.getElementById("meta-json-filename").value || "video_config_custom.json";
-  const outputFilename = document.getElementById("meta-output-filename").value || "output_custom.mp4";
-
-  // セットされた画像リストを作成
-  const uploadImages = [];
-  state.imageSlots.forEach((slotData, filename) => {
-    if (slotData.base64) {
-      uploadImages.push({
-        path: filename,
-        base64: slotData.base64
-      });
-    }
+  const missingSlots = [];
+  state.imageSlots.forEach((slot, filename) => {
+    if (!slot.base64) missingSlots.push(filename);
   });
 
-  const btn = document.getElementById("btn-push-trigger");
-  const origText = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = `⏳ リポジトリにアップロード＆起動中... (${uploadImages.length}枚)`;
+  if (missingSlots.length > 0) {
+    const confirmPush = confirm(`以下の画像が未セットですがプッシュしてよろしいですか？\n（テンプレートのデフォルト画像やリポジトリの既存画像が使われます）\n\n・${missingSlots.join("\n・")}`);
+    if (!confirmPush) return;
+  }
+
+  const pushBtn = document.getElementById("btn-push-trigger");
+  if (pushBtn) {
+    pushBtn.disabled = true;
+    pushBtn.innerHTML = `⏳ GAS 経由でプッシュ＆ Actions 起動中...`;
+  }
+  showToast("🔥 リポジトリへファイルをプッシュ中...");
 
   try {
+    syncJsonTextarea();
+    const updatedJsonText = document.getElementById("textarea-json-raw").value;
+
     const payload = {
-      action: "pushAndTrigger",
-      jsonFilename: jsonFilename,
-      outputFilename: outputFilename,
-      jsonContent: jsonString,
-      images: uploadImages
+      jsonFilename: document.getElementById("meta-json-filename") ? document.getElementById("meta-json-filename").value : "video_config_custom.json",
+      jsonContent: updatedJsonText,
+      images: []
     };
 
-    // GAS (CORS) への POST リクエスト (redirect follow & text output)
-    const response = await fetch(state.gasUrl, {
-      method: "POST",
-      redirect: "follow",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify(payload)
+    state.imageSlots.forEach((slot, filename) => {
+      if (slot.base64) {
+        payload.images.push({
+          filename: filename,
+          base64: slot.base64.split(",")[1]
+        });
+      }
     });
 
-    const resText = await response.text();
-    let resData;
-    try {
-      resData = JSON.parse(resText);
-    } catch (e) {
-      throw new Error("GASからの応答を解析できませんでした: " + resText.substring(0, 80));
-    }
+    const res = await fetch(state.gasUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "payload=" + encodeURIComponent(JSON.stringify(payload))
+    });
 
-    if (resData.success) {
-      showToast("🚀 プッシュ＆動画生成ワークフローがスタートしました！");
-      // ステータス監視タイマーをスタート
-      startActionsPolling();
+    const result = await res.json();
+    if (result.status === "ok") {
+      showToast("🎉 プッシュ＆動画生成の起動に成功しました！");
+      if (pushBtn) pushBtn.innerHTML = `✓ 起動完了！ Actions の状況を監視中...`;
+
+      setTimeout(() => {
+        checkActionsStatus(true);
+        startPollingActions();
+      }, 3000);
     } else {
-      showToast("❌ プッシュエラー: " + (resData.error || "詳細不明"));
+      throw new Error(result.message || "サーバー側でエラーが発生しました");
     }
   } catch (err) {
-    showToast("❌ 通信エラー: " + err.message);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = origText;
+    showToast("❌ プッシュ失敗: " + err.message);
+    if (pushBtn) {
+      pushBtn.disabled = false;
+      pushBtn.innerHTML = `🔥 全画像＆JSONを一斉プッシュして動画生成開始！`;
+    }
   }
 }
 
 /**
- * GitHub Actions 状況の自動ポーリングと表示
+ * Actions ステータスの自動ポーリングを開始
  */
-function startActionsPolling() {
-  if (state.pollingInterval) {
-    clearInterval(state.pollingInterval);
-  }
-  
-  // 即時1回目チェック
-  checkActionsStatus(false);
-
-  // 4秒ごとに自動ポーリング
+function startPollingActions() {
+  if (state.pollingInterval) clearInterval(state.pollingInterval);
   state.pollingInterval = setInterval(() => {
     checkActionsStatus(false);
   }, 4000);
 }
 
 /**
- * Actions ステータスを GET して表示更新
+ * GitHub Actions の最新ビルドステータス確認
  */
-async function checkActionsStatus(showToastOnManual) {
-  if (!state.gasUrl) {
-    if (showToastOnManual) showToast("⚠️ GAS URL を設定してください");
-    return;
-  }
+async function checkActionsStatus(showToastOnManual = false) {
+  if (showToastOnManual) showToast("🔍 最新のビルド状態を確認中...");
 
   try {
     const res = await fetch(`${state.gasUrl}?action=status`);
     const data = await res.json();
 
-    if (!data.success) {
-      if (showToastOnManual) showToast("❌ 状態取得失敗: " + (data.error || ""));
-      return;
+    if (data.status !== "ok") {
+      throw new Error(data.message || "取得に失敗しました");
     }
 
     const latest = data.latestRun;
-    if (!latest) {
-      document.getElementById("status-badge").textContent = "実行履歴なし";
-      document.getElementById("status-title").textContent = "ワークフローの実行履歴が見つかりません";
-      return;
-    }
-
     const badge = document.getElementById("status-badge");
     const title = document.getElementById("status-title");
     const meta = document.getElementById("status-meta");
     const artArea = document.getElementById("artifact-list-area");
 
-    // バッジカラーとメッセージの設定
-    badge.className = "status-badge";
-    if (latest.status === "in_progress" || latest.status === "queued") {
-      badge.classList.add("status-in-progress");
-      badge.textContent = `⏳ ${latest.status === "queued" ? "待機中 (Queued)" : "ナレーション合成＆レンダリング中..."}`;
-      title.textContent = latest.title;
-      meta.textContent = `Run ID: ${latest.id} / 更新: ${new Date(latest.updated_at).toLocaleTimeString("ja-JP")}`;
-    } else if (latest.status === "completed") {
-      if (latest.conclusion === "success") {
-        badge.classList.add("status-success");
-        badge.textContent = "✓ 動画生成完了！ (Success)";
-        title.textContent = latest.title;
-        meta.textContent = `正常終了 / ${new Date(latest.updated_at).toLocaleTimeString("ja-JP")}`;
-        
-        // ポーリング終了
-        if (state.pollingInterval) {
-          clearInterval(state.pollingInterval);
-          state.pollingInterval = null;
-        }
-      } else {
-        badge.classList.add("status-failure");
-        badge.textContent = `❌ 停止またはエラー (${latest.conclusion})`;
-        title.textContent = latest.title;
-        meta.textContent = `GitHub Actions でログをご確認ください`;
-        if (state.pollingInterval) {
-          clearInterval(state.pollingInterval);
-          state.pollingInterval = null;
-        }
-      }
+    if (!latest) {
+      if (badge) badge.textContent = "履歴なし";
+      if (title) title.textContent = "まだワークフローの実行履歴がありません";
+      return;
     }
 
-    // Artifact ダウンロード情報の表示
-    artArea.innerHTML = "";
-    if (latest.artifacts && latest.artifacts.length > 0) {
+    const timeStr = new Date(latest.created_at).toLocaleTimeString();
+    if (meta) meta.textContent = `開始時刻: ${timeStr} (Run ID: #${latest.run_number})`;
+
+    if (latest.status === "in_progress" || latest.status === "queued") {
+      if (badge) {
+        badge.textContent = "🔥 動画生成中 (VOICEVOX合成＆レンダリング)";
+        badge.className = "status-badge status-progress";
+      }
+      if (title) title.textContent = "現在、サーバー側で動画を生成しています...";
+    } else if (latest.status === "completed" && latest.conclusion === "success") {
+      if (badge) {
+        badge.textContent = "✓ 動画生成完了！";
+        badge.className = "status-badge status-success";
+      }
+      if (title) title.textContent = "動画のレンダリングが完了しました！下からダウンロードできます。";
+      if (state.pollingInterval) clearInterval(state.pollingInterval);
+    } else if (latest.status === "completed" && latest.conclusion === "failure") {
+      if (badge) {
+        badge.textContent = "❌ 生成エラー";
+        badge.className = "status-badge status-error";
+      }
+      if (title) title.textContent = "動画の生成中にエラーが発生しました。ログをご確認ください。";
+      if (state.pollingInterval) clearInterval(state.pollingInterval);
+    } else {
+      if (badge) badge.textContent = `${latest.status} (${latest.conclusion || ""})`;
+      if (title) title.textContent = `状態: ${latest.status}`;
+    }
+
+    if (artArea) artArea.innerHTML = "";
+    if (latest.artifacts && latest.artifacts.length > 0 && artArea) {
       latest.artifacts.forEach(art => {
         const sizeMb = (art.size_in_bytes / (1024 * 1024)).toFixed(1);
         const a = document.createElement("a");
         a.className = "artifact-item";
-        a.href = latest.html_url; // ログイン状態で Run ページからすぐダウンロード可能に
+        a.href = latest.html_url;
         a.target = "_blank";
         a.innerHTML = `
-          <span>🎬 ${art.name} (${sizeMb} MB)</span>
+          <span>🎬 ${escapeHtml(art.name)} (${sizeMb} MB)</span>
           <span>📥 ダウンロード画面へ ➔</span>
         `;
         artArea.appendChild(a);
       });
-    } else if (latest.status === "completed" && latest.conclusion === "success") {
+    } else if (latest.status === "completed" && latest.conclusion === "success" && artArea) {
       const a = document.createElement("a");
       a.className = "artifact-item";
       a.href = latest.html_url;
@@ -1269,6 +1325,7 @@ function escapeHtml(str) {
  */
 function showToast(msg) {
   const toast = document.getElementById("toast");
+  if (!toast) return;
   toast.textContent = msg;
   toast.classList.add("show");
   setTimeout(() => {
