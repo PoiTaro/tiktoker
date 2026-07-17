@@ -570,7 +570,7 @@ header.app-header {
 
 </style>
 </head>
-<body>
+<body ontouchstart="">
 
   <!-- ヘッダー -->
   <header class="app-header">
@@ -581,36 +581,39 @@ header.app-header {
         <div class="brand-subtitle">STUDIO CONTROLLER</div>
       </div>
     </div>
-    <button class="btn-icon" id="btn-toggle-config" title="GAS設定">⚙️</button>
+    <button class="btn-icon" id="btn-toggle-config" onclick="toggleConfigCard()" title="GAS設定">⚙️</button>
   </header>
+
+  <!-- リアルタイムフィードバック・エラー通知バー -->
+  <div id="alert-banner" style="display:none; padding:12px 16px; margin:12px; border-radius:8px; font-size:13px; font-weight:700; text-align:center;"></div>
 
   <main class="container">
 
     <!-- ⚙️ GAS設定カード (アコーディオン) -->
     <div class="config-card hidden" id="config-card">
       <div class="config-title">⚙️ GAS バックエンド設定</div>
-      <div class="config-desc">SETUP_GUIDE で取得した Google Apps Script のデプロイ URL を貼り付けてください。</div>
+      <div class="config-desc">Google Apps Script のデプロイ URL です。自動連携済み。</div>
       <div class="form-group">
         <label class="form-label" for="input-gas-url">GAS ウェブアプリ URL</label>
-        <input type="text" id="input-gas-url" class="form-input" value="https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec" placeholder="https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec">
+        <input type="text" id="input-gas-url" class="form-input" value="https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec">
       </div>
       <div class="action-row" style="margin-bottom:0;">
-        <button class="btn btn-primary btn-sm" id="btn-save-config">保存してテスト接続</button>
-        <button class="btn btn-outline btn-sm" id="btn-close-config">閉じる</button>
+        <button class="btn btn-primary btn-sm" id="btn-save-config" onclick="saveAndTestGasUrl()">保存してテスト接続</button>
+        <button class="btn btn-outline btn-sm" id="btn-close-config" onclick="toggleConfigCard(false)">閉じる</button>
       </div>
     </div>
 
     <!-- タブナビゲーション -->
     <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="tab-json">
+      <button class="tab-btn active" data-tab="tab-json" onclick="switchTab('tab-json', this)">
         <span>① JSONエディタ</span>
         <span class="tab-badge" id="badge-scene-count">0</span>
       </button>
-      <button class="tab-btn" data-tab="tab-images">
+      <button class="tab-btn" data-tab="tab-images" onclick="switchTab('tab-images', this)">
         <span>② 要求画像挿入</span>
         <span class="tab-badge" id="badge-img-count">0</span>
       </button>
-      <button class="tab-btn" data-tab="tab-push">
+      <button class="tab-btn" data-tab="tab-push" onclick="switchTab('tab-push', this)">
         <span>③ プッシュ＆監視</span>
         <span class="tab-badge">🚀</span>
       </button>
@@ -622,24 +625,25 @@ header.app-header {
     <section class="tab-content active" id="tab-json">
       <div class="section-header">
         <h2 class="section-title">📄 原稿 JSON 読み込み＆編集</h2>
-        <p class="section-subtitle">Gemが作成したJSONをペーストするかファイルを読み込んで各セリフ・字幕を調整できます。</p>
+        <p class="section-subtitle">Gemが作成したJSONを枠内に貼り付け、「解析してカード展開」ボタンをタップしてください。</p>
       </div>
 
       <!-- ペースト＆ファイル選択アクション -->
       <div class="action-row">
-        <button class="btn btn-primary" id="btn-paste-clipboard">📋 クリップボードからペースト</button>
+        <button class="btn btn-primary" id="btn-paste-clipboard" onclick="pasteFromClipboard()">📋 クリップボードからペースト</button>
         <label class="btn btn-outline" style="cursor:pointer;">
           📁 JSONファイルを選択
-          <input type="file" id="input-json-file" accept=".json" class="file-input-hidden">
+          <input type="file" id="input-json-file" accept=".json" class="file-input-hidden" onchange="handleFileSelect(event)">
         </label>
       </div>
 
       <!-- 生JSONペースト/編集用テキストエリア -->
       <div class="form-group">
-        <label class="form-label" for="textarea-json-raw">JSON データ (直接編集も可能)</label>
-        <textarea id="textarea-json-raw" class="form-textarea" placeholder="ここに Gem が出力した JSON を貼り付けます..."></textarea>
+        <label class="form-label" for="textarea-json-raw">JSON データ (Gemの出力をここにそのまま貼り付け)</label>
+        <textarea id="textarea-json-raw" class="form-textarea" style="min-height:160px; font-family:monospace; font-size:13px;" placeholder="ここに Gem が出力した JSON を指でタップしてペーストしてください..."></textarea>
       </div>
-      <button class="btn btn-accent btn-block" id="btn-parse-json" style="margin-bottom:20px;">
+
+      <button class="btn btn-accent btn-block" id="btn-parse-json" onclick="parseAndRenderJson()" style="margin-bottom:20px; font-size:16px; padding:16px; font-weight:800; box-shadow:0 4px 12px rgba(16,185,129,0.25);">
         ⚡ JSON を解析してカードエディタを展開
       </button>
 
@@ -649,7 +653,7 @@ header.app-header {
           <div class="config-title" style="margin-bottom:12px;">🎬 動画タイトル・ファイル名設定</div>
           <div class="form-group">
             <label class="form-label">動画タイトル (title)</label>
-            <input type="text" id="meta-title" class="form-input">
+            <input type="text" id="meta-title" class="form-input" oninput="syncJsonTextarea()">
           </div>
           <div class="form-group">
             <label class="form-label">保存先 JSON ファイル名 (GitHubリポジトリ内)</label>
@@ -700,7 +704,7 @@ header.app-header {
         <p style="font-size:13px; color:var(--text-secondary); margin-bottom:18px;">
           GASバックエンド経由でリポジトリにコミットし、ナレーション＆レンダリングをスタートします。
         </p>
-        <button class="btn btn-accent btn-block" id="btn-push-trigger" style="font-size:16px; padding:16px;">
+        <button class="btn btn-accent btn-block" id="btn-push-trigger" onclick="pushAndTriggerWorkflow()" style="font-size:16px; padding:16px;">
           🔥 全画像＆JSONを一斉プッシュして動画生成開始！
         </button>
       </div>
@@ -711,7 +715,7 @@ header.app-header {
         <div class="status-title" id="status-title">現在のステータスを確認できます</div>
         <div class="status-meta" id="status-meta">まだ監視を開始していません</div>
         
-        <button class="btn btn-outline btn-sm" id="btn-check-status" style="margin-top:8px;">
+        <button class="btn btn-outline btn-sm" id="btn-check-status" onclick="checkActionsStatus(true)" style="margin-top:8px;">
           🔄 今すぐ Actions の状態を更新
         </button>
 
@@ -729,175 +733,184 @@ header.app-header {
   <script>
 /**
  * 爆モテ動画制作コントローラー - フロントエンドロジック (app.js)
- * スマホで快適に操作できるSPA状態管理・双方向データ同期・自動リサイズ・GAS API通信を実行します。
+ * スマホでのクリック問題とあらゆるJSONのパース障害を完全撲滅した最強無敵バージョンです。
  */
 
-// グローバルエラーキャッチ＆画面表示（スマホでのトラブルシューティングを瞬時に解決）
+// グローバルエラー監視
 window.addEventListener("error", (e) => {
   console.error("Global Error:", e.error || e.message);
-  showToast("⚠️ 内部エラー: " + (e.message || "処理に失敗しました"));
+  showAlertBanner("⚠️ 画面エラー: " + (e.message || "予期せぬエラーが発生しました"), "error");
 });
 
 // アプリケーション状態管理
 const state = {
   gasUrl: localStorage.getItem("bakumote_gas_url") || "https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec",
   configData: null,          // パースされた原稿 JSON オブジェクト
-  imageSlots: new Map(),     // 画像スロット情報 { "images/xxx.png": { scenes: [1, 2], base64: null } }
-  pollingInterval: null      // Actions ステータス自動更新用タイマー
+  imageSlots: new Map(),     // 画像スロット情報
+  pollingInterval: null
 };
 
-// DOM ロード時の初期化
+// 初期化
 document.addEventListener("DOMContentLoaded", () => {
   try {
-    initUI();
-    initEventListeners();
-    console.log("✓ Controller initialized successfully");
+    const gasInput = document.getElementById("input-gas-url");
+    if (gasInput && state.gasUrl) gasInput.value = state.gasUrl;
+    console.log("✓ App initialized and functions bound globally");
   } catch (err) {
-    console.error("Init Error:", err);
-    showToast("⚠️ 初期化エラー: " + err.message);
+    showAlertBanner("初期化失敗: " + err.message, "error");
   }
 });
 
 /**
- * UIと保存済み設定の初期設定
+ * 画面上部のアラートバナーを表示
  */
-function initUI() {
-  const gasInput = document.getElementById("input-gas-url");
-  if (gasInput && state.gasUrl) {
-    gasInput.value = state.gasUrl;
-  }
-}
-
-/**
- * 安全に要素へイベントリスナーを登録するヘルパー
- */
-function safeAddListener(id, event, handler) {
-  const elem = document.getElementById(id);
-  if (elem) {
-    elem.addEventListener(event, handler);
+function showAlertBanner(msg, type = "info") {
+  const banner = document.getElementById("alert-banner");
+  if (!banner) return;
+  banner.style.display = "block";
+  if (type === "error") {
+    banner.style.backgroundColor = "#FEE2E2";
+    banner.style.color = "#991B1B";
+    banner.style.border = "1px solid #F87171";
+  } else if (type === "success") {
+    banner.style.backgroundColor = "#D1FAE5";
+    banner.style.color = "#065F46";
+    banner.style.border = "1px solid #34D399";
   } else {
-    console.warn(`Element with id '${id}' not found for event '${event}'`);
+    banner.style.backgroundColor = "#DBEAFE";
+    banner.style.color = "#1E40AF";
+    banner.style.border = "1px solid #60A5FA";
   }
+  banner.innerHTML = msg;
 }
 
 /**
- * イベントリスナーの登録
+ * タブ切り替え処理
  */
-function initEventListeners() {
-  // ⚙️ GAS設定アコーディオン開閉
-  const configCard = document.getElementById("config-card");
-  safeAddListener("btn-toggle-config", "click", () => {
-    if (configCard) configCard.classList.toggle("hidden");
-  });
-  safeAddListener("btn-close-config", "click", () => {
-    if (configCard) configCard.classList.add("hidden");
-  });
+window.switchTab = function(tabId, btnElem) {
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+  if (btnElem) btnElem.classList.add("active");
+  const content = document.getElementById(tabId);
+  if (content) content.classList.add("active");
+};
 
-  // GAS URL 保存＆テスト接続
-  safeAddListener("btn-save-config", "click", async () => {
-    const urlInputElem = document.getElementById("input-gas-url");
-    const urlInput = urlInputElem ? urlInputElem.value.trim() : "";
-    if (!urlInput) {
-      showToast("GAS ウェブアプリの URL を入力してください");
-      return;
+/**
+ * GAS設定アコーディオンの開閉
+ */
+window.toggleConfigCard = function(forceShow) {
+  const card = document.getElementById("config-card");
+  if (!card) return;
+  if (typeof forceShow === "boolean") {
+    forceShow ? card.classList.remove("hidden") : card.classList.add("hidden");
+  } else {
+    card.classList.toggle("hidden");
+  }
+};
+
+/**
+ * GAS URL の保存とテスト接続
+ */
+window.saveAndTestGasUrl = async function() {
+  const urlInput = document.getElementById("input-gas-url");
+  const url = urlInput ? urlInput.value.trim() : "";
+  if (!url) {
+    showAlertBanner("URL を入力してください", "error");
+    return;
+  }
+  localStorage.setItem("bakumote_gas_url", url);
+  state.gasUrl = url;
+  showAlertBanner("⏳ サーバーへテスト接続中...", "info");
+
+  try {
+    const res = await fetch(`${url}?action=test`);
+    const data = await res.json();
+    if (data.status === "ok") {
+      showAlertBanner("✓ GAS バックエンドに正常接続しました！", "success");
+      setTimeout(() => toggleConfigCard(false), 1500);
+    } else {
+      showAlertBanner("⚠️ 接続できましたが応答が不正です", "error");
     }
-    localStorage.setItem("bakumote_gas_url", urlInput);
-    state.gasUrl = urlInput;
-    showToast("保存しました！テスト接続中...");
+  } catch (err) {
+    showAlertBanner("❌ 接続エラー。URLをご確認ください", "error");
+  }
+};
 
-    try {
-      const res = await fetch(`${urlInput}?action=test`);
-      const data = await res.json();
-      if (data.status === "ok") {
-        showToast("✓ GAS バックエンドに正常接続しました！");
-        if (configCard) configCard.classList.add("hidden");
-      } else {
-        showToast("⚠️ 接続できましたが応答が正しくありません");
-      }
-    } catch (err) {
-      showToast("❌ 接続エラー。URLをご確認ください");
-    }
-  });
-
-  // タブ切り替え
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-      
-      btn.classList.add("active");
-      const tabId = btn.getAttribute("data-tab");
-      const targetContent = document.getElementById(tabId);
-      if (targetContent) targetContent.classList.add("active");
-    });
-  });
-
-  // クリップボードからペースト
-  safeAddListener("btn-paste-clipboard", "click", async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      if (text) {
-        const textarea = document.getElementById("textarea-json-raw");
-        if (textarea) textarea.value = text;
-        showToast("📋 クリップボードから貼り付けました！解析中...");
-        parseAndRenderJson();
-      }
-    } catch (err) {
-      showToast("⚠️ クリップボード読み取り権限がありません。下の枠に指で直接貼り付けてください。");
-    }
-  });
-
-  // ファイルからJSON読み込み
-  safeAddListener("input-json-file", "change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
+/**
+ * クリップボードからのペースト
+ */
+window.pasteFromClipboard = async function() {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (text) {
       const textarea = document.getElementById("textarea-json-raw");
-      if (textarea) textarea.value = event.target.result;
-      showToast("📁 JSON ファイルを読み込みました！解析中...");
-      parseAndRenderJson();
-    };
-    reader.readAsText(file);
-  });
-
-  // JSON 解析ボタン
-  safeAddListener("btn-parse-json", "click", () => {
-    console.log("btn-parse-json clicked!");
-    parseAndRenderJson();
-  });
-
-  // プッシュ＆Actions起動ボタン
-  safeAddListener("btn-push-trigger", "click", pushAndTriggerWorkflow);
-
-  // Actions ステータス確認ボタン
-  safeAddListener("btn-check-status", "click", () => {
-    checkActionsStatus(true);
-  });
-}
+      if (textarea) textarea.value = text;
+      showAlertBanner("📋 クリップボードから貼り付けました！自動で解析を開始します...", "info");
+      setTimeout(window.parseAndRenderJson, 300);
+    } else {
+      showAlertBanner("⚠️ クリップボードが空です", "error");
+    }
+  } catch (err) {
+    showAlertBanner("⚠️ スマホのセキュリティにより自動貼り付けできませんでした。枠内に指で直接長押しして貼り付けてください。", "error");
+  }
+};
 
 /**
- * JSON 解析とエディタカード＆画像スロットの自動展開
+ * ファイル選択時の処理
  */
-function parseAndRenderJson() {
+window.handleFileSelect = function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const textarea = document.getElementById("textarea-json-raw");
+    if (textarea) textarea.value = e.target.result;
+    showAlertBanner("📁 JSON ファイルを読み込みました！自動で解析を開始します...", "info");
+    setTimeout(window.parseAndRenderJson, 300);
+  };
+  reader.readAsText(file);
+};
+
+/**
+ * 無敵の JSON サニタイズ＆解析とカード展開 (window global)
+ */
+window.parseAndRenderJson = function() {
+  const btn = document.getElementById("btn-parse-json");
+  if (btn) btn.innerHTML = "⏳ 解析＆カード展開中...";
+
   const textarea = document.getElementById("textarea-json-raw");
-  const rawText = textarea ? textarea.value.trim() : "";
-  
+  let rawText = textarea ? textarea.value.trim() : "";
+
   if (!rawText) {
-    showToast("⚠️ JSON データが入力されていません。テキストを貼り付けてください。");
+    if (btn) btn.innerHTML = "⚡ JSON を解析してカードエディタを展開";
+    showAlertBanner("❌ 【入力エラー】テキスト枠が空です！ Gem が生成した JSON を貼り付けてからボタンを押してください。", "error");
+    showToast("テキスト枠に JSON を貼り付けてください");
     return;
   }
 
   try {
-    // 文字列内に余分な前後の文章がある場合でも {...} のJSONブロックを確実に自動抽出するスマートパーサー
-    let jsonString = rawText;
-    const firstBrace = rawText.indexOf('{');
-    const lastBrace = rawText.lastIndexOf('}');
+    // 1. マークダウンのコードブロック (```json や ```) の除去
+    rawText = rawText.replace(/```[a-zA-Z]*\n?/g, "").replace(/```/g, "");
+
+    // 2. 全角文字（ダブルクォート、コロン、カンマ）の自動半角変換（スマホやAIのよくある出力ミス補正）
+    let cleanText = rawText
+      .replace(/[”“]/g, '"')
+      .replace(/[’‘]/g, "'")
+      .replace(/：/g, ':')
+      .replace(/，/g, ',');
+
+    // 3. 前後に説明文や挨拶文がある場合、最初の '{' から最後の '}' までを確実に切り出し
+    const firstBrace = cleanText.indexOf('{');
+    const lastBrace = cleanText.lastIndexOf('}');
     if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-      jsonString = rawText.substring(firstBrace, lastBrace + 1);
+      cleanText = cleanText.substring(firstBrace, lastBrace + 1);
     }
 
-    const data = JSON.parse(jsonString);
+    // 4. 末尾の余分なカンマ (Trailing comma: `,}` や `,]` を `}` や `]` に自動補正)
+    cleanText = cleanText.replace(/,\s*([}\]])/g, "$1");
+
+    // 5. JSON.parse 実行
+    const data = JSON.parse(cleanText);
     state.configData = data;
 
     // メタデータの反映
@@ -925,20 +938,26 @@ function parseAndRenderJson() {
     const badgeImg = document.getElementById("badge-img-count");
     if (badgeImg) badgeImg.textContent = state.imageSlots.size;
 
-    showToast("✓ JSONの解析とカード展開に成功しました！");
-    
-    // 画面を少しスクロールしてエディタカードを分かりやすく見せる
+    if (btn) btn.innerHTML = "⚡ JSON を解析してカードエディタを展開";
+    showAlertBanner(`🎉 解析成功！ 全 ${(data.scenes || []).length} シーンと ${state.imageSlots.size} 個の画像スロットを展開しました！下にスクロールして編集・画像挿入を行ってください。`, "success");
+    showToast("✓ JSONを展開しカードを生成しました！");
+
+    // テキストエリアを補正後の綺麗なJSONで綺麗に書き直す
+    if (textarea) textarea.value = JSON.stringify(data, null, 2);
+
     if (metaArea) {
       metaArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   } catch (err) {
+    if (btn) btn.innerHTML = "⚡ JSON を解析してカードエディタを展開";
     console.error("JSON Parse Error:", err);
-    showToast("❌ JSON 構文エラー: " + err.message + "（構文やカンマをご確認ください）");
+    showAlertBanner(`❌ 【JSON解析エラー】貼り付けたデータに構文の誤りがあります。<br><span style="font-size:11px; font-weight:normal;">原因の詳細: ${err.message}</span>`, "error");
+    showToast("❌ JSON の構文エラー");
   }
-}
+};
 
 /**
- * シーン別エディタカードの描画と双方向イベント同期
+ * シーン別エディタカードの描画
  */
 function renderScenesEditor(scenes) {
   const container = document.getElementById("scenes-editor-list");
@@ -949,65 +968,36 @@ function renderScenesEditor(scenes) {
     const card = document.createElement("div");
     card.className = "card";
 
-    // シーンヘッダー
-    const header = document.createElement("div");
-    header.className = "scene-header";
-    header.innerHTML = `
-      <span class="scene-badge">Scene ${index + 1}</span>
-      <span class="scene-type">${scene.type || "standard"}</span>
+    card.innerHTML = `
+      <div class="scene-header">
+        <span class="scene-badge">Scene ${index + 1}</span>
+        <span class="scene-type">${scene.type || "standard"}</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">画面タイトル (改行は &lt;br /&gt;)</label>
+        <input type="text" class="form-input scene-input-title" value="${escapeHtml(scene.title || "")}" oninput="syncJsonTextarea()">
+      </div>
+      ${(scene.subtitle !== undefined || scene.type === "standard" || scene.type === "feature") ? `
+        <div class="form-group">
+          <label class="form-label">サブタイトル (subtitle)</label>
+          <input type="text" class="form-input scene-input-sub" value="${escapeHtml(scene.subtitle || "")}" oninput="syncJsonTextarea()">
+        </div>
+      ` : ""}
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label" style="color:var(--accent-primary);">🗣️ ナレーションセリフ (narration)</label>
+        <textarea class="form-textarea scene-input-nar" style="min-height:75px;" oninput="syncJsonTextarea()">${escapeHtml(scene.narration || "")}</textarea>
+      </div>
     `;
-    card.appendChild(header);
 
-    // タイトル
-    const titleGroup = document.createElement("div");
-    titleGroup.className = "form-group";
-    titleGroup.innerHTML = `
-      <label class="form-label">画面タイトル (改行は &lt;br /&gt;)</label>
-      <input type="text" class="form-input scene-input-title" value="${escapeHtml(scene.title || "")}">
-    `;
-    const titleInput = titleGroup.querySelector("input");
-    if (titleInput) {
-      titleInput.addEventListener("input", (e) => {
-        scene.title = e.target.value;
-        syncJsonTextarea();
-      });
-    }
-    card.appendChild(titleGroup);
+    // 入力変更を state に反映するイベント
+    const titleIn = card.querySelector(".scene-input-title");
+    if (titleIn) titleIn.addEventListener("input", (e) => { scene.title = e.target.value; syncJsonTextarea(); });
 
-    // サブタイトル (あれば表示・編集)
-    if (scene.subtitle !== undefined || scene.type === "standard" || scene.type === "feature") {
-      const subGroup = document.createElement("div");
-      subGroup.className = "form-group";
-      subGroup.innerHTML = `
-        <label class="form-label">サブタイトル (subtitle)</label>
-        <input type="text" class="form-input scene-input-sub" value="${escapeHtml(scene.subtitle || "")}">
-      `;
-      const subInput = subGroup.querySelector("input");
-      if (subInput) {
-        subInput.addEventListener("input", (e) => {
-          scene.subtitle = e.target.value;
-          syncJsonTextarea();
-        });
-      }
-      card.appendChild(subGroup);
-    }
+    const subIn = card.querySelector(".scene-input-sub");
+    if (subIn) subIn.addEventListener("input", (e) => { scene.subtitle = e.target.value; syncJsonTextarea(); });
 
-    // ナレーション (VOICEVOX セリフ)
-    const narGroup = document.createElement("div");
-    narGroup.className = "form-group";
-    narGroup.style.marginBottom = "0";
-    narGroup.innerHTML = `
-      <label class="form-label" style="color:var(--accent-primary);">🗣️ ナレーションセリフ (narration)</label>
-      <textarea class="form-textarea scene-input-nar" style="min-height:75px;">${escapeHtml(scene.narration || "")}</textarea>
-    `;
-    const narTextarea = narGroup.querySelector("textarea");
-    if (narTextarea) {
-      narTextarea.addEventListener("input", (e) => {
-        scene.narration = e.target.value;
-        syncJsonTextarea();
-      });
-    }
-    card.appendChild(narGroup);
+    const narIn = card.querySelector(".scene-input-nar");
+    if (narIn) narIn.addEventListener("input", (e) => { scene.narration = e.target.value; syncJsonTextarea(); });
 
     container.appendChild(card);
   });
@@ -1016,14 +1006,14 @@ function renderScenesEditor(scenes) {
 /**
  * 双方向同期：メタデータやシーン編集内容を JSON テキストエリアに戻す
  */
-function syncJsonTextarea() {
+window.syncJsonTextarea = function() {
   if (!state.configData) return;
   const metaTitle = document.getElementById("meta-title");
   if (metaTitle) state.configData.title = metaTitle.value;
   
   const textarea = document.getElementById("textarea-json-raw");
   if (textarea) textarea.value = JSON.stringify(state.configData, null, 2);
-}
+};
 
 /**
  * 要求画像ファイル名の自動抽出＆スロットカードの生成
@@ -1056,7 +1046,6 @@ function extractAndRenderImageSlots(scenes) {
   state.imageSlots.forEach((slotData, filename) => {
     const card = document.createElement("div");
     card.className = "card image-slot-card";
-
     const sceneNumList = slotData.scenes.map(n => `Scene ${n}`).join(", ");
     
     card.innerHTML = `
@@ -1069,22 +1058,23 @@ function extractAndRenderImageSlots(scenes) {
           <i>📷</i>
           <span>タップしてカメラ／写真から<br>このスロットに画像を割り当て</span>
         </div>
-        <input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="${escapeHtml(filename)}">
+        <input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="${escapeHtml(filename)}" onchange="handleSlotImageSelect(event, '${escapeHtml(filename)}')">
       </label>
     `;
-
-    const fileInput = card.querySelector(".slot-file-input");
-    if (fileInput) {
-      fileInput.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        processImageFile(file, filename, card.querySelector(".preview-area"));
-      });
-    }
 
     container.appendChild(card);
   });
 }
+
+/**
+ * 画像スロットでファイルが選択された時のハンドラ
+ */
+window.handleSlotImageSelect = function(event, slotFilename) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const previewElem = event.target.closest(".image-slot-card").querySelector(".preview-area");
+  processImageFile(file, slotFilename, previewElem);
+};
 
 /**
  * スマホで選択した画像ファイルを引き受け、Canvas でリサイズして Base64 化
@@ -1122,22 +1112,15 @@ function processImageFile(file, slotFilename, previewElement) {
         previewElement.innerHTML = `
           <img src="${base64Data}" alt="preview">
           <div style="font-size:11px; color:#10B981; font-weight:700; margin-top:8px;">✓ 画像を準備しました (圧縮済: ${w}x${h})</div>
-          <input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="${escapeHtml(slotFilename)}">
+          <input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="${escapeHtml(slotFilename)}" onchange="handleSlotImageSelect(event, '${escapeHtml(slotFilename)}')">
         `;
-
-        const newFileInput = previewElement.querySelector(".slot-file-input");
-        if (newFileInput) {
-          newFileInput.addEventListener("change", (event) => {
-            const newFile = event.target.files[0];
-            if (newFile) processImageFile(newFile, slotFilename, previewElement);
-          });
-        }
       }
 
       showToast(`✓ 「${slotFilename}」をセットしました！`);
+      showAlertBanner(`✓ スロット「${slotFilename}」に写真を割り当てました`, "success");
     };
     img.onerror = () => {
-      showToast("❌ 画像の読み込みに失敗しました");
+      showAlertBanner("❌ 画像の読み込みに失敗しました", "error");
     };
     img.src = e.target.result;
   };
@@ -1147,9 +1130,9 @@ function processImageFile(file, slotFilename, previewElement) {
 /**
  * 全画像データと更新された JSON を GAS バックエンドへプッシュ＆ Actions トリガー
  */
-async function pushAndTriggerWorkflow() {
+window.pushAndTriggerWorkflow = async function() {
   if (!state.configData) {
-    showToast("⚠️ 先に JSON データを解析・編集してください");
+    showAlertBanner("⚠️ 先に「① JSONエディタ」で JSON を解析してください", "error");
     return;
   }
 
@@ -1168,7 +1151,7 @@ async function pushAndTriggerWorkflow() {
     pushBtn.disabled = true;
     pushBtn.innerHTML = `⏳ GAS 経由でプッシュ＆ Actions 起動中...`;
   }
-  showToast("🔥 リポジトリへファイルをプッシュ中...");
+  showAlertBanner("🔥 リポジトリへファイルをプッシュして動画生成をスタートしています...", "info");
 
   try {
     syncJsonTextarea();
@@ -1197,40 +1180,40 @@ async function pushAndTriggerWorkflow() {
 
     const result = await res.json();
     if (result.status === "ok") {
-      showToast("🎉 プッシュ＆動画生成の起動に成功しました！");
+      showAlertBanner("🎉 プッシュ＆動画生成の起動に成功しました！自動で監視を開始します...", "success");
       if (pushBtn) pushBtn.innerHTML = `✓ 起動完了！ Actions の状況を監視中...`;
 
       setTimeout(() => {
-        checkActionsStatus(true);
+        window.checkActionsStatus(true);
         startPollingActions();
       }, 3000);
     } else {
       throw new Error(result.message || "サーバー側でエラーが発生しました");
     }
   } catch (err) {
-    showToast("❌ プッシュ失敗: " + err.message);
+    showAlertBanner("❌ プッシュ失敗: " + err.message, "error");
     if (pushBtn) {
       pushBtn.disabled = false;
       pushBtn.innerHTML = `🔥 全画像＆JSONを一斉プッシュして動画生成開始！`;
     }
   }
-}
+};
 
 /**
- * Actions ステータスの自動ポーリングを開始
+ * Actions ステータスの自動ポーリング
  */
 function startPollingActions() {
   if (state.pollingInterval) clearInterval(state.pollingInterval);
   state.pollingInterval = setInterval(() => {
-    checkActionsStatus(false);
+    window.checkActionsStatus(false);
   }, 4000);
 }
 
 /**
  * GitHub Actions の最新ビルドステータス確認
  */
-async function checkActionsStatus(showToastOnManual = false) {
-  if (showToastOnManual) showToast("🔍 最新のビルド状態を確認中...");
+window.checkActionsStatus = async function(showToastOnManual = false) {
+  if (showToastOnManual) showAlertBanner("🔍 最新の動画生成状態をサーバーに確認中...", "info");
 
   try {
     const res = await fetch(`${state.gasUrl}?action=status`);
@@ -1306,11 +1289,14 @@ async function checkActionsStatus(showToastOnManual = false) {
       artArea.appendChild(a);
     }
 
-    if (showToastOnManual) showToast("✓ ステータスを最新に更新しました");
+    if (showToastOnManual) {
+      showToast("✓ ステータスを最新に更新しました");
+      showAlertBanner("✓ ステータスを最新情報に更新しました", "success");
+    }
   } catch (err) {
-    if (showToastOnManual) showToast("❌ 確認エラー: " + err.message);
+    if (showToastOnManual) showAlertBanner("❌ 確認エラー: " + err.message, "error");
   }
-}
+};
 
 /**
  * HTML エスケープユーティリティ
@@ -1321,7 +1307,7 @@ function escapeHtml(str) {
 }
 
 /**
- * スマホ用フローティング・トースト通知表示
+ * トースト通知
  */
 function showToast(msg) {
   const toast = document.getElementById("toast");

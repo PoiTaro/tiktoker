@@ -6,7 +6,7 @@
   <title>爆モテ動画制作コントローラー</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body ontouchstart="">
 
   <!-- ヘッダー -->
   <header class="app-header">
@@ -17,36 +17,39 @@
         <div class="brand-subtitle">STUDIO CONTROLLER</div>
       </div>
     </div>
-    <button class="btn-icon" id="btn-toggle-config" title="GAS設定">⚙️</button>
+    <button class="btn-icon" id="btn-toggle-config" onclick="toggleConfigCard()" title="GAS設定">⚙️</button>
   </header>
+
+  <!-- リアルタイムフィードバック・エラー通知バー -->
+  <div id="alert-banner" style="display:none; padding:12px 16px; margin:12px; border-radius:8px; font-size:13px; font-weight:700; text-align:center;"></div>
 
   <main class="container">
 
     <!-- ⚙️ GAS設定カード (アコーディオン) -->
     <div class="config-card hidden" id="config-card">
       <div class="config-title">⚙️ GAS バックエンド設定</div>
-      <div class="config-desc">SETUP_GUIDE で取得した Google Apps Script のデプロイ URL を貼り付けてください。</div>
+      <div class="config-desc">Google Apps Script のデプロイ URL です。自動連携済み。</div>
       <div class="form-group">
         <label class="form-label" for="input-gas-url">GAS ウェブアプリ URL</label>
-        <input type="text" id="input-gas-url" class="form-input" value="https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec" placeholder="https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec">
+        <input type="text" id="input-gas-url" class="form-input" value="https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec">
       </div>
       <div class="action-row" style="margin-bottom:0;">
-        <button class="btn btn-primary btn-sm" id="btn-save-config">保存してテスト接続</button>
-        <button class="btn btn-outline btn-sm" id="btn-close-config">閉じる</button>
+        <button class="btn btn-primary btn-sm" id="btn-save-config" onclick="saveAndTestGasUrl()">保存してテスト接続</button>
+        <button class="btn btn-outline btn-sm" id="btn-close-config" onclick="toggleConfigCard(false)">閉じる</button>
       </div>
     </div>
 
     <!-- タブナビゲーション -->
     <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="tab-json">
+      <button class="tab-btn active" data-tab="tab-json" onclick="switchTab('tab-json', this)">
         <span>① JSONエディタ</span>
         <span class="tab-badge" id="badge-scene-count">0</span>
       </button>
-      <button class="tab-btn" data-tab="tab-images">
+      <button class="tab-btn" data-tab="tab-images" onclick="switchTab('tab-images', this)">
         <span>② 要求画像挿入</span>
         <span class="tab-badge" id="badge-img-count">0</span>
       </button>
-      <button class="tab-btn" data-tab="tab-push">
+      <button class="tab-btn" data-tab="tab-push" onclick="switchTab('tab-push', this)">
         <span>③ プッシュ＆監視</span>
         <span class="tab-badge">🚀</span>
       </button>
@@ -58,24 +61,25 @@
     <section class="tab-content active" id="tab-json">
       <div class="section-header">
         <h2 class="section-title">📄 原稿 JSON 読み込み＆編集</h2>
-        <p class="section-subtitle">Gemが作成したJSONをペーストするかファイルを読み込んで各セリフ・字幕を調整できます。</p>
+        <p class="section-subtitle">Gemが作成したJSONを枠内に貼り付け、「解析してカード展開」ボタンをタップしてください。</p>
       </div>
 
       <!-- ペースト＆ファイル選択アクション -->
       <div class="action-row">
-        <button class="btn btn-primary" id="btn-paste-clipboard">📋 クリップボードからペースト</button>
+        <button class="btn btn-primary" id="btn-paste-clipboard" onclick="pasteFromClipboard()">📋 クリップボードからペースト</button>
         <label class="btn btn-outline" style="cursor:pointer;">
           📁 JSONファイルを選択
-          <input type="file" id="input-json-file" accept=".json" class="file-input-hidden">
+          <input type="file" id="input-json-file" accept=".json" class="file-input-hidden" onchange="handleFileSelect(event)">
         </label>
       </div>
 
       <!-- 生JSONペースト/編集用テキストエリア -->
       <div class="form-group">
-        <label class="form-label" for="textarea-json-raw">JSON データ (直接編集も可能)</label>
-        <textarea id="textarea-json-raw" class="form-textarea" placeholder="ここに Gem が出力した JSON を貼り付けます..."></textarea>
+        <label class="form-label" for="textarea-json-raw">JSON データ (Gemの出力をここにそのまま貼り付け)</label>
+        <textarea id="textarea-json-raw" class="form-textarea" style="min-height:160px; font-family:monospace; font-size:13px;" placeholder="ここに Gem が出力した JSON を指でタップしてペーストしてください..."></textarea>
       </div>
-      <button class="btn btn-accent btn-block" id="btn-parse-json" style="margin-bottom:20px;">
+
+      <button class="btn btn-accent btn-block" id="btn-parse-json" onclick="parseAndRenderJson()" style="margin-bottom:20px; font-size:16px; padding:16px; font-weight:800; box-shadow:0 4px 12px rgba(16,185,129,0.25);">
         ⚡ JSON を解析してカードエディタを展開
       </button>
 
@@ -85,7 +89,7 @@
           <div class="config-title" style="margin-bottom:12px;">🎬 動画タイトル・ファイル名設定</div>
           <div class="form-group">
             <label class="form-label">動画タイトル (title)</label>
-            <input type="text" id="meta-title" class="form-input">
+            <input type="text" id="meta-title" class="form-input" oninput="syncJsonTextarea()">
           </div>
           <div class="form-group">
             <label class="form-label">保存先 JSON ファイル名 (GitHubリポジトリ内)</label>
@@ -136,7 +140,7 @@
         <p style="font-size:13px; color:var(--text-secondary); margin-bottom:18px;">
           GASバックエンド経由でリポジトリにコミットし、ナレーション＆レンダリングをスタートします。
         </p>
-        <button class="btn btn-accent btn-block" id="btn-push-trigger" style="font-size:16px; padding:16px;">
+        <button class="btn btn-accent btn-block" id="btn-push-trigger" onclick="pushAndTriggerWorkflow()" style="font-size:16px; padding:16px;">
           🔥 全画像＆JSONを一斉プッシュして動画生成開始！
         </button>
       </div>
@@ -147,7 +151,7 @@
         <div class="status-title" id="status-title">現在のステータスを確認できます</div>
         <div class="status-meta" id="status-meta">まだ監視を開始していません</div>
         
-        <button class="btn btn-outline btn-sm" id="btn-check-status" style="margin-top:8px;">
+        <button class="btn btn-outline btn-sm" id="btn-check-status" onclick="checkActionsStatus(true)" style="margin-top:8px;">
           🔄 今すぐ Actions の状態を更新
         </button>
 
