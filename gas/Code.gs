@@ -58,10 +58,14 @@ function doGet(e) {
 function doPost(e) {
   try {
     let reqData = {};
-    if (e.postData && e.postData.contents) {
-      reqData = JSON.parse(e.postData.contents);
-    } else if (e.parameter && e.parameter.payload) {
+    if (e && e.parameter && e.parameter.payload) {
       reqData = JSON.parse(e.parameter.payload);
+    } else if (e && e.postData && e.postData.contents) {
+      let contents = e.postData.contents;
+      if (contents.indexOf("payload=") === 0) {
+        contents = decodeURIComponent(contents.substring(8).replace(/\+/g, " "));
+      }
+      reqData = JSON.parse(contents);
     }
 
     const action = reqData.action || "pushAndTrigger";
