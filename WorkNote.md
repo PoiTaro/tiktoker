@@ -58,6 +58,9 @@
   - **デプロイ・稼働確認済みの本番 GAS ウェブアプリ URL (`2026-07-17 設定完了`)**:
     - `https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec`
     - `webui/index.html` および `webui/app.js` のデフォルト値として完全にバインド済み。
+  - **【重要アップデート】HTML/SPA の GAS 直接ホスティング機能実装 (デプロイ v4)**:
+    - スマホから上記 URL (`/exec`) をブラウザで開くだけで、外部サーバーを一切介さず `HtmlService` より `webui/` 全体（HTML/CSS/JS インライン統合版 `gas/Index.html` 43.4KB）が高速配信され、そのままコントローラー画面として機能する最強のサーバーレス構成を実現！
+
 
 
 

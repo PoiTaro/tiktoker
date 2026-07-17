@@ -31,7 +31,7 @@ function getConfig() {
 }
 
 /**
- * HTTP GET リクエスト処理 (ステータス確認・設定チェック用)
+ * HTTP GET リクエスト処理 (ステータス確認・WEB UI 配信・設定チェック用)
  */
 function doGet(e) {
   const action = e.parameter ? e.parameter.action : "";
@@ -45,7 +45,11 @@ function doGet(e) {
     return createJsonResponse({ status: "ok", message: "GAS Backend is online!" });
   }
   
-  return createJsonResponse({ status: "ok", message: "Bakumote Video Controller GAS API ready. Use POST for actions." });
+  // スマホ等のブラウザから URL そのままアクセスされた場合は、コントローラーの WEB UI 画面を直接返却
+  return HtmlService.createHtmlOutputFromFile('Index')
+    .setTitle('爆モテ動画制作コントローラー')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 /**
