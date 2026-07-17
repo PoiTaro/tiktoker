@@ -1,10 +1,10 @@
 /**
  * 爆モテ動画制作コントローラー - フロントエンドロジック (app.js)
- * スマホでのクリック問題とあらゆるJSONのパース障害を完全撲滅した最強無敵バージョンです。
+ * GAS サンドボックス (userCodeAppPanel) での JS 構文破壊 (バッククォートや改行の誤解析) を完全に撲滅したセキュア版です。
  */
 
 // グローバルエラー監視
-window.addEventListener("error", (e) => {
+window.addEventListener("error", function(e) {
   console.error("Global Error:", e.error || e.message);
   showAlertBanner("⚠️ 画面エラー: " + (e.message || "予期せぬエラーが発生しました"), "error");
 });
@@ -12,17 +12,17 @@ window.addEventListener("error", (e) => {
 // アプリケーション状態管理
 const state = {
   gasUrl: localStorage.getItem("bakumote_gas_url") || "https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec",
-  configData: null,          // パースされた原稿 JSON オブジェクト
-  imageSlots: new Map(),     // 画像スロット情報
+  configData: null,
+  imageSlots: new Map(),
   pollingInterval: null
 };
 
 // 初期化
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function() {
   try {
     const gasInput = document.getElementById("input-gas-url");
     if (gasInput && state.gasUrl) gasInput.value = state.gasUrl;
-    console.log("✓ App initialized and functions bound globally");
+    console.log("✓ App initialized safely without multiline template literals");
   } catch (err) {
     showAlertBanner("初期化失敗: " + err.message, "error");
   }
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 /**
  * 画面上部のアラートバナーを表示
  */
-function showAlertBanner(msg, type = "info") {
+function showAlertBanner(msg, type) {
   const banner = document.getElementById("alert-banner");
   if (!banner) return;
   banner.style.display = "block";
@@ -55,8 +55,8 @@ function showAlertBanner(msg, type = "info") {
  * タブ切り替え処理
  */
 window.switchTab = function(tabId, btnElem) {
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-  document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(function(b) { b.classList.remove("active"); });
+  document.querySelectorAll(".tab-content").forEach(function(c) { c.classList.remove("active"); });
   if (btnElem) btnElem.classList.add("active");
   const content = document.getElementById(tabId);
   if (content) content.classList.add("active");
@@ -90,11 +90,11 @@ window.saveAndTestGasUrl = async function() {
   showAlertBanner("⏳ サーバーへテスト接続中...", "info");
 
   try {
-    const res = await fetch(`${url}?action=test`);
+    const res = await fetch(url + "?action=test");
     const data = await res.json();
     if (data.status === "ok") {
       showAlertBanner("✓ GAS バックエンドに正常接続しました！", "success");
-      setTimeout(() => toggleConfigCard(false), 1500);
+      setTimeout(function() { toggleConfigCard(false); }, 1500);
     } else {
       showAlertBanner("⚠️ 接続できましたが応答が不正です", "error");
     }
@@ -129,7 +129,7 @@ window.handleFileSelect = function(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = function(e) {
     const textarea = document.getElementById("textarea-json-raw");
     if (textarea) textarea.value = e.target.result;
     showAlertBanner("📁 JSON ファイルを読み込みました！自動で解析を開始します...", "info");
@@ -139,7 +139,7 @@ window.handleFileSelect = function(event) {
 };
 
 /**
- * 無敵の JSON サニタイズ＆解析とカード展開 (window global)
+ * 無敵の JSON サニタイズ＆解析とカード展開
  */
 window.parseAndRenderJson = function() {
   const btn = document.getElementById("btn-parse-json");
@@ -156,31 +156,25 @@ window.parseAndRenderJson = function() {
   }
 
   try {
-    // 1. マークダウンのコードブロック (```json や ```) の除去
     rawText = rawText.replace(/```[a-zA-Z]*\n?/g, "").replace(/```/g, "");
 
-    // 2. 全角文字（ダブルクォート、コロン、カンマ）の自動半角変換（スマホやAIのよくある出力ミス補正）
     let cleanText = rawText
       .replace(/[”“]/g, '"')
       .replace(/[’‘]/g, "'")
       .replace(/：/g, ':')
       .replace(/，/g, ',');
 
-    // 3. 前後に説明文や挨拶文がある場合、最初の '{' から最後の '}' までを確実に切り出し
     const firstBrace = cleanText.indexOf('{');
     const lastBrace = cleanText.lastIndexOf('}');
     if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
       cleanText = cleanText.substring(firstBrace, lastBrace + 1);
     }
 
-    // 4. 末尾の余分なカンマ (Trailing comma: `,}` や `,]` を `}` や `]` に自動補正)
     cleanText = cleanText.replace(/,\s*([}\]])/g, "$1");
 
-    // 5. JSON.parse 実行
     const data = JSON.parse(cleanText);
     state.configData = data;
 
-    // メタデータの反映
     const metaTitle = document.getElementById("meta-title");
     if (metaTitle) metaTitle.value = data.title || "";
 
@@ -192,13 +186,9 @@ window.parseAndRenderJson = function() {
     const metaArea = document.getElementById("meta-editor-area");
     if (metaArea) metaArea.style.display = "block";
 
-    // シーンカードの生成
     renderScenesEditor(data.scenes || []);
-
-    // 要求画像スロットの抽出と生成
     extractAndRenderImageSlots(data.scenes || []);
 
-    // バッジ件数の更新
     const badgeScene = document.getElementById("badge-scene-count");
     if (badgeScene) badgeScene.textContent = (data.scenes || []).length;
 
@@ -206,10 +196,9 @@ window.parseAndRenderJson = function() {
     if (badgeImg) badgeImg.textContent = state.imageSlots.size;
 
     if (btn) btn.innerHTML = "⚡ JSON を解析してカードエディタを展開";
-    showAlertBanner(`🎉 解析成功！ 全 ${(data.scenes || []).length} シーンと ${state.imageSlots.size} 個の画像スロットを展開しました！下にスクロールして編集・画像挿入を行ってください。`, "success");
+    showAlertBanner("🎉 解析成功！ 全 " + (data.scenes || []).length + " シーンと " + state.imageSlots.size + " 個の画像スロットを展開しました！下にスクロールして編集・画像挿入を行ってください。", "success");
     showToast("✓ JSONを展開しカードを生成しました！");
 
-    // テキストエリアを補正後の綺麗なJSONで綺麗に書き直す
     if (textarea) textarea.value = JSON.stringify(data, null, 2);
 
     if (metaArea) {
@@ -218,60 +207,61 @@ window.parseAndRenderJson = function() {
   } catch (err) {
     if (btn) btn.innerHTML = "⚡ JSON を解析してカードエディタを展開";
     console.error("JSON Parse Error:", err);
-    showAlertBanner(`❌ 【JSON解析エラー】貼り付けたデータに構文の誤りがあります。<br><span style="font-size:11px; font-weight:normal;">原因の詳細: ${err.message}</span>`, "error");
+    showAlertBanner("❌ 【JSON解析エラー】貼り付けたデータに構文の誤りがあります。<br><span style='font-size:11px; font-weight:normal;'>原因の詳細: " + err.message + "</span>", "error");
     showToast("❌ JSON の構文エラー");
   }
 };
 
 /**
- * シーン別エディタカードの描画
+ * シーン別エディタカードの描画 (改行・バッククォート不使用)
  */
 function renderScenesEditor(scenes) {
   const container = document.getElementById("scenes-editor-list");
   if (!container) return;
   container.innerHTML = "";
 
-  scenes.forEach((scene, index) => {
+  scenes.forEach(function(scene, index) {
     const card = document.createElement("div");
     card.className = "card";
 
-    card.innerHTML = `
-      <div class="scene-header">
-        <span class="scene-badge">Scene ${index + 1}</span>
-        <span class="scene-type">${scene.type || "standard"}</span>
-      </div>
-      <div class="form-group">
-        <label class="form-label">画面タイトル (改行は &lt;br /&gt;)</label>
-        <input type="text" class="form-input scene-input-title" value="${escapeHtml(scene.title || "")}" oninput="syncJsonTextarea()">
-      </div>
-      ${(scene.subtitle !== undefined || scene.type === "standard" || scene.type === "feature") ? `
-        <div class="form-group">
-          <label class="form-label">サブタイトル (subtitle)</label>
-          <input type="text" class="form-input scene-input-sub" value="${escapeHtml(scene.subtitle || "")}" oninput="syncJsonTextarea()">
-        </div>
-      ` : ""}
-      <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label" style="color:var(--accent-primary);">🗣️ ナレーションセリフ (narration)</label>
-        <textarea class="form-textarea scene-input-nar" style="min-height:75px;" oninput="syncJsonTextarea()">${escapeHtml(scene.narration || "")}</textarea>
-      </div>
-    `;
+    let html = '<div class="scene-header">' +
+      '<span class="scene-badge">Scene ' + (index + 1) + '</span>' +
+      '<span class="scene-type">' + (scene.type || "standard") + '</span>' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label class="form-label">画面タイトル (改行は &lt;br /&gt;)</label>' +
+      '<input type="text" class="form-input scene-input-title" value="' + escapeHtml(scene.title || "") + '" oninput="syncJsonTextarea()">' +
+      '</div>';
 
-    // 入力変更を state に反映するイベント
+    if (scene.subtitle !== undefined || scene.type === "standard" || scene.type === "feature") {
+      html += '<div class="form-group">' +
+        '<label class="form-label">サブタイトル (subtitle)</label>' +
+        '<input type="text" class="form-input scene-input-sub" value="' + escapeHtml(scene.subtitle || "") + '" oninput="syncJsonTextarea()">' +
+        '</div>';
+    }
+
+    html += '<div class="form-group" style="margin-bottom:0;">' +
+      '<label class="form-label" style="color:var(--accent-primary);">🗣️ ナレーションセリフ (narration)</label>' +
+      '<textarea class="form-textarea scene-input-nar" style="min-height:75px;" oninput="syncJsonTextarea()">' + escapeHtml(scene.narration || "") + '</textarea>' +
+      '</div>';
+
+    card.innerHTML = html;
+
     const titleIn = card.querySelector(".scene-input-title");
-    if (titleIn) titleIn.addEventListener("input", (e) => { scene.title = e.target.value; syncJsonTextarea(); });
+    if (titleIn) titleIn.addEventListener("input", function(e) { scene.title = e.target.value; syncJsonTextarea(); });
 
     const subIn = card.querySelector(".scene-input-sub");
-    if (subIn) subIn.addEventListener("input", (e) => { scene.subtitle = e.target.value; syncJsonTextarea(); });
+    if (subIn) subIn.addEventListener("input", function(e) { scene.subtitle = e.target.value; syncJsonTextarea(); });
 
     const narIn = card.querySelector(".scene-input-nar");
-    if (narIn) narIn.addEventListener("input", (e) => { scene.narration = e.target.value; syncJsonTextarea(); });
+    if (narIn) narIn.addEventListener("input", function(e) { scene.narration = e.target.value; syncJsonTextarea(); });
 
     container.appendChild(card);
   });
 }
 
 /**
- * 双方向同期：メタデータやシーン編集内容を JSON テキストエリアに戻す
+ * 双方向同期
  */
 window.syncJsonTextarea = function() {
   if (!state.configData) return;
@@ -288,7 +278,7 @@ window.syncJsonTextarea = function() {
 function extractAndRenderImageSlots(scenes) {
   state.imageSlots.clear();
 
-  scenes.forEach((scene, idx) => {
+  scenes.forEach(function(scene, idx) {
     if (scene.image) {
       if (!state.imageSlots.has(scene.image)) {
         state.imageSlots.set(scene.image, {
@@ -306,28 +296,28 @@ function extractAndRenderImageSlots(scenes) {
   container.innerHTML = "";
 
   if (state.imageSlots.size === 0) {
-    container.innerHTML = `<div class="card" style="text-align:center; padding:30px; color:var(--text-muted);">要求されている画像はありません。</div>`;
+    container.innerHTML = '<div class="card" style="text-align:center; padding:30px; color:var(--text-muted);">要求されている画像はありません。</div>';
     return;
   }
 
-  state.imageSlots.forEach((slotData, filename) => {
+  state.imageSlots.forEach(function(slotData, filename) {
     const card = document.createElement("div");
     card.className = "card image-slot-card";
-    const sceneNumList = slotData.scenes.map(n => `Scene ${n}`).join(", ");
+    const sceneNumList = slotData.scenes.map(function(n) { return "Scene " + n; }).join(", ");
+    const safeId = filename.replace(/[^a-zA-Z0-9]/g, "_");
+    const safeFilename = escapeHtml(filename);
     
-    card.innerHTML = `
-      <div class="slot-info">
-        <span class="slot-filename">🖼️ ${escapeHtml(filename)}</span>
-        <span class="slot-scenes">${sceneNumList}</span>
-      </div>
-      <label class="preview-area" id="preview-${filename.replace(/[^a-zA-Z0-9]/g, "_")}">
-        <div class="preview-placeholder">
-          <i>📷</i>
-          <span>タップしてカメラ／写真から<br>このスロットに画像を割り当て</span>
-        </div>
-        <input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="${escapeHtml(filename)}" onchange="handleSlotImageSelect(event, '${escapeHtml(filename)}')">
-      </label>
-    `;
+    card.innerHTML = '<div class="slot-info">' +
+      '<span class="slot-filename">🖼️ ' + safeFilename + '</span>' +
+      '<span class="slot-scenes">' + sceneNumList + '</span>' +
+      '</div>' +
+      '<label class="preview-area" id="preview-' + safeId + '">' +
+      '<div class="preview-placeholder">' +
+      '<i>📷</i>' +
+      '<span>タップしてカメラ／写真から<br>このスロットに画像を割り当て</span>' +
+      '</div>' +
+      '<input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="' + safeFilename + '" onchange="handleSlotImageSelect(event, \'' + safeFilename + '\')">' +
+      '</label>';
 
     container.appendChild(card);
   });
@@ -348,9 +338,9 @@ window.handleSlotImageSelect = function(event, slotFilename) {
  */
 function processImageFile(file, slotFilename, previewElement) {
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = function(e) {
     const img = new Image();
-    img.onload = () => {
+    img.onload = function() {
       const MAX_SIZE = 1200;
       let w = img.width;
       let h = img.height;
@@ -376,17 +366,16 @@ function processImageFile(file, slotFilename, previewElement) {
       if (slot) slot.base64 = base64Data;
 
       if (previewElement) {
-        previewElement.innerHTML = `
-          <img src="${base64Data}" alt="preview">
-          <div style="font-size:11px; color:#10B981; font-weight:700; margin-top:8px;">✓ 画像を準備しました (圧縮済: ${w}x${h})</div>
-          <input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="${escapeHtml(slotFilename)}" onchange="handleSlotImageSelect(event, '${escapeHtml(slotFilename)}')">
-        `;
+        const safeFilename = escapeHtml(slotFilename);
+        previewElement.innerHTML = '<img src="' + base64Data + '" alt="preview">' +
+          '<div style="font-size:11px; color:#10B981; font-weight:700; margin-top:8px;">✓ 画像を準備しました (圧縮済: ' + w + 'x' + h + ')</div>' +
+          '<input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="' + safeFilename + '" onchange="handleSlotImageSelect(event, \'' + safeFilename + '\')">';
       }
 
-      showToast(`✓ 「${slotFilename}」をセットしました！`);
-      showAlertBanner(`✓ スロット「${slotFilename}」に写真を割り当てました`, "success");
+      showToast("✓ 「" + slotFilename + "」をセットしました！");
+      showAlertBanner("✓ スロット「" + slotFilename + "」に写真を割り当てました", "success");
     };
-    img.onerror = () => {
+    img.onerror = function() {
       showAlertBanner("❌ 画像の読み込みに失敗しました", "error");
     };
     img.src = e.target.result;
@@ -404,19 +393,19 @@ window.pushAndTriggerWorkflow = async function() {
   }
 
   const missingSlots = [];
-  state.imageSlots.forEach((slot, filename) => {
+  state.imageSlots.forEach(function(slot, filename) {
     if (!slot.base64) missingSlots.push(filename);
   });
 
   if (missingSlots.length > 0) {
-    const confirmPush = confirm(`以下の画像が未セットですがプッシュしてよろしいですか？\n（テンプレートのデフォルト画像やリポジトリの既存画像が使われます）\n\n・${missingSlots.join("\n・")}`);
-    if (!confirmPush) return;
+    const confirmMsg = "以下の画像が未セットですがプッシュしてよろしいですか？\n（テンプレートのデフォルト画像や既存画像が使われます）\n\n・" + missingSlots.join("\n・");
+    if (!confirm(confirmMsg)) return;
   }
 
   const pushBtn = document.getElementById("btn-push-trigger");
   if (pushBtn) {
     pushBtn.disabled = true;
-    pushBtn.innerHTML = `⏳ GAS 経由でプッシュ＆ Actions 起動中...`;
+    pushBtn.innerHTML = "⏳ GAS 経由でプッシュ＆ Actions 起動中...";
   }
   showAlertBanner("🔥 リポジトリへファイルをプッシュして動画生成をスタートしています...", "info");
 
@@ -430,7 +419,7 @@ window.pushAndTriggerWorkflow = async function() {
       images: []
     };
 
-    state.imageSlots.forEach((slot, filename) => {
+    state.imageSlots.forEach(function(slot, filename) {
       if (slot.base64) {
         payload.images.push({
           filename: filename,
@@ -448,9 +437,9 @@ window.pushAndTriggerWorkflow = async function() {
     const result = await res.json();
     if (result.status === "ok") {
       showAlertBanner("🎉 プッシュ＆動画生成の起動に成功しました！自動で監視を開始します...", "success");
-      if (pushBtn) pushBtn.innerHTML = `✓ 起動完了！ Actions の状況を監視中...`;
+      if (pushBtn) pushBtn.innerHTML = "✓ 起動完了！ Actions の状況を監視中...";
 
-      setTimeout(() => {
+      setTimeout(function() {
         window.checkActionsStatus(true);
         startPollingActions();
       }, 3000);
@@ -461,7 +450,7 @@ window.pushAndTriggerWorkflow = async function() {
     showAlertBanner("❌ プッシュ失敗: " + err.message, "error");
     if (pushBtn) {
       pushBtn.disabled = false;
-      pushBtn.innerHTML = `🔥 全画像＆JSONを一斉プッシュして動画生成開始！`;
+      pushBtn.innerHTML = "🔥 全画像＆JSONを一斉プッシュして動画生成開始！";
     }
   }
 };
@@ -471,7 +460,7 @@ window.pushAndTriggerWorkflow = async function() {
  */
 function startPollingActions() {
   if (state.pollingInterval) clearInterval(state.pollingInterval);
-  state.pollingInterval = setInterval(() => {
+  state.pollingInterval = setInterval(function() {
     window.checkActionsStatus(false);
   }, 4000);
 }
@@ -479,11 +468,11 @@ function startPollingActions() {
 /**
  * GitHub Actions の最新ビルドステータス確認
  */
-window.checkActionsStatus = async function(showToastOnManual = false) {
+window.checkActionsStatus = async function(showToastOnManual) {
   if (showToastOnManual) showAlertBanner("🔍 最新の動画生成状態をサーバーに確認中...", "info");
 
   try {
-    const res = await fetch(`${state.gasUrl}?action=status`);
+    const res = await fetch(state.gasUrl + "?action=status");
     const data = await res.json();
 
     if (data.status !== "ok") {
@@ -503,7 +492,7 @@ window.checkActionsStatus = async function(showToastOnManual = false) {
     }
 
     const timeStr = new Date(latest.created_at).toLocaleTimeString();
-    if (meta) meta.textContent = `開始時刻: ${timeStr} (Run ID: #${latest.run_number})`;
+    if (meta) meta.textContent = "開始時刻: " + timeStr + " (Run ID: #" + latest.run_number + ")";
 
     if (latest.status === "in_progress" || latest.status === "queued") {
       if (badge) {
@@ -526,22 +515,20 @@ window.checkActionsStatus = async function(showToastOnManual = false) {
       if (title) title.textContent = "動画の生成中にエラーが発生しました。ログをご確認ください。";
       if (state.pollingInterval) clearInterval(state.pollingInterval);
     } else {
-      if (badge) badge.textContent = `${latest.status} (${latest.conclusion || ""})`;
-      if (title) title.textContent = `状態: ${latest.status}`;
+      if (badge) badge.textContent = latest.status + " (" + (latest.conclusion || "") + ")";
+      if (title) title.textContent = "状態: " + latest.status;
     }
 
     if (artArea) artArea.innerHTML = "";
     if (latest.artifacts && latest.artifacts.length > 0 && artArea) {
-      latest.artifacts.forEach(art => {
+      latest.artifacts.forEach(function(art) {
         const sizeMb = (art.size_in_bytes / (1024 * 1024)).toFixed(1);
         const a = document.createElement("a");
         a.className = "artifact-item";
         a.href = latest.html_url;
         a.target = "_blank";
-        a.innerHTML = `
-          <span>🎬 ${escapeHtml(art.name)} (${sizeMb} MB)</span>
-          <span>📥 ダウンロード画面へ ➔</span>
-        `;
+        a.innerHTML = '<span>🎬 ' + escapeHtml(art.name) + ' (' + sizeMb + ' MB)</span>' +
+          '<span>📥 ダウンロード画面へ ➔</span>';
         artArea.appendChild(a);
       });
     } else if (latest.status === "completed" && latest.conclusion === "success" && artArea) {
@@ -549,10 +536,8 @@ window.checkActionsStatus = async function(showToastOnManual = false) {
       a.className = "artifact-item";
       a.href = latest.html_url;
       a.target = "_blank";
-      a.innerHTML = `
-        <span>🎬 generated-mp4-video</span>
-        <span>📥 Run ページを開く ➔</span>
-      `;
+      a.innerHTML = '<span>🎬 generated-mp4-video</span>' +
+        '<span>📥 Run ページを開く ➔</span>';
       artArea.appendChild(a);
     }
 
@@ -581,7 +566,7 @@ function showToast(msg) {
   if (!toast) return;
   toast.textContent = msg;
   toast.classList.add("show");
-  setTimeout(() => {
+  setTimeout(function() {
     toast.classList.remove("show");
   }, 3200);
 }
