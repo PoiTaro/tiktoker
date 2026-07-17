@@ -64,7 +64,7 @@ function doPost(e) {
       reqData = JSON.parse(e.parameter.payload);
     }
 
-    const action = reqData.action;
+    const action = reqData.action || "pushAndTrigger";
 
     if (action === "pushAndTrigger") {
       const result = handlePushAndTrigger(reqData);
@@ -73,10 +73,10 @@ function doPost(e) {
       const status = checkActionsStatus();
       return createJsonResponse(status);
     } else {
-      return createJsonResponse({ success: false, error: "Unknown action: " + action });
+      return createJsonResponse({ status: "error", success: false, error: "Unknown action: " + action });
     }
   } catch (err) {
-    return createJsonResponse({ success: false, error: err.toString(), stack: err.stack });
+    return createJsonResponse({ status: "error", success: false, error: err.toString(), stack: err.stack });
   }
 }
 
@@ -103,16 +103,19 @@ function handlePushAndTrigger(data) {
   // 1. 画像ファイルを順番にコミット＆プッシュ
   for (const img of images) {
     try {
+      const imgPath = img.path || img.filename;
+      if (!imgPath) continue;
+
       // Data URL ("data:image/jpeg;base64,.....") から純粋な Base64 文字列を抽出
       let base64Data = img.base64;
-      if (base64Data.includes(",")) {
+      if (base64Data && base64Data.indexOf(",") !== -1) {
         base64Data = base64Data.split(",")[1];
       }
-      const commitMsg = `feat: Upload ${img.path} via Bakumote Mobile UI`;
-      createOrUpdateFileGitHub(repo, img.path, base64Data, commitMsg, token, true);
-      results.pushedFiles.push(img.path);
+      const commitMsg = `feat: Upload ${imgPath} via Bakumote Mobile UI`;
+      createOrUpdateFileGitHub(repo, imgPath, base64Data, commitMsg, token, true);
+      results.pushedFiles.push(imgPath);
     } catch (err) {
-      results.errors.push(`画像プッシュエラー (${img.path}): ` + err.message);
+      results.errors.push(`画像プッシュエラー (${img.path || img.filename}): ` + err.message);
     }
   }
 
@@ -147,8 +150,11 @@ function handlePushAndTrigger(data) {
   }
 
   return {
+    status: "ok",
     success: results.errors.length === 0,
-    results: results
+    workflowTriggered: results.workflowTriggered,
+    results: results,
+    errors: results.errors
   };
 }
 

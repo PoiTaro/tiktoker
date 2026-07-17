@@ -1147,16 +1147,21 @@ window.pushAndTriggerWorkflow = async function() {
     const updatedJsonText = document.getElementById("textarea-json-raw").value;
 
     const payload = {
+      action: "pushAndTrigger",
       jsonFilename: document.getElementById("meta-json-filename") ? document.getElementById("meta-json-filename").value : "video_config_custom.json",
+      outputFilename: document.getElementById("meta-output-filename") ? document.getElementById("meta-output-filename").value : "output_custom.mp4",
       jsonContent: updatedJsonText,
       images: []
     };
 
     state.imageSlots.forEach(function(slot, filename) {
       if (slot.base64) {
+        let b64 = slot.base64;
+        if (b64.indexOf(",") !== -1) b64 = b64.split(",")[1];
         payload.images.push({
+          path: filename,
           filename: filename,
-          base64: slot.base64.split(",")[1]
+          base64: b64
         });
       }
     });
@@ -1168,7 +1173,7 @@ window.pushAndTriggerWorkflow = async function() {
     });
 
     const result = await res.json();
-    if (result.status === "ok") {
+    if (result.status === "ok" || result.success === true || result.workflowTriggered === true) {
       showAlertBanner("🎉 プッシュ＆動画生成の起動に成功しました！自動で監視を開始します...", "success");
       if (pushBtn) pushBtn.innerHTML = "✓ 起動完了！ Actions の状況を監視中...";
 
@@ -1177,7 +1182,11 @@ window.pushAndTriggerWorkflow = async function() {
         startPollingActions();
       }, 3000);
     } else {
-      throw new Error(result.message || "サーバー側でエラーが発生しました");
+      let errMsg = result.error || result.message || "サーバー側でエラーが発生しました";
+      if (result.errors && result.errors.length > 0) {
+        errMsg += " (" + result.errors.join(", ") + ")";
+      }
+      throw new Error(errMsg);
     }
   } catch (err) {
     showAlertBanner("❌ プッシュ失敗: " + err.message, "error");
