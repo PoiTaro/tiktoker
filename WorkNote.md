@@ -45,4 +45,16 @@
 - **配置先とArtifact提供**:
   - リポジトリ内 `gemini_gem_instructions.md` および Artifact `gemini_gem_prompt.md` に完全なインストラクション（Persona, Task, Context, Format の4要素対応版）を保存。
 
+## スマホ向け動画制作コントローラー（WEB UI ＆ GAS バックエンド＆ Actions 監視）構築 (2026-07-17 追加)
+- **フロントエンド (`webui/index.html, style.css, app.js`)**:
+  - 白基調で iOS / Material You の極上の使いやすさを実現したスマホ最適化 SPA 画面。
+  - **① JSONエディタタブ**: クリップボードペースト＆ファイル読み込み、全シーン別のナレーション・字幕カード自由編集と JSON テキストエリアとの双方向リアルタイム同期。
+  - **② 要求画像挿入タブ**: JSON 内の `image` 指定パスを自動解析＆一覧カード化。カメラ／アルバムから1枚ずつ写真を選択し、スマホ上・ブラウザの Canvas 処理で最大1200pxに自動圧縮・Base64化。
+  - **③ プッシュ＆監視タブ**: ボタンタップで GAS を介し全画像と JSON を GitHub (`PoiTaro/tiktoker`) へ一括コミット＆ `workflow_dispatch` で動画生成スタート。
+  - **リアルタイムビルド監視＆動画リンク**: Actions のステータスを自動ポーリングし、ナレーション合成・レンダリング中の状態と完成時の Artifact ダウンロードリンクをスマホに表示。
+- **バックエンド (`gas/Code.gs, SETUP_GUIDE.md`)**:
+  - `doPost/doGet` で CORS/リダイレクトに対応した GitHub API (`/contents/`, `/dispatches`, `/runs`, `/artifacts`) 中継処理を実装。
+  - スプレッドシート連動による生成履歴自動ログ記録。
+
+
 

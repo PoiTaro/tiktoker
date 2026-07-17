@@ -1,0 +1,562 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+:root {
+  --bg-main: #f8f9fc;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.88);
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --accent-primary: #10b981; /* 清潔感あるエメラルドグリーン/ミント */
+  --accent-hover: #059669;
+  --accent-light: #d1fae5;
+  --danger: #ef4444;
+  --border-color: #e5e7eb;
+  --border-focus: #10b981;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding-bottom: 90px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ヘッダー */
+header.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  width: 34px;
+  height: 34px;
+  background: var(--text-primary);
+  color: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: -0.5px;
+}
+
+.brand-title {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+
+.brand-subtitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ⚙️ GAS設定トグルボタン */
+.btn-icon {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: var(--transition);
+}
+
+.btn-icon:active {
+  transform: scale(0.92);
+}
+
+/* メインコンテナ */
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* GAS 設定パネル (アコーディオン) */
+.config-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-md);
+  animation: slideDown 0.25s ease-out;
+}
+
+.config-card.hidden {
+  display: none;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.config-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.config-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+/* フォームコントロール */
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.form-input, .form-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  transition: var(--transition);
+}
+
+.form-input:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+}
+
+.form-textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+/* ナビゲーションタブ */
+.tab-nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: #ebeff5;
+  padding: 4px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  padding: 10px 4px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.tab-btn.active {
+  background: #ffffff;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-badge {
+  background: var(--text-primary);
+  color: #fff;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 800;
+}
+
+.tab-btn.active .tab-badge {
+  background: var(--accent-primary);
+}
+
+/* セクションタブ本体 */
+.tab-content {
+  display: none;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* セクションヘッダー */
+.section-header {
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  margin-bottom: 4px;
+}
+
+.section-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* アクションボタンバー */
+.action-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+/* ボタン各種 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  min-height: 48px;
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn-primary {
+  background: var(--text-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.15);
+}
+
+.btn-primary:hover {
+  background: #000000;
+}
+
+.btn-accent {
+  background: var(--accent-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.btn-accent:hover {
+  background: var(--accent-hover);
+}
+
+.btn-outline {
+  background: #ffffff;
+  border: 1.5px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.btn-outline:hover {
+  background: var(--bg-main);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-sm {
+  padding: 8px 12px;
+  min-height: 36px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+/* カード共通 */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* シーンカード */
+.scene-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.scene-badge {
+  font-size: 12px;
+  font-weight: 800;
+  background: #f3f4f6;
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.scene-type {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  background: var(--accent-light);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* 画像要求スロットカード */
+.image-slot-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.slot-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.slot-filename {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.slot-scenes {
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--bg-main);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.preview-area {
+  width: 100%;
+  height: 180px;
+  background: #f1f5f9;
+  border: 2px dashed #cbd5e1;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.preview-area:hover {
+  border-color: var(--accent-primary);
+  background: #f8fafc;
+}
+
+.preview-area img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.preview-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  padding: 10px;
+}
+
+.preview-placeholder i {
+  font-size: 28px;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+/* Actions 監視パネル */
+.status-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.status-in-progress {
+  background: #fef3c7;
+  color: #b45309;
+  animation: pulse 1.5s infinite;
+}
+
+.status-success {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.status-failure {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.65; }
+  100% { opacity: 1; }
+}
+
+.status-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.status-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+/* Artifact リンク */
+.artifact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.artifact-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--accent-light);
+  border: 1px solid var(--accent-primary);
+  border-radius: var(--radius-sm);
+  color: #047857;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+/* トースト通知 */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--text-primary);
+  color: #ffffff;
+  padding: 12px 22px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  white-space: nowrap;
+}
+
+#toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* レスポンス調整 */
+@media (min-width: 600px) {
+  .container {
+    padding: 24px;
+  }
+}

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>爆モテ動画制作コントローラー</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="app-header">
+    <div class="brand-area">
+      <div class="brand-icon">B</div>
+      <div>
+        <div class="brand-title">爆モテメンズラボ</div>
+        <div class="brand-subtitle">STUDIO CONTROLLER</div>
+      </div>
+    </div>
+    <button class="btn-icon" id="btn-toggle-config" title="GAS設定">⚙️</button>
+  </header>
+
+  <main class="container">
+
+    <!-- ⚙️ GAS設定カード (アコーディオン) -->
+    <div class="config-card hidden" id="config-card">
+      <div class="config-title">⚙️ GAS バックエンド設定</div>
+      <div class="config-desc">SETUP_GUIDE で取得した Google Apps Script のデプロイ URL を貼り付けてください。</div>
+      <div class="form-group">
+        <label class="form-label" for="input-gas-url">GAS ウェブアプリ URL</label>
+        <input type="text" id="input-gas-url" class="form-input" placeholder="https://script.google.com/macros/s/XXXXX/exec">
+      </div>
+      <div class="action-row" style="margin-bottom:0;">
+        <button class="btn btn-primary btn-sm" id="btn-save-config">保存してテスト接続</button>
+        <button class="btn btn-outline btn-sm" id="btn-close-config">閉じる</button>
+      </div>
+    </div>
+
+    <!-- タブナビゲーション -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="tab-json">
+        <span>① JSONエディタ</span>
+        <span class="tab-badge" id="badge-scene-count">0</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-images">
+        <span>② 要求画像挿入</span>
+        <span class="tab-badge" id="badge-img-count">0</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-push">
+        <span>③ プッシュ＆監視</span>
+        <span class="tab-badge">🚀</span>
+      </button>
+    </nav>
+
+    <!-- =======================
+         TAB 1: JSON 読み込み＆セリフ・字幕エディタ
+         ======================= -->
+    <section class="tab-content active" id="tab-json">
+      <div class="section-header">
+        <h2 class="section-title">📄 原稿 JSON 読み込み＆編集</h2>
+        <p class="section-subtitle">Gemが作成したJSONをペーストするかファイルを読み込んで各セリフ・字幕を調整できます。</p>
+      </div>
+
+      <!-- ペースト＆ファイル選択アクション -->
+      <div class="action-row">
+        <button class="btn btn-primary" id="btn-paste-clipboard">📋 クリップボードからペースト</button>
+        <label class="btn btn-outline" style="cursor:pointer;">
+          📁 JSONファイルを選択
+          <input type="file" id="input-json-file" accept=".json" class="file-input-hidden">
+        </label>
+      </div>
+
+      <!-- 生JSONペースト/編集用テキストエリア -->
+      <div class="form-group">
+        <label class="form-label" for="textarea-json-raw">JSON データ (直接編集も可能)</label>
+        <textarea id="textarea-json-raw" class="form-textarea" placeholder="ここに Gem が出力した JSON を貼り付けます..."></textarea>
+      </div>
+      <button class="btn btn-accent btn-block" id="btn-parse-json" style="margin-bottom:20px;">
+        ⚡ JSON を解析してカードエディタを展開
+      </button>
+
+      <!-- 基本メタデータカード -->
+      <div id="meta-editor-area" style="display:none;">
+        <div class="card">
+          <div class="config-title" style="margin-bottom:12px;">🎬 動画タイトル・ファイル名設定</div>
+          <div class="form-group">
+            <label class="form-label">動画タイトル (title)</label>
+            <input type="text" id="meta-title" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">保存先 JSON ファイル名 (GitHubリポジトリ内)</label>
+            <input type="text" id="meta-json-filename" class="form-input" value="video_config_custom.json">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">出力 MP4 動画ファイル名</label>
+            <input type="text" id="meta-output-filename" class="form-input" value="output_custom.mp4">
+          </div>
+        </div>
+
+        <div class="section-header" style="margin-top:24px;">
+          <h2 class="section-title">✍️ シーン別 セリフ＆字幕エディタ</h2>
+          <p class="section-subtitle">各シーンのカードを直接書き換えるだけでリアルタイムにJSONへ反映されます。</p>
+        </div>
+        <div id="scenes-editor-list"></div>
+      </div>
+    </section>
+
+    <!-- =======================
+         TAB 2: 要求画像スロット＆カメラ・ファイル割り当て
+         ======================= -->
+    <section class="tab-content" id="tab-images">
+      <div class="section-header">
+        <h2 class="section-title">🖼️ 要求画像スロット設定</h2>
+        <p class="section-subtitle">JSONの各シーンで指定されているファイル名がここに並びます。タップして写真を1枚ずつセットしてください。</p>
+      </div>
+
+      <div id="images-slot-list">
+        <div class="card" style="text-align:center; padding:30px; color:var(--text-muted);">
+          先に「① JSONエディタ」タブで JSON を解析してください。要求されている画像スロットが自動抽出されます。
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================
+         TAB 3: GitHubプッシュ＆Actionsリアルタイム監視
+         ======================= -->
+    <section class="tab-content" id="tab-push">
+      <div class="section-header">
+        <h2 class="section-title">🚀 プッシュ＆動画生成・監視</h2>
+        <p class="section-subtitle">セットした全画像と更新済みJSONを一斉にアップロードし、動画のレンダリングを開始・確認します。</p>
+      </div>
+
+      <!-- プッシュ実行カード -->
+      <div class="card" style="padding:24px; text-align:center;">
+        <h3 style="font-size:17px; font-weight:800; margin-bottom:8px;">一斉アップロード ＆ Actions 自動起動</h3>
+        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:18px;">
+          GASバックエンド経由でリポジトリにコミットし、ナレーション＆レンダリングをスタートします。
+        </p>
+        <button class="btn btn-accent btn-block" id="btn-push-trigger" style="font-size:16px; padding:16px;">
+          🔥 全画像＆JSONを一斉プッシュして動画生成開始！
+        </button>
+      </div>
+
+      <!-- Actions 状況＆監視カード -->
+      <div class="status-card" id="actions-status-container" style="margin-top:20px;">
+        <div class="status-badge" id="status-badge" style="background:#f3f4f6; color:#4b5563;">状態未確認</div>
+        <div class="status-title" id="status-title">現在のステータスを確認できます</div>
+        <div class="status-meta" id="status-meta">まだ監視を開始していません</div>
+        
+        <button class="btn btn-outline btn-sm" id="btn-check-status" style="margin-top:8px;">
+          🔄 今すぐ Actions の状態を更新
+        </button>
+
+        <!-- Artifact リンク配置領域 -->
+        <div class="artifact-list" id="artifact-list-area"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- トースト通知 -->
+  <div id="toast"></div>
+
+  <!-- スクリプト -->
+  <script src="app.js"></script>
+</body>
+</html>
