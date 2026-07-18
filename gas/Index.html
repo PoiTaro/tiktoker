@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>爆モテ動画制作コントローラー</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>爆モテ STUDIO</title>
   <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
 
@@ -12,794 +12,656 @@
   --bg-surface: #ffffff;
   --bg-card: #ffffff;
   --bg-glass: rgba(255, 255, 255, 0.88);
+  --bg-elevated: #f1f5f9;
+  --bg-hover: #e8ecf1;
   --text-primary: #111827;
   --text-secondary: #4b5563;
   --text-muted: #9ca3af;
-  --accent-primary: #10b981; /* 清潔感あるエメラルドグリーン/ミント */
+  --accent: #10b981;
   --accent-hover: #059669;
   --accent-light: #d1fae5;
+  --accent-dim: rgba(16, 185, 129, 0.12);
+  --accent-glow: rgba(16, 185, 129, 0.25);
   --danger: #ef4444;
-  --border-color: #e5e7eb;
+  --warning: #f59e0b;
+  --border: #e5e7eb;
   --border-focus: #10b981;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 14px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
   --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
 body {
-  font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg-main);
+  font-family: 'Inter','Noto Sans JP',-apple-system,BlinkMacSystemFont,sans-serif;
+  background: var(--bg-main);
   color: var(--text-primary);
-  line-height: 1.6;
+  line-height: 1.5;
   min-height: 100vh;
-  padding-bottom: 90px;
+  min-height: 100dvh;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  padding-bottom: calc(64px + var(--safe-bottom));
 }
 
-/* ヘッダー */
-header.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* ===== HEADER BAR ===== */
+.app-header {
+  position: sticky; top: 0; z-index: 200;
   background: var(--bg-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border-color);
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 52px; box-shadow: var(--shadow-sm);
 }
-
-.brand-area {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
+.brand-area { display: flex; align-items: center; gap: 10px; }
 .brand-icon {
-  width: 34px;
-  height: 34px;
-  background: var(--text-primary);
-  color: #fff;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 16px;
-  letter-spacing: -0.5px;
+  width: 32px; height: 32px;
+  background: var(--text-primary); color: #fff;
+  border-radius: 9px; display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 14px;
 }
-
-.brand-title {
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: -0.3px;
-  color: var(--text-primary);
-}
-
-.brand-subtitle {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--accent-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* ⚙️ GAS設定トグルボタン */
+.brand-title { font-size: 15px; font-weight: 800; color: var(--text-primary); }
+.brand-subtitle { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.8px; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
 .btn-icon {
-  background: var(--bg-main);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 18px;
-  transition: var(--transition);
+  background: var(--bg-main); border: 1px solid var(--border);
+  border-radius: 10px; width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; transition: var(--transition); color: var(--text-secondary);
+}
+.btn-icon:active { transform: scale(0.9); background: var(--bg-hover); }
+
+/* ===== ALERT BANNER ===== */
+#alert-banner {
+  display: none; padding: 10px 14px; margin: 8px 12px;
+  border-radius: var(--radius-sm); font-size: 12px; font-weight: 700; text-align: center;
 }
 
-.btn-icon:active {
-  transform: scale(0.92);
-}
-
-/* メインコンテナ */
-.container {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 16px;
-}
-
-/* GAS 設定パネル (アコーディオン) */
+/* ===== CONFIG CARD ===== */
 .config-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 18px;
-  margin-bottom: 16px;
-  box-shadow: var(--shadow-md);
-  animation: slideDown 0.25s ease-out;
-}
-
-.config-card.hidden {
-  display: none;
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.config-title {
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.config-desc {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-bottom: 12px;
-}
-
-/* フォームコントロール */
-.form-group {
-  margin-bottom: 14px;
-}
-
-.form-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: var(--text-secondary);
-}
-
-.form-input, .form-textarea {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1.5px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-family: inherit;
-  background: var(--bg-main);
-  color: var(--text-primary);
-  transition: var(--transition);
-}
-
-.form-input:focus, .form-textarea:focus {
-  outline: none;
-  border-color: var(--border-focus);
-  background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
-}
-
-.form-textarea {
-  min-height: 110px;
-  resize: vertical;
-}
-
-/* ナビゲーションタブ */
-.tab-nav {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  background: #ebeff5;
-  padding: 4px;
-  border-radius: 14px;
-  margin-bottom: 20px;
-}
-
-.tab-btn {
-  background: transparent;
-  border: none;
-  padding: 10px 4px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.tab-btn.active {
-  background: #ffffff;
-  color: var(--text-primary);
-  box-shadow: var(--shadow-sm);
-}
-
-.tab-badge {
-  background: var(--text-primary);
-  color: #fff;
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 10px;
-  font-weight: 800;
-}
-
-.tab-btn.active .tab-badge {
-  background: var(--accent-primary);
-}
-
-/* セクションタブ本体 */
-.tab-content {
-  display: none;
-  animation: fadeIn 0.25s ease-out;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* セクションヘッダー */
-.section-header {
-  margin-bottom: 16px;
-}
-
-.section-title {
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -0.4px;
-  margin-bottom: 4px;
-}
-
-.section-subtitle {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-/* アクションボタンバー */
-.action-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-}
-
-/* ボタン各種 */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 18px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: var(--transition);
-  text-decoration: none;
-  min-height: 48px;
-}
-
-.btn:active {
-  transform: scale(0.96);
-}
-
-.btn-primary {
-  background: var(--text-primary);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.15);
-}
-
-.btn-primary:hover {
-  background: #000000;
-}
-
-.btn-accent {
-  background: var(--accent-primary);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-}
-
-.btn-accent:hover {
-  background: var(--accent-hover);
-}
-
-.btn-outline {
-  background: #ffffff;
-  border: 1.5px solid var(--border-color);
-  color: var(--text-primary);
-}
-
-.btn-outline:hover {
-  background: var(--bg-main);
-}
-
-.btn-block {
-  width: 100%;
-}
-
-.btn-sm {
-  padding: 8px 12px;
-  min-height: 36px;
-  font-size: 12px;
-  border-radius: 8px;
-}
-
-/* カード共通 */
-.card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  margin-bottom: 14px;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition);
-}
-
-.card:hover {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 16px; margin: 8px 12px 0;
   box-shadow: var(--shadow-md);
 }
+.config-card.hidden { display: none; }
+.config-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: var(--text-primary); }
+.config-desc { font-size: 11px; color: var(--text-secondary); margin-bottom: 10px; }
 
-/* シーンカード */
-.scene-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.scene-badge {
-  font-size: 12px;
-  font-weight: 800;
-  background: #f3f4f6;
-  color: var(--text-secondary);
-  padding: 4px 10px;
-  border-radius: 8px;
-}
-
-.scene-type {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--accent-primary);
-  text-transform: uppercase;
-  background: var(--accent-light);
-  padding: 3px 8px;
-  border-radius: 6px;
-}
-
-/* 画像要求スロットカード */
-.image-slot-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.slot-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.slot-filename {
-  font-weight: 800;
-  font-size: 15px;
-  color: var(--text-primary);
-  word-break: break-all;
-}
-
-.slot-scenes {
-  font-size: 11px;
-  color: var(--text-secondary);
-  background: var(--bg-main);
-  padding: 2px 8px;
-  border-radius: 6px;
-}
-
-.preview-area {
-  width: 100%;
-  height: 180px;
-  background: #f1f5f9;
-  border: 2px dashed #cbd5e1;
-  border-radius: var(--radius-sm);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* ===== PREVIEW AREA ===== */
+.preview-container {
+  position: relative; width: 100%;
+  aspect-ratio: 9/16; max-height: 44vh;
+  background: linear-gradient(135deg, #e0e7ee 0%, #c9d6e3 100%);
   overflow: hidden;
-  position: relative;
-  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-bottom: 1px solid var(--border);
+}
+.preview-image {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+.preview-placeholder-msg {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  text-align: center; color: var(--text-muted); font-size: 13px; font-weight: 600;
+}
+.preview-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 24px 16px 16px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.6));
+  pointer-events: none;
+}
+.preview-title {
+  font-size: 18px; font-weight: 800; color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  margin-bottom: 4px; line-height: 1.3;
+}
+.preview-subtitle {
+  font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+.preview-scene-indicator {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(255,255,255,0.9); backdrop-filter: blur(8px);
+  padding: 4px 10px; border-radius: 8px;
+  font-size: 11px; font-weight: 800; color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+.preview-duration-indicator {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(255,255,255,0.9); backdrop-filter: blur(8px);
+  padding: 4px 10px; border-radius: 8px;
+  font-size: 11px; font-weight: 700; color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+.preview-nav {
+  position: absolute; top: 50%; width: 100%;
+  display: flex; justify-content: space-between; padding: 0 8px;
+  transform: translateY(-50%); pointer-events: none;
+}
+.preview-nav-btn {
+  pointer-events: all;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255,255,255,0.85); backdrop-filter: blur(8px);
+  border: none; color: var(--text-primary); font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: var(--transition);
+  box-shadow: var(--shadow-md);
+}
+.preview-nav-btn:active { transform: scale(0.85); background: #fff; }
+
+/* ===== TIMELINE BAR ===== */
+.timeline-section {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+}
+.timeline-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 14px 8px; font-size: 11px; color: var(--text-secondary); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.timeline-total-duration { color: var(--accent); font-weight: 800; }
+.timeline-scroll {
+  display: flex; gap: 4px; overflow-x: auto; padding: 0 14px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.timeline-scroll::-webkit-scrollbar { display: none; }
+.timeline-block {
+  flex-shrink: 0; min-width: 52px; height: 56px;
+  border-radius: 8px; overflow: hidden; position: relative;
+  cursor: pointer; transition: var(--transition);
+  scroll-snap-align: center;
+  border: 2.5px solid transparent;
+  box-shadow: var(--shadow-sm);
+}
+.timeline-block.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow), var(--shadow-md);
+}
+.timeline-block-bg {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.timeline-block-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 2px 4px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.5));
+  font-size: 9px; font-weight: 800; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.timeline-block-no-img {
+  width: 100%; height: 100%;
+  background: var(--bg-elevated);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: var(--text-muted);
+}
+
+/* ===== TOOL TABS ===== */
+.tool-tabs {
+  display: flex; background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.tool-tab {
+  flex: 1; padding: 10px 4px; text-align: center;
+  background: none; border: none; border-bottom: 2.5px solid transparent;
+  color: var(--text-muted); font-size: 11px; font-weight: 700;
+  cursor: pointer; transition: var(--transition);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.tool-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tool-tab:active { background: var(--bg-elevated); }
+.tool-tab-icon { font-size: 18px; }
+
+/* ===== EDITOR PANELS ===== */
+.editor-panel { display: none; padding: 12px; max-width: 640px; margin: 0 auto; }
+.editor-panel.active { display: block; }
+
+/* -- Script Panel -- */
+.script-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 14px; margin-bottom: 10px;
+  box-shadow: var(--shadow-sm); transition: var(--transition);
+}
+.script-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim), var(--shadow-md);
+}
+.script-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
+}
+.script-scene-badge {
+  font-size: 11px; font-weight: 800; color: var(--accent);
+  background: var(--accent-light); padding: 3px 10px; border-radius: 8px;
+}
+.script-scene-type {
+  font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* -- Media Panel -- */
+.media-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+}
+.media-slot {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden;
+  box-shadow: var(--shadow-sm); transition: var(--transition);
+}
+.media-slot:active { transform: scale(0.97); }
+.media-slot-preview {
+  aspect-ratio: 16/9; background: var(--bg-elevated);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden; cursor: pointer;
+}
+.media-slot-preview img {
+  width: 100%; height: 100%; object-fit: cover;
+  position: absolute; top: 0; left: 0;
+}
+.media-slot-placeholder {
+  text-align: center; color: var(--text-muted); font-size: 24px;
+}
+.media-slot-info { padding: 8px 10px; }
+.media-slot-name {
+  font-size: 11px; font-weight: 700; color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.media-slot-scenes { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.media-slot-check {
+  position: absolute; top: 6px; right: 6px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800;
+}
+
+/* -- Timing Panel -- */
+.timing-info-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 16px; margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+.timing-row {
+  display: flex; align-items: center; justify-content: space-between; padding: 5px 0;
+}
+.timing-label { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+.timing-value { font-size: 14px; color: var(--accent); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+/* ===== FORM CONTROLS ===== */
+.form-group { margin-bottom: 12px; }
+.form-label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 4px; color: var(--text-secondary); }
+.form-input, .form-textarea {
+  width: 100%; padding: 10px 12px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 14px; font-family: inherit;
+  background: var(--bg-main); color: var(--text-primary);
   transition: var(--transition);
 }
-
-.preview-area:hover {
-  border-color: var(--accent-primary);
-  background: #f8fafc;
+.form-input:focus, .form-textarea:focus {
+  outline: none; border-color: var(--border-focus);
+  background: #fff; box-shadow: 0 0 0 3px var(--accent-dim);
 }
+.form-textarea { min-height: 80px; resize: vertical; }
 
-.preview-area img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  position: absolute;
-  top: 0;
-  left: 0;
+/* ===== BOTTOM ACTION BAR ===== */
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 200;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 6px 12px calc(6px + var(--safe-bottom));
+  display: flex; gap: 8px;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.04);
 }
-
-.preview-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 600;
-  text-align: center;
-  padding: 10px;
+.bar-btn {
+  flex: 1; padding: 8px 6px; border-radius: var(--radius-sm);
+  border: none; font-size: 11px; font-weight: 800;
+  cursor: pointer; transition: var(--transition);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
 }
+.bar-btn:active { transform: scale(0.93); }
+.bar-btn-icon { font-size: 18px; }
+.bar-btn-default { background: var(--bg-main); color: var(--text-secondary); border: 1px solid var(--border); }
+.bar-btn-default:active { background: var(--bg-hover); }
+.bar-btn-accent { background: var(--accent); color: #fff; box-shadow: 0 4px 16px var(--accent-glow); }
+.bar-btn-accent:active { background: var(--accent-hover); }
 
-.preview-placeholder i {
-  font-size: 28px;
+/* ===== MODAL / BOTTOM SHEET ===== */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.35); backdrop-filter: blur(4px);
+  display: none; align-items: flex-end; justify-content: center;
 }
-
-.file-input-hidden {
-  display: none;
+.modal-overlay.active { display: flex; }
+.modal-sheet {
+  width: 100%; max-width: 640px; max-height: 85vh;
+  background: var(--bg-surface); border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 16px 16px calc(16px + var(--safe-bottom));
+  overflow-y: auto; animation: sheetUp 0.3s ease-out;
+  box-shadow: var(--shadow-lg);
 }
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle {
+  width: 36px; height: 4px; background: var(--border);
+  border-radius: 2px; margin: 0 auto 14px;
+}
+.modal-title { font-size: 17px; font-weight: 800; margin-bottom: 14px; }
 
-/* Actions 監視パネル */
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 16px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 700; border: none;
+  cursor: pointer; transition: var(--transition); min-height: 44px;
+}
+.btn:active { transform: scale(0.95); }
+.btn-primary { background: var(--text-primary); color: #fff; box-shadow: 0 4px 12px rgba(17,24,39,0.15); }
+.btn-accent { background: var(--accent); color: #fff; box-shadow: 0 4px 12px var(--accent-glow); }
+.btn-accent:active { background: var(--accent-hover); }
+.btn-outline { background: #fff; border: 1.5px solid var(--border); color: var(--text-primary); }
+.btn-outline:active { background: var(--bg-main); }
+.btn-block { width: 100%; }
+.btn-sm { padding: 8px 12px; min-height: 36px; font-size: 12px; }
+
+/* ===== STATUS CARD ===== */
 .status-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 20px;
-  text-align: center;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 16px; text-align: center;
+  margin: 6px 0; box-shadow: var(--shadow-sm);
 }
-
 .status-badge {
-  display: inline-block;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 800;
-  margin-bottom: 12px;
+  display: inline-block; padding: 5px 12px; border-radius: 16px;
+  font-size: 12px; font-weight: 800; margin-bottom: 10px;
 }
+.status-progress { background: #fef3c7; color: #b45309; animation: pulse 1.5s infinite; }
+.status-success { background: var(--accent-light); color: #047857; }
+.status-error { background: #fee2e2; color: #b91c1c; }
+@keyframes pulse { 0%{opacity:1}50%{opacity:0.6}100%{opacity:1} }
+.status-title { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+.status-meta { font-size: 11px; color: var(--text-secondary); margin-bottom: 10px; }
 
-.status-in-progress {
-  background: #fef3c7;
-  color: #b45309;
-  animation: pulse 1.5s infinite;
-}
-
-.status-success {
-  background: #d1fae5;
-  color: #047857;
-}
-
-.status-failure {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-@keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.65; }
-  100% { opacity: 1; }
-}
-
-.status-title {
-  font-size: 16px;
-  font-weight: 800;
-  margin-bottom: 4px;
-}
-
-.status-meta {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
-}
-
-/* Artifact リンク */
-.artifact-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 16px;
-}
-
+/* ===== ARTIFACT LINKS ===== */
+.artifact-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
 .artifact-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--accent-light);
-  border: 1px solid var(--accent-primary);
-  border-radius: var(--radius-sm);
-  color: #047857;
-  font-weight: 700;
-  font-size: 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: var(--accent-light); border: 1px solid var(--accent);
+  border-radius: var(--radius-sm); color: #047857; font-weight: 700; font-size: 13px;
   text-decoration: none;
 }
 
-/* トースト通知 */
+/* ===== TOAST ===== */
 #toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
+  position: fixed; bottom: calc(72px + var(--safe-bottom)); left: 50%;
   transform: translateX(-50%) translateY(100px);
-  background: var(--text-primary);
-  color: #ffffff;
-  padding: 12px 22px;
-  border-radius: 30px;
-  font-size: 14px;
-  font-weight: 700;
-  box-shadow: var(--shadow-lg);
-  z-index: 1000;
-  transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  background: var(--text-primary); color: #fff;
+  padding: 10px 20px; border-radius: 24px;
+  font-size: 13px; font-weight: 700; box-shadow: var(--shadow-lg);
+  z-index: 1000; transition: transform 0.3s cubic-bezier(0.18,0.89,0.32,1.28);
   white-space: nowrap;
 }
+#toast.show { transform: translateX(-50%) translateY(0); }
 
-#toast.show {
-  transform: translateX(-50%) translateY(0);
-}
+/* ===== FILE INPUT ===== */
+.file-input-hidden { display: none; }
+.action-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
 
-/* レスポンス調整 */
-@media (min-width: 600px) {
-  .container {
-    padding: 24px;
-  }
+/* ===== RESPONSIVE ===== */
+@media (min-width: 640px) {
+  .preview-container { max-height: 50vh; }
+  .media-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 </style>
 </head>
 <body ontouchstart="">
 
-  <!-- ヘッダー -->
+  <!-- ===== HEADER BAR ===== -->
   <header class="app-header">
     <div class="brand-area">
       <div class="brand-icon">B</div>
       <div>
-        <div class="brand-title">爆モテメンズラボ</div>
-        <div class="brand-subtitle">STUDIO CONTROLLER</div>
+        <div class="brand-title">爆モテ STUDIO</div>
+        <div class="brand-subtitle">VIDEO EDITOR</div>
       </div>
     </div>
-    <button class="btn-icon" id="btn-toggle-config" onclick="toggleConfigCard()" title="GAS設定">⚙️</button>
+    <div class="header-actions">
+      <button class="btn-icon" id="btn-toggle-config" onclick="toggleConfigCard()" title="設定">&#9881;</button>
+    </div>
   </header>
 
-  <!-- リアルタイムフィードバック・エラー通知バー -->
-  <div id="alert-banner" style="display:none; padding:12px 16px; margin:12px; border-radius:8px; font-size:13px; font-weight:700; text-align:center;"></div>
+  <!-- ===== ALERT BANNER ===== -->
+  <div id="alert-banner"></div>
 
-  <main class="container">
+  <!-- ===== GAS CONFIG (hidden accordion) ===== -->
+  <div class="config-card hidden" id="config-card">
+    <div class="config-title">&#9881; GAS Backend</div>
+    <div class="config-desc">Google Apps Script deploy URL</div>
+    <div class="form-group">
+      <label class="form-label" for="input-gas-url">GAS URL</label>
+      <input type="text" id="input-gas-url" class="form-input" value="https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec">
+    </div>
+    <div class="action-row" style="margin-bottom:0;">
+      <button class="btn btn-accent btn-sm" onclick="saveAndTestGasUrl()">Save & Test</button>
+      <button class="btn btn-outline btn-sm" onclick="toggleConfigCard(false)">Close</button>
+    </div>
+  </div>
 
-    <!-- ⚙️ GAS設定カード (アコーディオン) -->
-    <div class="config-card hidden" id="config-card">
-      <div class="config-title">⚙️ GAS バックエンド設定</div>
-      <div class="config-desc">Google Apps Script のデプロイ URL です。自動連携済み。</div>
-      <div class="form-group">
-        <label class="form-label" for="input-gas-url">GAS ウェブアプリ URL</label>
-        <input type="text" id="input-gas-url" class="form-input" value="https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec">
-      </div>
-      <div class="action-row" style="margin-bottom:0;">
-        <button class="btn btn-primary btn-sm" id="btn-save-config" onclick="saveAndTestGasUrl()">保存してテスト接続</button>
-        <button class="btn btn-outline btn-sm" id="btn-close-config" onclick="toggleConfigCard(false)">閉じる</button>
+  <!-- ===== PREVIEW AREA ===== -->
+  <div class="preview-container" id="preview-container">
+    <div class="preview-placeholder-msg" id="preview-empty">
+      <div style="font-size:40px; margin-bottom:8px;">&#127916;</div>
+      <div>JSON を読み込むと<br>ここにプレビューが表示されます</div>
+    </div>
+    <img class="preview-image" id="preview-image" src="" alt="" style="display:none;">
+    <div class="preview-overlay" id="preview-overlay" style="display:none;">
+      <div class="preview-title" id="preview-title"></div>
+      <div class="preview-subtitle" id="preview-subtitle"></div>
+    </div>
+    <div class="preview-scene-indicator" id="preview-scene-num" style="display:none;">Scene 1/10</div>
+    <div class="preview-duration-indicator" id="preview-duration" style="display:none;">&#128266; --s</div>
+    <div class="preview-nav" id="preview-nav" style="display:none;">
+      <button class="preview-nav-btn" onclick="navigateScene(-1)">&#9664;</button>
+      <button class="preview-nav-btn" onclick="navigateScene(1)">&#9654;</button>
+    </div>
+  </div>
+
+  <!-- ===== TIMELINE BAR ===== -->
+  <div class="timeline-section" id="timeline-section" style="display:none;">
+    <div class="timeline-header">
+      <span>TIMELINE</span>
+      <span class="timeline-total-duration" id="timeline-total">0 scenes</span>
+    </div>
+    <div class="timeline-scroll" id="timeline-scroll"></div>
+  </div>
+
+  <!-- ===== TOOL TABS ===== -->
+  <div class="tool-tabs" id="tool-tabs" style="display:none;">
+    <button class="tool-tab active" data-panel="panel-script" onclick="switchToolTab('panel-script', this)">
+      <span class="tool-tab-icon">&#9997;</span>
+      <span>&#12475;&#12522;&#12501;</span>
+    </button>
+    <button class="tool-tab" data-panel="panel-media" onclick="switchToolTab('panel-media', this)">
+      <span class="tool-tab-icon">&#128247;</span>
+      <span>&#32032;&#26448;</span>
+    </button>
+    <button class="tool-tab" data-panel="panel-timing" onclick="switchToolTab('panel-timing', this)">
+      <span class="tool-tab-icon">&#9202;</span>
+      <span>&#23610;</span>
+    </button>
+    <button class="tool-tab" data-panel="panel-status" onclick="switchToolTab('panel-status', this)">
+      <span class="tool-tab-icon">&#128640;</span>
+      <span>&#29983;&#25104;</span>
+    </button>
+  </div>
+
+  <!-- ===== EDITOR PANELS ===== -->
+
+  <!-- Panel: Script (セリフ・字幕) -->
+  <div class="editor-panel active" id="panel-script">
+    <div id="script-editor-list"></div>
+  </div>
+
+  <!-- Panel: Media (画像スロット) -->
+  <div class="editor-panel" id="panel-media">
+    <div class="media-grid" id="media-slot-grid">
+      <div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted); font-size:13px;">
+        JSON&#12434;&#35501;&#12415;&#36796;&#12416;&#12392;&#30011;&#20687;&#12473;&#12525;&#12483;&#12488;&#12364;&#34920;&#31034;&#12373;&#12428;&#12414;&#12377;
       </div>
     </div>
+  </div>
 
-    <!-- タブナビゲーション -->
-    <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="tab-json" onclick="switchTab('tab-json', this)">
-        <span>① JSONエディタ</span>
-        <span class="tab-badge" id="badge-scene-count">0</span>
-      </button>
-      <button class="tab-btn" data-tab="tab-images" onclick="switchTab('tab-images', this)">
-        <span>② 要求画像挿入</span>
-        <span class="tab-badge" id="badge-img-count">0</span>
-      </button>
-      <button class="tab-btn" data-tab="tab-push" onclick="switchTab('tab-push', this)">
-        <span>③ プッシュ＆監視</span>
-        <span class="tab-badge">🚀</span>
-      </button>
-    </nav>
+  <!-- Panel: Timing (尺・タイミング設定) -->
+  <div class="editor-panel" id="panel-timing">
+    <div id="timing-editor-list"></div>
+  </div>
 
-    <!-- =======================
-         TAB 1: JSON 読み込み＆セリフ・字幕エディタ
-         ======================= -->
-    <section class="tab-content active" id="tab-json">
-      <div class="section-header">
-        <h2 class="section-title">📄 原稿 JSON 読み込み＆編集</h2>
-        <p class="section-subtitle">Gemが作成したJSONを枠内に貼り付け、「解析してカード展開」ボタンをタップしてください。</p>
-      </div>
+  <!-- Panel: Status (プッシュ & Actions監視) -->
+  <div class="editor-panel" id="panel-status">
+    <div class="status-card">
+      <div class="status-badge" id="status-badge" style="background:var(--bg-elevated); color:var(--text-muted);">STANDBY</div>
+      <div class="status-title" id="status-title">JSON &#12434;&#35501;&#12415;&#36796;&#12435;&#12391;&#12503;&#12483;&#12471;&#12517;&#12375;&#12390;&#12367;&#12384;&#12373;&#12356;</div>
+      <div class="status-meta" id="status-meta"></div>
+      <button class="btn btn-outline btn-sm" onclick="checkActionsStatus(true)" style="margin-top:4px;">
+        &#128260; &#12473;&#12486;&#12540;&#12479;&#12473;&#26356;&#26032;
+      </button>
+      <div class="artifact-list" id="artifact-list-area"></div>
+    </div>
+  </div>
 
-      <!-- ペースト＆ファイル選択アクション -->
+  <!-- ===== JSON LOAD MODAL (Bottom Sheet) ===== -->
+  <div class="modal-overlay" id="modal-json">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">&#128196; JSON &#35501;&#12415;&#36796;&#12415;</div>
       <div class="action-row">
-        <button class="btn btn-primary" id="btn-paste-clipboard" onclick="pasteFromClipboard()">📋 クリップボードからペースト</button>
+        <button class="btn btn-accent" onclick="pasteFromClipboard()">&#128203; &#12463;&#12522;&#12483;&#12503;&#12508;&#12540;&#12489;</button>
         <label class="btn btn-outline" style="cursor:pointer;">
-          📁 JSONファイルを選択
+          &#128193; &#12501;&#12449;&#12452;&#12523;
           <input type="file" id="input-json-file" accept=".json" class="file-input-hidden" onchange="handleFileSelect(event)">
         </label>
       </div>
-
-      <!-- 生JSONペースト/編集用テキストエリア -->
       <div class="form-group">
-        <label class="form-label" for="textarea-json-raw">JSON データ (Gemの出力をここにそのまま貼り付け)</label>
-        <textarea id="textarea-json-raw" class="form-textarea" style="min-height:160px; font-family:monospace; font-size:13px;" placeholder="ここに Gem が出力した JSON を指でタップしてペーストしてください..."></textarea>
+        <label class="form-label" for="textarea-json-raw">JSON (Gem&#12398;&#20986;&#21147;&#12434;&#12381;&#12398;&#12414;&#12414;&#36028;&#12426;&#20184;&#12369;)</label>
+        <textarea id="textarea-json-raw" class="form-textarea" style="min-height:140px; font-family:monospace; font-size:12px;" placeholder="JSON&#12434;&#36028;&#12426;&#20184;&#12369;..."></textarea>
       </div>
-
-      <button class="btn btn-accent btn-block" id="btn-parse-json" onclick="parseAndRenderJson()" style="margin-bottom:20px; font-size:16px; padding:16px; font-weight:800; box-shadow:0 4px 12px rgba(16,185,129,0.25);">
-        ⚡ JSON を解析してカードエディタを展開
+      <div class="form-group">
+        <label class="form-label">&#20986;&#21147;&#12501;&#12449;&#12452;&#12523;&#21517;</label>
+        <input type="text" id="meta-json-filename" class="form-input" value="video_config_custom.json">
+      </div>
+      <div class="form-group">
+        <label class="form-label">MP4&#12501;&#12449;&#12452;&#12523;&#21517;</label>
+        <input type="text" id="meta-output-filename" class="form-input" value="output_custom.mp4">
+      </div>
+      <button class="btn btn-accent btn-block" id="btn-parse-json" onclick="parseAndRenderJson()" style="font-size:15px; padding:14px; font-weight:800;">
+        &#9889; &#35299;&#26512;&#12375;&#12390;&#12479;&#12452;&#12512;&#12521;&#12452;&#12531;&#12434;&#29983;&#25104;
       </button>
+      <button class="btn btn-outline btn-block" onclick="closeModal('modal-json')" style="margin-top:8px;">&#12461;&#12515;&#12531;&#12475;&#12523;</button>
+    </div>
+  </div>
 
-      <!-- 基本メタデータカード -->
-      <div id="meta-editor-area" style="display:none;">
-        <div class="card">
-          <div class="config-title" style="margin-bottom:12px;">🎬 動画タイトル・ファイル名設定</div>
-          <div class="form-group">
-            <label class="form-label">動画タイトル (title)</label>
-            <input type="text" id="meta-title" class="form-input" oninput="syncJsonTextarea()">
-          </div>
-          <div class="form-group">
-            <label class="form-label">保存先 JSON ファイル名 (GitHubリポジトリ内)</label>
-            <input type="text" id="meta-json-filename" class="form-input" value="video_config_custom.json">
-          </div>
-          <div class="form-group" style="margin-bottom:0;">
-            <label class="form-label">出力 MP4 動画ファイル名</label>
-            <input type="text" id="meta-output-filename" class="form-input" value="output_custom.mp4">
-          </div>
-        </div>
+  <!-- ===== BOTTOM ACTION BAR ===== -->
+  <div class="bottom-bar">
+    <button class="bar-btn bar-btn-default" onclick="openModal('modal-json')">
+      <span class="bar-btn-icon">&#128196;</span>
+      <span>JSON</span>
+    </button>
+    <button class="bar-btn bar-btn-accent" id="btn-push-trigger" onclick="pushAndTriggerWorkflow()">
+      <span class="bar-btn-icon">&#128640;</span>
+      <span>&#29983;&#25104;&#38283;&#22987;</span>
+    </button>
+    <button class="bar-btn bar-btn-default" onclick="switchToolTab('panel-status', null); checkActionsStatus(true)">
+      <span class="bar-btn-icon">&#128202;</span>
+      <span>&#30435;&#35222;</span>
+    </button>
+  </div>
 
-        <div class="section-header" style="margin-top:24px;">
-          <h2 class="section-title">✍️ シーン別 セリフ＆字幕エディタ</h2>
-          <p class="section-subtitle">各シーンのカードを直接書き換えるだけでリアルタイムにJSONへ反映されます。</p>
-        </div>
-        <div id="scenes-editor-list"></div>
-      </div>
-    </section>
+  <!-- Hidden fields for backward compat -->
+  <input type="hidden" id="meta-title" value="">
 
-    <!-- =======================
-         TAB 2: 要求画像スロット＆カメラ・ファイル割り当て
-         ======================= -->
-    <section class="tab-content" id="tab-images">
-      <div class="section-header">
-        <h2 class="section-title">🖼️ 要求画像スロット設定</h2>
-        <p class="section-subtitle">JSONの各シーンで指定されているファイル名がここに並びます。タップして写真を1枚ずつセットしてください。</p>
-      </div>
-
-      <div id="images-slot-list">
-        <div class="card" style="text-align:center; padding:30px; color:var(--text-muted);">
-          先に「① JSONエディタ」タブで JSON を解析してください。要求されている画像スロットが自動抽出されます。
-        </div>
-      </div>
-    </section>
-
-    <!-- =======================
-         TAB 3: GitHubプッシュ＆Actionsリアルタイム監視
-         ======================= -->
-    <section class="tab-content" id="tab-push">
-      <div class="section-header">
-        <h2 class="section-title">🚀 プッシュ＆動画生成・監視</h2>
-        <p class="section-subtitle">セットした全画像と更新済みJSONを一斉にアップロードし、動画のレンダリングを開始・確認します。</p>
-      </div>
-
-      <!-- プッシュ実行カード -->
-      <div class="card" style="padding:24px; text-align:center;">
-        <h3 style="font-size:17px; font-weight:800; margin-bottom:8px;">一斉アップロード ＆ Actions 自動起動</h3>
-        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:18px;">
-          GASバックエンド経由でリポジトリにコミットし、ナレーション＆レンダリングをスタートします。
-        </p>
-        <button class="btn btn-accent btn-block" id="btn-push-trigger" onclick="pushAndTriggerWorkflow()" style="font-size:16px; padding:16px;">
-          🔥 全画像＆JSONを一斉プッシュして動画生成開始！
-        </button>
-      </div>
-
-      <!-- Actions 状況＆監視カード -->
-      <div class="status-card" id="actions-status-container" style="margin-top:20px;">
-        <div class="status-badge" id="status-badge" style="background:#f3f4f6; color:#4b5563;">状態未確認</div>
-        <div class="status-title" id="status-title">現在のステータスを確認できます</div>
-        <div class="status-meta" id="status-meta">まだ監視を開始していません</div>
-        
-        <button class="btn btn-outline btn-sm" id="btn-check-status" onclick="checkActionsStatus(true)" style="margin-top:8px;">
-          🔄 今すぐ Actions の状態を更新
-        </button>
-
-        <!-- Artifact リンク配置領域 -->
-        <div class="artifact-list" id="artifact-list-area"></div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- トースト通知 -->
+  <!-- ===== TOAST ===== -->
   <div id="toast"></div>
 
-  <!-- スクリプト -->
+  <!-- ===== SCRIPT ===== -->
   <script>
 /**
- * 爆モテ動画制作コントローラー - フロントエンドロジック (app.js)
- * GAS サンドボックス (userCodeAppPanel) での JS 構文破壊 (バッククォートや改行の誤解析) を完全に撲滅したセキュア版です。
+ * bakumote STUDIO - CapCut-style Video Editor Controller
+ * GAS sandbox safe: NO backticks, NO template literals, NO arrow functions in critical paths
  */
 
-// グローバルエラー監視
 window.addEventListener("error", function(e) {
   console.error("Global Error:", e.error || e.message);
-  showAlertBanner("⚠️ 画面エラー: " + (e.message || "予期せぬエラーが発生しました"), "error");
+  showAlertBanner("画面エラー: " + (e.message || ""), "error");
 });
 
-// アプリケーション状態管理
-const state = {
+var state = {
   gasUrl: localStorage.getItem("bakumote_gas_url") || "https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec",
   configData: null,
   imageSlots: new Map(),
-  pollingInterval: null
+  pollingInterval: null,
+  selectedSceneIndex: 0,
+  sceneCount: 0
 };
 
-// 初期化
 document.addEventListener("DOMContentLoaded", function() {
-  try {
-    const gasInput = document.getElementById("input-gas-url");
-    if (gasInput && state.gasUrl) gasInput.value = state.gasUrl;
-    console.log("✓ App initialized safely without multiline template literals");
-  } catch (err) {
-    showAlertBanner("初期化失敗: " + err.message, "error");
-  }
+  var gasInput = document.getElementById("input-gas-url");
+  if (gasInput && state.gasUrl) gasInput.value = state.gasUrl;
 });
 
-/**
- * 画面上部のアラートバナーを表示
- */
+/* ===== UTILITIES ===== */
+
 function showAlertBanner(msg, type) {
-  const banner = document.getElementById("alert-banner");
+  var banner = document.getElementById("alert-banner");
   if (!banner) return;
   banner.style.display = "block";
   if (type === "error") {
-    banner.style.backgroundColor = "#FEE2E2";
-    banner.style.color = "#991B1B";
-    banner.style.border = "1px solid #F87171";
+    banner.style.backgroundColor = "#FEE2E2"; banner.style.color = "#991B1B"; banner.style.border = "1px solid #F87171";
   } else if (type === "success") {
-    banner.style.backgroundColor = "#D1FAE5";
-    banner.style.color = "#065F46";
-    banner.style.border = "1px solid #34D399";
+    banner.style.backgroundColor = "#D1FAE5"; banner.style.color = "#065F46"; banner.style.border = "1px solid #34D399";
   } else {
-    banner.style.backgroundColor = "#DBEAFE";
-    banner.style.color = "#1E40AF";
-    banner.style.border = "1px solid #60A5FA";
+    banner.style.backgroundColor = "#DBEAFE"; banner.style.color = "#1E40AF"; banner.style.border = "1px solid #60A5FA";
   }
   banner.innerHTML = msg;
 }
 
-/**
- * タブ切り替え処理
- */
-window.switchTab = function(tabId, btnElem) {
-  document.querySelectorAll(".tab-btn").forEach(function(b) { b.classList.remove("active"); });
-  document.querySelectorAll(".tab-content").forEach(function(c) { c.classList.remove("active"); });
-  if (btnElem) btnElem.classList.add("active");
-  const content = document.getElementById(tabId);
-  if (content) content.classList.add("active");
+function showToast(msg) {
+  var toast = document.getElementById("toast");
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(function() { toast.classList.remove("show"); }, 3200);
+}
+
+function escapeHtml(str) {
+  if (typeof str !== "string") return "";
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+/* ===== MODAL ===== */
+
+window.openModal = function(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.add("active");
 };
 
-/**
- * GAS設定アコーディオンの開閉
- */
+window.closeModal = function(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.remove("active");
+};
+
+/* ===== CONFIG ===== */
+
 window.toggleConfigCard = function(forceShow) {
-  const card = document.getElementById("config-card");
+  var card = document.getElementById("config-card");
   if (!card) return;
   if (typeof forceShow === "boolean") {
     forceShow ? card.classList.remove("hidden") : card.classList.add("hidden");
@@ -808,345 +670,492 @@ window.toggleConfigCard = function(forceShow) {
   }
 };
 
-/**
- * GAS URL の保存とテスト接続
- */
 window.saveAndTestGasUrl = async function() {
-  const urlInput = document.getElementById("input-gas-url");
-  const url = urlInput ? urlInput.value.trim() : "";
-  if (!url) {
-    showAlertBanner("URL を入力してください", "error");
-    return;
-  }
+  var urlInput = document.getElementById("input-gas-url");
+  var url = urlInput ? urlInput.value.trim() : "";
+  if (!url) { showAlertBanner("URL required", "error"); return; }
   localStorage.setItem("bakumote_gas_url", url);
   state.gasUrl = url;
-  showAlertBanner("⏳ サーバーへテスト接続中...", "info");
-
+  showAlertBanner("Connecting...", "info");
   try {
-    const res = await fetch(url + "?action=test");
-    const data = await res.json();
+    var res = await fetch(url + "?action=test");
+    var data = await res.json();
     if (data.status === "ok") {
-      showAlertBanner("✓ GAS バックエンドに正常接続しました！", "success");
+      showAlertBanner("Connected!", "success");
       setTimeout(function() { toggleConfigCard(false); }, 1500);
-    } else {
-      showAlertBanner("⚠️ 接続できましたが応答が不正です", "error");
-    }
-  } catch (err) {
-    showAlertBanner("❌ 接続エラー。URLをご確認ください", "error");
-  }
+    } else { showAlertBanner("Connection failed", "error"); }
+  } catch (err) { showAlertBanner("Connection error", "error"); }
 };
 
-/**
- * クリップボードからのペースト
- */
+/* ===== TOOL TABS ===== */
+
+window.switchToolTab = function(panelId, btnElem) {
+  var tabs = document.querySelectorAll(".tool-tab");
+  var panels = document.querySelectorAll(".editor-panel");
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+  for (var j = 0; j < panels.length; j++) panels[j].classList.remove("active");
+  if (btnElem) btnElem.classList.add("active");
+  else {
+    for (var k = 0; k < tabs.length; k++) {
+      if (tabs[k].getAttribute("data-panel") === panelId) { tabs[k].classList.add("active"); break; }
+    }
+  }
+  var panel = document.getElementById(panelId);
+  if (panel) panel.classList.add("active");
+};
+
+/* ===== CLIPBOARD & FILE ===== */
+
 window.pasteFromClipboard = async function() {
   try {
-    const text = await navigator.clipboard.readText();
+    var text = await navigator.clipboard.readText();
     if (text) {
-      const textarea = document.getElementById("textarea-json-raw");
-      if (textarea) textarea.value = text;
-      showAlertBanner("📋 クリップボードから貼り付けました！自動で解析を開始します...", "info");
+      var ta = document.getElementById("textarea-json-raw");
+      if (ta) ta.value = text;
+      showAlertBanner("Pasted! Auto-parsing...", "info");
       setTimeout(window.parseAndRenderJson, 300);
-    } else {
-      showAlertBanner("⚠️ クリップボードが空です", "error");
-    }
+    } else { showAlertBanner("Clipboard empty", "error"); }
   } catch (err) {
-    showAlertBanner("⚠️ スマホのセキュリティにより自動貼り付けできませんでした。枠内に指で直接長押しして貼り付けてください。", "error");
+    showAlertBanner("Paste failed. Please paste manually.", "error");
   }
 };
 
-/**
- * ファイル選択時の処理
- */
 window.handleFileSelect = function(event) {
-  const file = event.target.files[0];
+  var file = event.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
+  var reader = new FileReader();
   reader.onload = function(e) {
-    const textarea = document.getElementById("textarea-json-raw");
-    if (textarea) textarea.value = e.target.result;
-    showAlertBanner("📁 JSON ファイルを読み込みました！自動で解析を開始します...", "info");
+    var ta = document.getElementById("textarea-json-raw");
+    if (ta) ta.value = e.target.result;
+    showAlertBanner("File loaded! Auto-parsing...", "info");
     setTimeout(window.parseAndRenderJson, 300);
   };
   reader.readAsText(file);
 };
 
-/**
- * 無敵の JSON サニタイズ＆解析とカード展開
- */
-window.parseAndRenderJson = function() {
-  const btn = document.getElementById("btn-parse-json");
-  if (btn) btn.innerHTML = "⏳ 解析＆カード展開中...";
+/* ===== JSON PARSE & RENDER ===== */
 
-  const textarea = document.getElementById("textarea-json-raw");
-  let rawText = textarea ? textarea.value.trim() : "";
+window.parseAndRenderJson = function() {
+  var btn = document.getElementById("btn-parse-json");
+  if (btn) btn.textContent = "Parsing...";
+
+  var textarea = document.getElementById("textarea-json-raw");
+  var rawText = textarea ? textarea.value.trim() : "";
 
   if (!rawText) {
-    if (btn) btn.innerHTML = "⚡ JSON を解析してカードエディタを展開";
-    showAlertBanner("❌ 【入力エラー】テキスト枠が空です！ Gem が生成した JSON を貼り付けてからボタンを押してください。", "error");
-    showToast("テキスト枠に JSON を貼り付けてください");
+    if (btn) btn.textContent = "Parse & Generate Timeline";
+    showAlertBanner("Empty! Paste JSON first.", "error");
     return;
   }
 
   try {
     rawText = rawText.replace(/```[a-zA-Z]*\n?/g, "").replace(/```/g, "");
+    var cleanText = rawText
+      .replace(/[\u201c\u201d]/g, '"')
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/\uff1a/g, ':')
+      .replace(/\uff0c/g, ',');
 
-    let cleanText = rawText
-      .replace(/[”“]/g, '"')
-      .replace(/[’‘]/g, "'")
-      .replace(/：/g, ':')
-      .replace(/，/g, ',');
-
-    const firstBrace = cleanText.indexOf('{');
-    const lastBrace = cleanText.lastIndexOf('}');
+    var firstBrace = cleanText.indexOf('{');
+    var lastBrace = cleanText.lastIndexOf('}');
     if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
       cleanText = cleanText.substring(firstBrace, lastBrace + 1);
     }
-
     cleanText = cleanText.replace(/,\s*([}\]])/g, "$1");
 
-    const data = JSON.parse(cleanText);
+    var data = JSON.parse(cleanText);
     state.configData = data;
+    state.sceneCount = (data.scenes || []).length;
+    state.selectedSceneIndex = 0;
 
-    const metaTitle = document.getElementById("meta-title");
+    var metaTitle = document.getElementById("meta-title");
     if (metaTitle) metaTitle.value = data.title || "";
 
-    const metaOut = document.getElementById("meta-output-filename");
-    if (metaOut && data.outputVideo) {
-      metaOut.value = data.outputVideo;
-    }
+    var metaOut = document.getElementById("meta-output-filename");
+    if (metaOut && data.outputVideo) metaOut.value = data.outputVideo;
 
-    const metaArea = document.getElementById("meta-editor-area");
-    if (metaArea) metaArea.style.display = "block";
+    renderTimeline(data.scenes || []);
+    renderScriptEditor(data.scenes || []);
+    extractAndRenderMediaSlots(data.scenes || []);
+    renderTimingPanel(data.scenes || []);
+    updatePreview();
 
-    renderScenesEditor(data.scenes || []);
-    extractAndRenderImageSlots(data.scenes || []);
+    // Show hidden sections
+    var tl = document.getElementById("timeline-section");
+    if (tl) tl.style.display = "block";
+    var tt = document.getElementById("tool-tabs");
+    if (tt) tt.style.display = "flex";
 
-    const badgeScene = document.getElementById("badge-scene-count");
-    if (badgeScene) badgeScene.textContent = (data.scenes || []).length;
+    if (btn) btn.textContent = "Parse & Generate Timeline";
+    closeModal("modal-json");
 
-    const badgeImg = document.getElementById("badge-img-count");
-    if (badgeImg) badgeImg.textContent = state.imageSlots.size;
-
-    if (btn) btn.innerHTML = "⚡ JSON を解析してカードエディタを展開";
-    showAlertBanner("🎉 解析成功！ 全 " + (data.scenes || []).length + " シーンと " + state.imageSlots.size + " 個の画像スロットを展開しました！下にスクロールして編集・画像挿入を行ってください。", "success");
-    showToast("✓ JSONを展開しカードを生成しました！");
+    showAlertBanner(state.sceneCount + " scenes loaded! Timeline ready.", "success");
+    showToast("Timeline generated!");
 
     if (textarea) textarea.value = JSON.stringify(data, null, 2);
-
-    if (metaArea) {
-      metaArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
   } catch (err) {
-    if (btn) btn.innerHTML = "⚡ JSON を解析してカードエディタを展開";
-    console.error("JSON Parse Error:", err);
-    showAlertBanner("❌ 【JSON解析エラー】貼り付けたデータに構文の誤りがあります。<br><span style='font-size:11px; font-weight:normal;'>原因の詳細: " + err.message + "</span>", "error");
-    showToast("❌ JSON の構文エラー");
+    if (btn) btn.textContent = "Parse & Generate Timeline";
+    showAlertBanner("JSON Error: " + err.message, "error");
   }
 };
 
-/**
- * シーン別エディタカードの描画 (改行・バッククォート不使用)
- */
-function renderScenesEditor(scenes) {
-  const container = document.getElementById("scenes-editor-list");
+/* ===== TIMELINE ===== */
+
+function renderTimeline(scenes) {
+  var scroll = document.getElementById("timeline-scroll");
+  var totalEl = document.getElementById("timeline-total");
+  if (!scroll) return;
+  scroll.innerHTML = "";
+
+  if (totalEl) totalEl.textContent = scenes.length + " scenes";
+
+  for (var i = 0; i < scenes.length; i++) {
+    var scene = scenes[i];
+    var block = document.createElement("div");
+    block.className = "timeline-block" + (i === state.selectedSceneIndex ? " active" : "");
+    block.setAttribute("data-index", i);
+    block.style.width = Math.max(52, Math.min(120, 52 + (scene.narration || "").length)) + "px";
+
+    var slotData = scene.image ? state.imageSlots.get(scene.image) : null;
+    var hasPreview = slotData && slotData.base64;
+
+    if (hasPreview) {
+      block.innerHTML = '<img class="timeline-block-bg" src="' + slotData.base64 + '" alt="">' +
+        '<div class="timeline-block-label">S' + (i + 1) + '</div>';
+    } else {
+      block.innerHTML = '<div class="timeline-block-no-img">' + getSceneEmoji(scene.type) + '</div>' +
+        '<div class="timeline-block-label">S' + (i + 1) + '</div>';
+    }
+
+    block.addEventListener("click", (function(idx) {
+      return function() { selectScene(idx); };
+    })(i));
+
+    scroll.appendChild(block);
+  }
+}
+
+function getSceneEmoji(type) {
+  if (!type) return "&#127916;";
+  if (type === "hook") return "&#127919;";
+  if (type === "intro") return "&#128075;";
+  if (type === "feature") return "&#11088;";
+  if (type === "cta") return "&#128293;";
+  if (type === "ending") return "&#128588;";
+  return "&#127916;";
+}
+
+/* ===== SCENE SELECTION & PREVIEW ===== */
+
+window.selectScene = function(index) {
+  if (!state.configData || !state.configData.scenes) return;
+  if (index < 0) index = state.sceneCount - 1;
+  if (index >= state.sceneCount) index = 0;
+  state.selectedSceneIndex = index;
+
+  // Update timeline highlights
+  var blocks = document.querySelectorAll(".timeline-block");
+  for (var i = 0; i < blocks.length; i++) {
+    blocks[i].classList.toggle("active", i === index);
+  }
+
+  // Scroll timeline block into view
+  if (blocks[index]) {
+    blocks[index].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }
+
+  // Update script card highlights
+  var cards = document.querySelectorAll(".script-card");
+  for (var j = 0; j < cards.length; j++) {
+    cards[j].classList.toggle("selected", j === index);
+  }
+  if (cards[index]) {
+    cards[index].scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  updatePreview();
+};
+
+window.navigateScene = function(delta) {
+  selectScene(state.selectedSceneIndex + delta);
+};
+
+function updatePreview() {
+  if (!state.configData || !state.configData.scenes) return;
+  var scene = state.configData.scenes[state.selectedSceneIndex];
+  if (!scene) return;
+
+  var imgEl = document.getElementById("preview-image");
+  var emptyEl = document.getElementById("preview-empty");
+  var overlayEl = document.getElementById("preview-overlay");
+  var titleEl = document.getElementById("preview-title");
+  var subEl = document.getElementById("preview-subtitle");
+  var sceneNumEl = document.getElementById("preview-scene-num");
+  var durEl = document.getElementById("preview-duration");
+  var navEl = document.getElementById("preview-nav");
+
+  // Show image if available
+  var slotData = scene.image ? state.imageSlots.get(scene.image) : null;
+  if (slotData && slotData.base64) {
+    if (imgEl) { imgEl.src = slotData.base64; imgEl.style.display = "block"; }
+    if (emptyEl) emptyEl.style.display = "none";
+  } else {
+    if (imgEl) imgEl.style.display = "none";
+    if (emptyEl) {
+      emptyEl.style.display = "block";
+      emptyEl.innerHTML = '<div style="font-size:40px; margin-bottom:8px;">' + getSceneEmoji(scene.type) + '</div>' +
+        '<div style="font-weight:700; font-size:14px;">' + escapeHtml(scene.title || "Scene " + (state.selectedSceneIndex + 1)) + '</div>' +
+        '<div style="margin-top:4px; font-size:12px;">' + escapeHtml(scene.image || "No image") + '</div>';
+    }
+  }
+
+  // Overlay text
+  if (overlayEl) overlayEl.style.display = "block";
+  if (titleEl) titleEl.innerHTML = (scene.title || "").replace(/&lt;br\s*\/?&gt;/gi, "<br>").replace(/<br\s*\/?>/gi, "<br>");
+  if (subEl) subEl.textContent = scene.subtitle || scene.narration || "";
+
+  // Scene indicator
+  if (sceneNumEl) {
+    sceneNumEl.style.display = "block";
+    sceneNumEl.textContent = "Scene " + (state.selectedSceneIndex + 1) + "/" + state.sceneCount;
+  }
+
+  // Duration
+  if (durEl) {
+    durEl.style.display = "block";
+    var charCount = (scene.narration || "").length;
+    var estSec = Math.max(2, Math.round(charCount * 0.12));
+    durEl.textContent = "~" + estSec + "s";
+  }
+
+  if (navEl) navEl.style.display = "flex";
+}
+
+/* ===== SCRIPT EDITOR ===== */
+
+function renderScriptEditor(scenes) {
+  var container = document.getElementById("script-editor-list");
   if (!container) return;
   container.innerHTML = "";
 
-  scenes.forEach(function(scene, index) {
-    const card = document.createElement("div");
-    card.className = "card";
+  for (var i = 0; i < scenes.length; i++) {
+    (function(scene, index) {
+      var card = document.createElement("div");
+      card.className = "script-card" + (index === state.selectedSceneIndex ? " selected" : "");
+      card.setAttribute("data-scene-index", index);
 
-    let html = '<div class="scene-header">' +
-      '<span class="scene-badge">Scene ' + (index + 1) + '</span>' +
-      '<span class="scene-type">' + (scene.type || "standard") + '</span>' +
-      '</div>' +
-      '<div class="form-group">' +
-      '<label class="form-label">画面タイトル (改行は &lt;br /&gt;)</label>' +
-      '<input type="text" class="form-input scene-input-title" value="' + escapeHtml(scene.title || "") + '" oninput="syncJsonTextarea()">' +
-      '</div>';
-
-    if (scene.subtitle !== undefined || scene.type === "standard" || scene.type === "feature") {
-      html += '<div class="form-group">' +
-        '<label class="form-label">サブタイトル (subtitle)</label>' +
-        '<input type="text" class="form-input scene-input-sub" value="' + escapeHtml(scene.subtitle || "") + '" oninput="syncJsonTextarea()">' +
+      var html = '<div class="script-card-header">' +
+        '<span class="script-scene-badge">Scene ' + (index + 1) + '</span>' +
+        '<span class="script-scene-type">' + escapeHtml(scene.type || "standard") + '</span>' +
         '</div>';
-    }
 
-    html += '<div class="form-group" style="margin-bottom:0;">' +
-      '<label class="form-label" style="color:var(--accent-primary);">🗣️ ナレーションセリフ (narration)</label>' +
-      '<textarea class="form-textarea scene-input-nar" style="min-height:75px;" oninput="syncJsonTextarea()">' + escapeHtml(scene.narration || "") + '</textarea>' +
-      '</div>';
+      html += '<div class="form-group">' +
+        '<label class="form-label">Title</label>' +
+        '<input type="text" class="form-input scene-title-input" value="' + escapeHtml(scene.title || "") + '" oninput="onSceneFieldChange(' + index + ', \'title\', this.value)">' +
+        '</div>';
 
-    card.innerHTML = html;
+      if (scene.subtitle !== undefined) {
+        html += '<div class="form-group">' +
+          '<label class="form-label">Subtitle</label>' +
+          '<input type="text" class="form-input scene-sub-input" value="' + escapeHtml(scene.subtitle || "") + '" oninput="onSceneFieldChange(' + index + ', \'subtitle\', this.value)">' +
+          '</div>';
+      }
 
-    const titleIn = card.querySelector(".scene-input-title");
-    if (titleIn) titleIn.addEventListener("input", function(e) { scene.title = e.target.value; syncJsonTextarea(); });
+      html += '<div class="form-group" style="margin-bottom:0;">' +
+        '<label class="form-label" style="color:var(--accent);">Narration</label>' +
+        '<textarea class="form-textarea scene-nar-input" style="min-height:60px;" oninput="onSceneFieldChange(' + index + ', \'narration\', this.value)">' + escapeHtml(scene.narration || "") + '</textarea>' +
+        '</div>';
 
-    const subIn = card.querySelector(".scene-input-sub");
-    if (subIn) subIn.addEventListener("input", function(e) { scene.subtitle = e.target.value; syncJsonTextarea(); });
+      card.innerHTML = html;
 
-    const narIn = card.querySelector(".scene-input-nar");
-    if (narIn) narIn.addEventListener("input", function(e) { scene.narration = e.target.value; syncJsonTextarea(); });
-
-    container.appendChild(card);
-  });
+      card.addEventListener("click", function() { selectScene(index); });
+      container.appendChild(card);
+    })(scenes[i], i);
+  }
 }
 
-/**
- * 双方向同期
- */
+window.onSceneFieldChange = function(index, field, value) {
+  if (!state.configData || !state.configData.scenes) return;
+  state.configData.scenes[index][field] = value;
+  syncJsonTextarea();
+  if (index === state.selectedSceneIndex) updatePreview();
+  if (field === "narration") renderTimingPanel(state.configData.scenes);
+};
+
 window.syncJsonTextarea = function() {
   if (!state.configData) return;
-  const metaTitle = document.getElementById("meta-title");
+  var metaTitle = document.getElementById("meta-title");
   if (metaTitle) state.configData.title = metaTitle.value;
-  
-  const textarea = document.getElementById("textarea-json-raw");
+  var textarea = document.getElementById("textarea-json-raw");
   if (textarea) textarea.value = JSON.stringify(state.configData, null, 2);
 };
 
-/**
- * 要求画像ファイル名の自動抽出＆スロットカードの生成
- */
-function extractAndRenderImageSlots(scenes) {
+/* ===== MEDIA SLOTS ===== */
+
+function extractAndRenderMediaSlots(scenes) {
   state.imageSlots.clear();
 
-  scenes.forEach(function(scene, idx) {
+  for (var i = 0; i < scenes.length; i++) {
+    var scene = scenes[i];
     if (scene.image) {
       if (!state.imageSlots.has(scene.image)) {
-        state.imageSlots.set(scene.image, {
-          scenes: [idx + 1],
-          base64: null
-        });
+        state.imageSlots.set(scene.image, { scenes: [i + 1], base64: null });
       } else {
-        state.imageSlots.get(scene.image).scenes.push(idx + 1);
+        state.imageSlots.get(scene.image).scenes.push(i + 1);
       }
     }
-  });
+  }
 
-  const container = document.getElementById("images-slot-list");
+  var container = document.getElementById("media-slot-grid");
   if (!container) return;
   container.innerHTML = "";
 
   if (state.imageSlots.size === 0) {
-    container.innerHTML = '<div class="card" style="text-align:center; padding:30px; color:var(--text-muted);">要求されている画像はありません。</div>';
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted); font-size:13px;">No image slots required</div>';
     return;
   }
 
   state.imageSlots.forEach(function(slotData, filename) {
-    const card = document.createElement("div");
-    card.className = "card image-slot-card";
-    const sceneNumList = slotData.scenes.map(function(n) { return "Scene " + n; }).join(", ");
-    const safeId = filename.replace(/[^a-zA-Z0-9]/g, "_");
-    const safeFilename = escapeHtml(filename);
-    
-    card.innerHTML = '<div class="slot-info">' +
-      '<span class="slot-filename">🖼️ ' + safeFilename + '</span>' +
-      '<span class="slot-scenes">' + sceneNumList + '</span>' +
-      '</div>' +
-      '<label class="preview-area" id="preview-' + safeId + '">' +
-      '<div class="preview-placeholder">' +
-      '<i>📷</i>' +
-      '<span>タップしてカメラ／写真から<br>このスロットに画像を割り当て</span>' +
-      '</div>' +
-      '<input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="' + safeFilename + '" onchange="handleSlotImageSelect(event, \'' + safeFilename + '\')">' +
-      '</label>';
+    var slot = document.createElement("div");
+    slot.className = "media-slot";
+    var safeFilename = escapeHtml(filename);
+    var sceneList = slotData.scenes.map(function(n) { return "S" + n; }).join(", ");
 
-    container.appendChild(card);
+    slot.innerHTML = '<label class="media-slot-preview">' +
+      '<div class="media-slot-placeholder">&#128247;</div>' +
+      '<input type="file" accept="image/*" class="file-input-hidden" data-filename="' + safeFilename + '" onchange="handleSlotImageSelect(event, \'' + safeFilename + '\')">' +
+      '</label>' +
+      '<div class="media-slot-info">' +
+      '<div class="media-slot-name">' + safeFilename + '</div>' +
+      '<div class="media-slot-scenes">' + sceneList + '</div>' +
+      '</div>';
+
+    container.appendChild(slot);
   });
 }
 
-/**
- * 画像スロットでファイルが選択された時のハンドラ
- */
 window.handleSlotImageSelect = function(event, slotFilename) {
-  const file = event.target.files[0];
+  var file = event.target.files[0];
   if (!file) return;
-  const previewElem = event.target.closest(".image-slot-card").querySelector(".preview-area");
-  processImageFile(file, slotFilename, previewElem);
+  var slotEl = event.target.closest(".media-slot");
+  processImageFile(file, slotFilename, slotEl);
 };
 
-/**
- * スマホで選択した画像ファイルを引き受け、Canvas でリサイズして Base64 化
- */
-function processImageFile(file, slotFilename, previewElement) {
-  const reader = new FileReader();
+function processImageFile(file, slotFilename, slotElement) {
+  var reader = new FileReader();
   reader.onload = function(e) {
-    const img = new Image();
+    var img = new Image();
     img.onload = function() {
-      const MAX_SIZE = 1200;
-      let w = img.width;
-      let h = img.height;
-
+      var MAX_SIZE = 1200;
+      var w = img.width, h = img.height;
       if (w > MAX_SIZE || h > MAX_SIZE) {
-        if (w > h) {
-          h = Math.round((h * MAX_SIZE) / w);
-          w = MAX_SIZE;
-        } else {
-          w = Math.round((w * MAX_SIZE) / h);
-          h = MAX_SIZE;
+        if (w > h) { h = Math.round((h * MAX_SIZE) / w); w = MAX_SIZE; }
+        else { w = Math.round((w * MAX_SIZE) / h); h = MAX_SIZE; }
+      }
+      var canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      var base64Data = canvas.toDataURL("image/jpeg", 0.85);
+
+      var slot = state.imageSlots.get(slotFilename);
+      if (slot) slot.base64 = base64Data;
+
+      // Update slot card
+      if (slotElement) {
+        var preview = slotElement.querySelector(".media-slot-preview");
+        if (preview) {
+          var safeFilename = escapeHtml(slotFilename);
+          preview.innerHTML = '<img src="' + base64Data + '" alt="preview">' +
+            '<div class="media-slot-check">&#10003;</div>' +
+            '<input type="file" accept="image/*" class="file-input-hidden" data-filename="' + safeFilename + '" onchange="handleSlotImageSelect(event, \'' + safeFilename + '\')">';
         }
       }
 
-      const canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, w, h);
-
-      const base64Data = canvas.toDataURL("image/jpeg", 0.85);
-      const slot = state.imageSlots.get(slotFilename);
-      if (slot) slot.base64 = base64Data;
-
-      if (previewElement) {
-        const safeFilename = escapeHtml(slotFilename);
-        previewElement.innerHTML = '<img src="' + base64Data + '" alt="preview">' +
-          '<div style="font-size:11px; color:#10B981; font-weight:700; margin-top:8px;">✓ 画像を準備しました (圧縮済: ' + w + 'x' + h + ')</div>' +
-          '<input type="file" accept="image/*" class="file-input-hidden slot-file-input" data-filename="' + safeFilename + '" onchange="handleSlotImageSelect(event, \'' + safeFilename + '\')">';
+      // Refresh timeline & preview
+      if (state.configData) {
+        renderTimeline(state.configData.scenes || []);
+        updatePreview();
       }
 
-      showToast("✓ 「" + slotFilename + "」をセットしました！");
-      showAlertBanner("✓ スロット「" + slotFilename + "」に写真を割り当てました", "success");
+      showToast(slotFilename + " set!");
     };
-    img.onerror = function() {
-      showAlertBanner("❌ 画像の読み込みに失敗しました", "error");
-    };
+    img.onerror = function() { showAlertBanner("Image load failed", "error"); };
     img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
 
-/**
- * 全画像データと更新された JSON を GAS バックエンドへプッシュ＆ Actions トリガー
- */
+/* ===== TIMING PANEL ===== */
+
+function renderTimingPanel(scenes) {
+  var container = document.getElementById("timing-editor-list");
+  if (!container) return;
+  container.innerHTML = "";
+
+  var totalEst = 0;
+
+  for (var i = 0; i < scenes.length; i++) {
+    var scene = scenes[i];
+    var charCount = (scene.narration || "").length;
+    var estSec = Math.max(2, Math.round(charCount * 0.12));
+    totalEst += estSec;
+
+    var card = document.createElement("div");
+    card.className = "timing-info-card";
+    card.innerHTML = '<div class="timing-row">' +
+      '<span class="timing-label">Scene ' + (i + 1) + ' (' + escapeHtml(scene.type || "std") + ')</span>' +
+      '<span class="timing-value">~' + estSec + 's</span>' +
+      '</div>' +
+      '<div class="timing-row">' +
+      '<span class="timing-label">Narration chars</span>' +
+      '<span class="timing-value">' + charCount + '</span>' +
+      '</div>';
+    container.appendChild(card);
+  }
+
+  // Total summary
+  var summary = document.createElement("div");
+  summary.className = "timing-info-card";
+  summary.style.borderColor = "var(--accent)";
+  summary.innerHTML = '<div class="timing-row">' +
+    '<span class="timing-label" style="font-weight:800;">Total estimated</span>' +
+    '<span class="timing-value" style="font-size:18px;">~' + totalEst + 's</span>' +
+    '</div>' +
+    '<div class="timing-row">' +
+    '<span class="timing-label">Scenes</span>' +
+    '<span class="timing-value">' + scenes.length + '</span>' +
+    '</div>';
+  container.appendChild(summary);
+}
+
+/* ===== PUSH & TRIGGER ===== */
+
 window.pushAndTriggerWorkflow = async function() {
   if (!state.configData) {
-    showAlertBanner("⚠️ 先に「① JSONエディタ」で JSON を解析してください", "error");
+    showAlertBanner("Load JSON first!", "error");
+    openModal("modal-json");
     return;
   }
 
-  const missingSlots = [];
+  var missingSlots = [];
   state.imageSlots.forEach(function(slot, filename) {
     if (!slot.base64) missingSlots.push(filename);
   });
 
   if (missingSlots.length > 0) {
-    const confirmMsg = "以下の画像が未セットですがプッシュしてよろしいですか？\n（テンプレートのデフォルト画像や既存画像が使われます）\n\n・" + missingSlots.join("\n・");
+    var confirmMsg = "These images are not set:\n\n" + missingSlots.join("\n") + "\n\nPush anyway?";
     if (!confirm(confirmMsg)) return;
   }
 
-  const pushBtn = document.getElementById("btn-push-trigger");
-  if (pushBtn) {
-    pushBtn.disabled = true;
-    pushBtn.innerHTML = "⏳ GAS 経由でプッシュ＆ Actions 起動中...";
-  }
-  showAlertBanner("🔥 リポジトリへファイルをプッシュして動画生成をスタートしています...", "info");
+  var pushBtn = document.getElementById("btn-push-trigger");
+  if (pushBtn) { pushBtn.disabled = true; pushBtn.querySelector(".bar-btn-icon").textContent = "..."; }
+  showAlertBanner("Pushing to GitHub & starting Actions...", "info");
 
   try {
     syncJsonTextarea();
-    const updatedJsonText = document.getElementById("textarea-json-raw").value;
+    var updatedJsonText = document.getElementById("textarea-json-raw").value;
 
-    const payload = {
+    var payload = {
       action: "pushAndTrigger",
       jsonFilename: document.getElementById("meta-json-filename") ? document.getElementById("meta-json-filename").value : "video_config_custom.json",
       outputFilename: document.getElementById("meta-output-filename") ? document.getElementById("meta-output-filename").value : "output_custom.mp4",
@@ -1156,50 +1165,43 @@ window.pushAndTriggerWorkflow = async function() {
 
     state.imageSlots.forEach(function(slot, filename) {
       if (slot.base64) {
-        let b64 = slot.base64;
+        var b64 = slot.base64;
         if (b64.indexOf(",") !== -1) b64 = b64.split(",")[1];
-        payload.images.push({
-          path: filename,
-          filename: filename,
-          base64: b64
-        });
+        payload.images.push({ path: filename, filename: filename, base64: b64 });
       }
     });
 
-    const res = await fetch(state.gasUrl, {
+    var res = await fetch(state.gasUrl, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: "payload=" + encodeURIComponent(JSON.stringify(payload))
     });
 
-    const result = await res.json();
+    var result = await res.json();
     if (result.status === "ok" || result.success === true || result.workflowTriggered === true) {
-      showAlertBanner("🎉 プッシュ＆動画生成の起動に成功しました！自動で監視を開始します...", "success");
-      if (pushBtn) pushBtn.innerHTML = "✓ 起動完了！ Actions の状況を監視中...";
-
+      showAlertBanner("Pushed! Actions started. Monitoring...", "success");
+      if (pushBtn) pushBtn.querySelector(".bar-btn-icon").textContent = "\u2713";
+      switchToolTab("panel-status", null);
       setTimeout(function() {
         window.checkActionsStatus(true);
         startPollingActions();
       }, 3000);
     } else {
-      let errMsg = result.error || result.message || "サーバー側でエラーが発生しました";
-      if (result.errors && result.errors.length > 0) {
-        errMsg += " (" + result.errors.join(", ") + ")";
-      }
+      var errMsg = result.error || result.message || "Server error";
+      if (result.errors && result.errors.length > 0) errMsg += " (" + result.errors.join(", ") + ")";
       throw new Error(errMsg);
     }
   } catch (err) {
-    showAlertBanner("❌ プッシュ失敗: " + err.message, "error");
+    showAlertBanner("Push failed: " + err.message, "error");
     if (pushBtn) {
       pushBtn.disabled = false;
-      pushBtn.innerHTML = "🔥 全画像＆JSONを一斉プッシュして動画生成開始！";
+      pushBtn.querySelector(".bar-btn-icon").textContent = "\uD83D\uDE80";
     }
   }
 };
 
-/**
- * Actions ステータスの自動ポーリング
- */
+/* ===== ACTIONS STATUS ===== */
+
 function startPollingActions() {
   if (state.pollingInterval) clearInterval(state.pollingInterval);
   state.pollingInterval = setInterval(function() {
@@ -1207,113 +1209,79 @@ function startPollingActions() {
   }, 4000);
 }
 
-/**
- * GitHub Actions の最新ビルドステータス確認
- */
 window.checkActionsStatus = async function(showToastOnManual) {
-  if (showToastOnManual) showAlertBanner("🔍 最新の動画生成状態をサーバーに確認中...", "info");
+  if (showToastOnManual) showAlertBanner("Checking Actions status...", "info");
 
   try {
-    const res = await fetch(state.gasUrl + "?action=status");
-    const data = await res.json();
+    var res = await fetch(state.gasUrl + "?action=status");
+    var data = await res.json();
 
     if (data.status !== "ok" && data.success !== true) {
-      throw new Error(data.error || data.message || "取得に失敗しました");
+      throw new Error(data.error || data.message || "Status check failed");
     }
 
-    const latest = data.latestRun;
-    const badge = document.getElementById("status-badge");
-    const title = document.getElementById("status-title");
-    const meta = document.getElementById("status-meta");
-    const artArea = document.getElementById("artifact-list-area");
+    var latest = data.latestRun;
+    var badge = document.getElementById("status-badge");
+    var title = document.getElementById("status-title");
+    var meta = document.getElementById("status-meta");
+    var artArea = document.getElementById("artifact-list-area");
 
     if (!latest) {
-      if (badge) badge.textContent = "履歴なし";
-      if (title) title.textContent = "まだワークフローの実行履歴がありません";
+      if (badge) badge.textContent = "No runs";
+      if (title) title.textContent = "No workflow runs found";
       return;
     }
 
-    const createdTime = latest.created_at || latest.updated_at || new Date().toISOString();
-    const timeStr = new Date(createdTime).toLocaleTimeString();
-    const runNum = latest.run_number || latest.id || "?";
-    if (meta) meta.textContent = "開始時刻: " + timeStr + " (Run ID: #" + runNum + ")";
+    var createdTime = latest.created_at || latest.updated_at || new Date().toISOString();
+    var timeStr = new Date(createdTime).toLocaleTimeString();
+    var runNum = latest.run_number || latest.id || "?";
+    if (meta) meta.textContent = "Started: " + timeStr + " (Run #" + runNum + ")";
 
     if (latest.status === "in_progress" || latest.status === "queued") {
-      if (badge) {
-        badge.textContent = "🔥 動画生成中 (VOICEVOX合成＆レンダリング)";
-        badge.className = "status-badge status-progress";
-      }
-      if (title) title.textContent = "現在、サーバー側で動画を生成しています...";
+      if (badge) { badge.textContent = "RENDERING..."; badge.className = "status-badge status-progress"; }
+      if (title) title.textContent = "VOICEVOX + Rendering in progress...";
     } else if (latest.status === "completed" && latest.conclusion === "success") {
-      if (badge) {
-        badge.textContent = "✓ 動画生成完了！";
-        badge.className = "status-badge status-success";
-      }
-      if (title) title.textContent = "動画のレンダリングが完了しました！下からダウンロードできます。";
+      if (badge) { badge.textContent = "COMPLETE"; badge.className = "status-badge status-success"; }
+      if (title) title.textContent = "Video rendered successfully!";
       if (state.pollingInterval) clearInterval(state.pollingInterval);
     } else if (latest.status === "completed" && latest.conclusion === "failure") {
-      if (badge) {
-        badge.textContent = "❌ 生成エラー";
-        badge.className = "status-badge status-error";
-      }
-      if (title) title.textContent = "動画の生成中にエラーが発生しました。ログをご確認ください。";
+      if (badge) { badge.textContent = "FAILED"; badge.className = "status-badge status-error"; }
+      if (title) title.textContent = "Render failed. Check logs.";
       if (state.pollingInterval) clearInterval(state.pollingInterval);
     } else {
-      if (badge) badge.textContent = latest.status + " (" + (latest.conclusion || "") + ")";
-      if (title) title.textContent = "状態: " + latest.status;
+      if (badge) badge.textContent = latest.status;
+      if (title) title.textContent = "Status: " + latest.status;
     }
 
     if (artArea) artArea.innerHTML = "";
     if (latest.artifacts && latest.artifacts.length > 0 && artArea) {
-      latest.artifacts.forEach(function(art) {
-        const sizeMb = (art.size_in_bytes / (1024 * 1024)).toFixed(1);
-        const a = document.createElement("a");
+      for (var i = 0; i < latest.artifacts.length; i++) {
+        var art = latest.artifacts[i];
+        var sizeMb = (art.size_in_bytes / (1024 * 1024)).toFixed(1);
+        var a = document.createElement("a");
         a.className = "artifact-item";
         a.href = latest.html_url;
         a.target = "_blank";
-        a.innerHTML = '<span>🎬 ' + escapeHtml(art.name) + ' (' + sizeMb + ' MB)</span>' +
-          '<span>📥 ダウンロード画面へ ➔</span>';
+        a.innerHTML = '<span>' + escapeHtml(art.name) + ' (' + sizeMb + ' MB)</span><span>Download</span>';
         artArea.appendChild(a);
-      });
+      }
     } else if (latest.status === "completed" && latest.conclusion === "success" && artArea) {
-      const a = document.createElement("a");
-      a.className = "artifact-item";
-      a.href = latest.html_url;
-      a.target = "_blank";
-      a.innerHTML = '<span>🎬 generated-mp4-video</span>' +
-        '<span>📥 Run ページを開く ➔</span>';
-      artArea.appendChild(a);
+      var link = document.createElement("a");
+      link.className = "artifact-item";
+      link.href = latest.html_url;
+      link.target = "_blank";
+      link.innerHTML = '<span>generated-video</span><span>Open Run Page</span>';
+      artArea.appendChild(link);
     }
 
     if (showToastOnManual) {
-      showToast("✓ ステータスを最新に更新しました");
-      showAlertBanner("✓ ステータスを最新情報に更新しました", "success");
+      showToast("Status updated");
+      showAlertBanner("Status updated!", "success");
     }
   } catch (err) {
-    if (showToastOnManual) showAlertBanner("❌ 確認エラー: " + err.message, "error");
+    if (showToastOnManual) showAlertBanner("Status error: " + err.message, "error");
   }
 };
-
-/**
- * HTML エスケープユーティリティ
- */
-function escapeHtml(str) {
-  if (typeof str !== "string") return "";
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
-
-/**
- * トースト通知
- */
-function showToast(msg) {
-  const toast = document.getElementById("toast");
-  if (!toast) return;
-  toast.textContent = msg;
-  toast.classList.add("show");
-  setTimeout(function() {
-    toast.classList.remove("show");
-  }, 3200);
-}
 
 </script>
 </body>
