@@ -1,5 +1,5 @@
 /**
- * bakumote STUDIO - Premium Apple Design compliant script
+ * bakumote STUDIO - Fully Redesigned Clean Editor Logic
  * GAS sandbox safe: NO backticks (`), NO template literals, NO arrow functions in code
  */
 
@@ -29,11 +29,11 @@ function showAlertBanner(msg, type) {
   if (!banner) return;
   banner.style.display = "block";
   if (type === "error") {
-    banner.style.backgroundColor = "#ffefe5"; banner.style.color = "#ff3b30"; banner.style.border = "0.5px solid rgba(255,59,48,0.3)";
+    banner.style.backgroundColor = "#fee2e2"; banner.style.color = "#ef4444"; banner.style.border = "1px solid rgba(239,68,68,0.2)";
   } else if (type === "success") {
-    banner.style.backgroundColor = "#eafaf1"; banner.style.color = "#10b981"; banner.style.border = "0.5px solid rgba(16,185,129,0.3)";
+    banner.style.backgroundColor = "#ecfdf5"; banner.style.color = "#10b981"; banner.style.border = "1px solid rgba(16,185,129,0.2)";
   } else {
-    banner.style.backgroundColor = "#e8f4ff"; banner.style.color = "#007aff"; banner.style.border = "0.5px solid rgba(0,122,255,0.3)";
+    banner.style.backgroundColor = "#eff6ff"; banner.style.color = "#3b82f6"; banner.style.border = "1px solid rgba(59,130,246,0.2)";
   }
   banner.innerHTML = msg;
 }
@@ -46,8 +46,8 @@ function showToast(msg) {
   toast.classList.add("show");
   setTimeout(function() {
     toast.classList.remove("show");
-    setTimeout(function() { toast.style.display = "none"; }, 300);
-  }, 2500);
+    setTimeout(function() { toast.style.display = "none"; }, 350);
+  }, 2300);
 }
 
 function escapeHtml(str) {
@@ -81,21 +81,21 @@ window.toggleConfigCard = function() {
 window.saveConfig = async function() {
   var urlInput = document.getElementById("input-gas-url");
   var url = urlInput ? urlInput.value.trim() : "";
-  if (!url) { showAlertBanner("URL is required.", "error"); return; }
+  if (!url) { showAlertBanner("URL cannot be empty.", "error"); return; }
   localStorage.setItem("bakumote_gas_url", url);
   state.gasUrl = url;
-  showAlertBanner("Testing connection...", "info");
+  showAlertBanner("Testing backend connection...", "info");
   try {
     var res = await fetch(url + "?action=test");
     var data = await res.json();
     if (data.status === "ok") {
-      showAlertBanner("Connected successfully!", "success");
-      setTimeout(function() { toggleConfigCard(); }, 1500);
+      showAlertBanner("Backend connected successfully!", "success");
+      setTimeout(function() { toggleConfigCard(); }, 1200);
     } else {
-      showAlertBanner("Connection failed. Bad server response.", "error");
+      showAlertBanner("Verification failed. Invalid response from GAS.", "error");
     }
   } catch (err) {
-    showAlertBanner("Connection failed. Please check the URL.", "error");
+    showAlertBanner("Backend connection error. Please verify the URL.", "error");
   }
 };
 
@@ -121,7 +121,7 @@ window.switchToolTab = function(panelId, btnElem) {
   if (panel) panel.classList.add("active");
 };
 
-/* ===== FILE UPLOADER & CLIPBOARD ===== */
+/* ===== FILE INPUTS & CLIPBOARD ===== */
 
 window.pasteFromClipboard = async function() {
   try {
@@ -129,13 +129,13 @@ window.pasteFromClipboard = async function() {
     if (text) {
       var ta = document.getElementById("textarea-json-raw");
       if (ta) ta.value = text;
-      showAlertBanner("Pasted from clipboard! Parsing...", "info");
+      showAlertBanner("JSON pasted successfully! Parsing...", "info");
       setTimeout(window.parseAndRenderJson, 300);
     } else {
       showAlertBanner("Clipboard is empty.", "error");
     }
   } catch (err) {
-    showAlertBanner("Clipboard access rejected. Please paste manually into the textarea.", "error");
+    showAlertBanner("Security block: Please tap the textarea and paste the JSON manually.", "error");
   }
 };
 
@@ -146,24 +146,29 @@ window.handleFileUpload = function(event) {
   reader.onload = function(e) {
     var ta = document.getElementById("textarea-json-raw");
     if (ta) ta.value = e.target.result;
-    showAlertBanner("File loaded! Parsing...", "info");
+    showAlertBanner("JSON file loaded! Parsing...", "info");
     setTimeout(window.parseAndRenderJson, 300);
   };
   reader.readAsText(file);
 };
 
-/* ===== JSON PARSER & RENDERING ===== */
+// HTML-defined file upload compatibility mapping
+window.handleFileUploadFallback = function(event) {
+  window.handleFileUpload(event);
+};
+
+/* ===== JSON PARSE AND DECORATOR ===== */
 
 window.parseAndRenderJson = function() {
   var btn = document.getElementById("btn-parse-json");
-  if (btn) btn.textContent = "Parsing...";
+  if (btn) btn.textContent = "Processing...";
 
   var textarea = document.getElementById("textarea-json-raw");
   var rawText = textarea ? textarea.value.trim() : "";
 
   if (!rawText) {
     if (btn) btn.textContent = "Parse & Render";
-    showAlertBanner("No JSON data provided.", "error");
+    showAlertBanner("Please input JSON data first.", "error");
     return;
   }
 
@@ -199,7 +204,6 @@ window.parseAndRenderJson = function() {
     renderTimingPanel(data.scenes || []);
     updatePreview();
 
-    // Reveal elements
     var tl = document.getElementById("timeline-section");
     if (tl) tl.style.display = "block";
     var tt = document.getElementById("tool-tabs");
@@ -208,17 +212,17 @@ window.parseAndRenderJson = function() {
     if (btn) btn.textContent = "Parse & Render";
     closeModal("modal-json");
 
-    showAlertBanner("Parsed " + state.sceneCount + " scenes successfully!", "success");
+    showAlertBanner("Successfully loaded " + state.sceneCount + " scenes!", "success");
     showToast("Editor generated!");
 
     if (textarea) textarea.value = JSON.stringify(data, null, 2);
   } catch (err) {
     if (btn) btn.textContent = "Parse & Render";
-    showAlertBanner("JSON Parse Error: " + err.message, "error");
+    showAlertBanner("Invalid JSON structure: " + err.message, "error");
   }
 };
 
-/* ===== TIMELINE ===== */
+/* ===== TIMELINE RENDERING ===== */
 
 function renderTimeline(scenes) {
   var scroll = document.getElementById("timeline-scroll");
@@ -245,7 +249,7 @@ function renderTimeline(scenes) {
       card.innerHTML = '<img src="' + slotData.base64 + '" alt="">' +
         '<div class="timeline-label-num">S' + (i + 1) + '</div>';
     } else {
-      card.innerHTML = '<div class="timeline-card-empty">' + getSceneEmoji(scene.type) + '</div>' +
+      card.innerHTML = '<div class="timeline-card-empty">' + getSceneLabelAbbr(scene.type) + '</div>' +
         '<div class="timeline-label-num">S' + (i + 1) + '</div>';
     }
 
@@ -259,17 +263,17 @@ function renderTimeline(scenes) {
   if (totalEl) totalEl.textContent = totalEst.toFixed(1) + "s (" + scenes.length + " scenes)";
 }
 
-function getSceneEmoji(type) {
-  if (!type) return "&#127916;";
-  if (type === "hook") return "&#127919;";
-  if (type === "intro") return "&#128075;";
-  if (type === "feature") return "&#11088;";
-  if (type === "cta") return "&#128293;";
-  if (type === "ending") return "&#128588;";
-  return "&#127916;";
+function getSceneLabelAbbr(type) {
+  if (!type) return "SC";
+  if (type === "hook") return "HK";
+  if (type === "intro") return "IN";
+  if (type === "feature") return "FT";
+  if (type === "cta") return "CT";
+  if (type === "ending") return "ED";
+  return "SC";
 }
 
-/* ===== SCENE SELECTION & PREVIEW ===== */
+/* ===== SCENE PREVIEW CONTROLLER (タグ露出バグの完全修正) ===== */
 
 window.selectScene = function(index) {
   if (!state.configData || !state.configData.scenes) return;
@@ -321,16 +325,23 @@ function updatePreview() {
     if (imgEl) imgEl.style.display = "none";
     if (emptyEl) {
       emptyEl.style.display = "flex";
-      emptyEl.innerHTML = '<span class="emoji">' + getSceneEmoji(scene.type) + '</span>' +
-        '<div style="font-weight:700; margin-top:4px;">' + escapeHtml(scene.title || "Scene " + (state.selectedSceneIndex + 1)) + '</div>' +
-        '<div style="font-size:11px; opacity:0.7; margin-top:2px;">' + escapeHtml(scene.image || "No image") + '</div>';
+      emptyEl.innerHTML = '<span class="emoji">&#127916;</span>' +
+        '<div style="font-weight:800; font-size: 15px; margin-top:8px;">' + escapeHtml(scene.title || "Scene " + (state.selectedSceneIndex + 1)).replace(/&lt;br\s*\/?&gt;/gi, " ").replace(/<br\s*\/?>/gi, " ") + '</div>';
     }
   }
 
   if (overlayEl) {
-    overlayEl.style.display = "block";
-    overlayEl.innerHTML = '<div class="preview-title">' + (scene.title || "").replace(/&lt;br\s*\/?&gt;/gi, "<br>").replace(/<br\s*\/?>/gi, "<br>") + '</div>' +
-      '<div class="preview-subtitle">' + escapeHtml(scene.subtitle || scene.narration || "") + '</div>';
+    overlayEl.style.display = "flex";
+    
+    // HTMLエスケープ後に、<br /> や <br> を実際の改行タグに戻してテキスト被り・生タグ露出を解決
+    var cleanTitle = escapeHtml(scene.title || "")
+      .replace(/&lt;br\s*\/?&gt;/gi, "<br>")
+      .replace(/&lt;br&gt;/gi, "<br>");
+      
+    var cleanSub = escapeHtml(scene.subtitle || scene.narration || "");
+
+    overlayEl.innerHTML = '<div class="preview-title">' + cleanTitle + '</div>' +
+      '<div class="preview-subtitle">' + cleanSub + '</div>';
   }
 
   if (sceneNumEl) {
@@ -348,7 +359,7 @@ function updatePreview() {
   if (navEl) navEl.style.display = "flex";
 }
 
-/* ===== SCRIPT EDITOR ===== */
+/* ===== SCRIPT EDITOR PANEL ===== */
 
 function renderScriptEditor(scenes) {
   var container = document.getElementById("script-editor-list");
@@ -379,8 +390,8 @@ function renderScriptEditor(scenes) {
       }
 
       html += '<div class="input-group" style="margin-bottom:0;">' +
-        '<label style="color:var(--accent);">Narration</label>' +
-        '<textarea class="scene-nar-input" style="min-height:54px;" oninput="onSceneFieldChange(' + index + ', \'narration\', this.value)">' + escapeHtml(scene.narration || "") + '</textarea>' +
+        '<label style="color:var(--accent);">Narration Script</label>' +
+        '<textarea class="scene-nar-input" style="min-height:56px;" oninput="onSceneFieldChange(' + index + ', \'narration\', this.value)">' + escapeHtml(scene.narration || "") + '</textarea>' +
         '</div>';
 
       card.innerHTML = html;
@@ -397,7 +408,6 @@ window.onSceneFieldChange = function(index, field, value) {
   if (index === state.selectedSceneIndex) updatePreview();
   if (field === "narration") {
     renderTimingPanel(state.configData.scenes);
-    // Refresh timeline label calculations
     var totalEl = document.getElementById("timeline-total");
     if (totalEl) {
       var totalEst = 0;
@@ -418,7 +428,7 @@ window.syncJsonTextarea = function() {
   if (textarea) textarea.value = JSON.stringify(state.configData, null, 2);
 };
 
-/* ===== MEDIA SLOTS ===== */
+/* ===== MEDIA SLOTS (標準ボタンの隠蔽とカードタップ挙動) ===== */
 
 function extractAndRenderMediaSlots(scenes) {
   state.imageSlots.clear();
@@ -449,10 +459,12 @@ function extractAndRenderMediaSlots(scenes) {
     var safeFilename = escapeHtml(filename);
     var sceneList = slotData.scenes.map(function(n) { return "Scene " + n; }).join(", ");
 
-    slot.innerHTML = '<label class="media-slot-view">' +
-      '<div class="media-slot-placeholder icon-camera">&#128247;</div>' +
-      '<input type="file" accept="image/*" class="file-input-hidden" data-filename="' + safeFilename + '" onchange="handleSlotImageSelect(event, \'' + safeFilename + '\')">' +
-      '</label>' +
+    // 標準の <input type="file"> は非表示にして、カード全体のクリックで発火させる
+    slot.innerHTML = '<div class="media-slot-view" onclick="triggerFileInput(\'' + safeFilename + '\')">' +
+      '<div class="icon-camera">&#128247;</div>' +
+      '<span class="media-slot-placeholder-text">Tap to select photo</span>' +
+      '<input type="file" id="file-input-' + safeFilename.replace(/[^a-zA-Z0-9]/g, "_") + '" accept="image/*" style="display:none;" onchange="handleSlotImageSelect(event, \'' + safeFilename + '\')">' +
+      '</div>' +
       '<div class="media-slot-details">' +
       '<div class="media-slot-title">' + safeFilename + '</div>' +
       '<div class="media-slot-scenes-list">' + sceneList + '</div>' +
@@ -461,6 +473,12 @@ function extractAndRenderMediaSlots(scenes) {
     container.appendChild(slot);
   });
 }
+
+window.triggerFileInput = function(filename) {
+  var id = "file-input-" + filename.replace(/[^a-zA-Z0-9]/g, "_");
+  var input = document.getElementById(id);
+  if (input) input.click();
+};
 
 window.handleSlotImageSelect = function(event, slotFilename) {
   var file = event.target.files[0];
@@ -494,7 +512,7 @@ function processImageFile(file, slotFilename, slotElement) {
           var safeFilename = escapeHtml(slotFilename);
           view.innerHTML = '<img src="' + base64Data + '" alt="preview">' +
             '<div class="media-slot-checked">&#10003;</div>' +
-            '<input type="file" accept="image/*" class="file-input-hidden" data-filename="' + safeFilename + '" onchange="handleSlotImageSelect(event, \'' + safeFilename + '\')">';
+            '<input type="file" id="file-input-' + safeFilename.replace(/[^a-zA-Z0-9]/g, "_") + '" accept="image/*" style="display:none;" onchange="handleSlotImageSelect(event, \'' + safeFilename + '\')">';
         }
       }
 
@@ -503,9 +521,9 @@ function processImageFile(file, slotFilename, slotElement) {
         updatePreview();
       }
 
-      showToast("Media updated!");
+      showToast("Uploaded successfully!");
     };
-    img.onerror = function() { showAlertBanner("Invalid image file.", "error"); };
+    img.onerror = function() { showAlertBanner("Failed to load image file.", "error"); };
     img.src = e.target.result;
   };
   reader.readAsDataURL(file);
@@ -538,17 +556,17 @@ function renderTimingPanel(scenes) {
   var summary = document.createElement("div");
   summary.className = "timing-item-card total";
   summary.innerHTML = '<div class="timing-name">' +
-    'Total Estimated Duration<span>' + scenes.length + ' scenes</span>' +
+    'Total Video Duration<span>' + scenes.length + ' scenes</span>' +
     '</div>' +
     '<div class="timing-sec">~' + totalEst + 's</div>';
   container.appendChild(summary);
 }
 
-/* ===== PUSH AND VIDEO TRIGGER ===== */
+/* ===== PUSH AND VIDEO ACTIONS TRIGGER ===== */
 
 window.pushAndTriggerWorkflow = async function() {
   if (!state.configData) {
-    showAlertBanner("Please load and parse JSON first.", "error");
+    showAlertBanner("Please load JSON first.", "error");
     openModal("modal-json");
     return;
   }
@@ -569,7 +587,7 @@ window.pushAndTriggerWorkflow = async function() {
     var labelEl = pushBtn.querySelector(".btn-label");
     if (labelEl) labelEl.textContent = "Processing...";
   }
-  showAlertBanner("Pushing files to GitHub...", "info");
+  showAlertBanner("Uploading files to GitHub...", "info");
 
   try {
     syncJsonTextarea();
@@ -599,10 +617,10 @@ window.pushAndTriggerWorkflow = async function() {
 
     var result = await res.json();
     if (result.status === "ok" || result.success === true || result.workflowTriggered === true) {
-      showAlertBanner("Files pushed! Launching Actions...", "success");
+      showAlertBanner("Files uploaded! Actions triggered successfully.", "success");
       if (pushBtn) {
         var labelEl2 = pushBtn.querySelector(".btn-label");
-        if (labelEl2) labelEl2.textContent = "Triggered";
+        if (labelEl2) labelEl2.textContent = "Success";
       }
       switchToolTab("panel-status", null);
       setTimeout(function() {
@@ -610,7 +628,7 @@ window.pushAndTriggerWorkflow = async function() {
         startPollingActions();
       }, 3000);
     } else {
-      var errMsg = result.error || result.message || "Server upload error";
+      var errMsg = result.error || result.message || "Server error";
       if (result.errors && result.errors.length > 0) errMsg += " (" + result.errors.join(", ") + ")";
       throw new Error(errMsg);
     }
@@ -634,7 +652,7 @@ function startPollingActions() {
 }
 
 window.checkActionsStatus = async function(showToastOnManual) {
-  if (showToastOnManual) showAlertBanner("Fetching latest video generation status...", "info");
+  if (showToastOnManual) showAlertBanner("Loading execution logs from GitHub...", "info");
 
   try {
     var res = await fetch(state.gasUrl + "?action=status");
