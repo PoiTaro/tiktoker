@@ -1217,8 +1217,8 @@ window.checkActionsStatus = async function(showToastOnManual) {
     const res = await fetch(state.gasUrl + "?action=status");
     const data = await res.json();
 
-    if (data.status !== "ok") {
-      throw new Error(data.message || "取得に失敗しました");
+    if (data.status !== "ok" && data.success !== true) {
+      throw new Error(data.error || data.message || "取得に失敗しました");
     }
 
     const latest = data.latestRun;
@@ -1233,8 +1233,10 @@ window.checkActionsStatus = async function(showToastOnManual) {
       return;
     }
 
-    const timeStr = new Date(latest.created_at).toLocaleTimeString();
-    if (meta) meta.textContent = "開始時刻: " + timeStr + " (Run ID: #" + latest.run_number + ")";
+    const createdTime = latest.created_at || latest.updated_at || new Date().toISOString();
+    const timeStr = new Date(createdTime).toLocaleTimeString();
+    const runNum = latest.run_number || latest.id || "?";
+    if (meta) meta.textContent = "開始時刻: " + timeStr + " (Run ID: #" + runNum + ")";
 
     if (latest.status === "in_progress" || latest.status === "queued") {
       if (badge) {

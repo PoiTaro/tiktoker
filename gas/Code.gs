@@ -246,7 +246,7 @@ function triggerWorkflow(repo, workflowId, ref, inputs, token) {
 function checkActionsStatus() {
   const { token, repo } = getConfig();
   if (!token) {
-    return { success: false, error: "GITHUB_TOKEN Not Configured" };
+    return { status: "error", success: false, error: "GITHUB_TOKEN Not Configured" };
   }
 
   const headers = {
@@ -264,14 +264,14 @@ function checkActionsStatus() {
   });
 
   if (runsRes.getResponseCode() !== 200) {
-    return { success: false, error: "GitHub API Error: " + runsRes.getContentText() };
+    return { status: "error", success: false, error: "GitHub API Error (" + runsRes.getResponseCode() + "): " + runsRes.getContentText() };
   }
 
   const runsData = JSON.parse(runsRes.getContentText());
   const runs = runsData.workflow_runs || [];
 
   if (runs.length === 0) {
-    return { success: true, latestRun: null };
+    return { status: "ok", success: true, latestRun: null };
   }
 
   const latestRun = runs[0];
@@ -302,13 +302,16 @@ function checkActionsStatus() {
   }
 
   return {
+    status: "ok",
     success: true,
     latestRun: {
       id: runId,
+      run_number: latestRun.run_number || runId,
       title: title,
       status: status,
       conclusion: conclusion,
       html_url: htmlUrl,
+      created_at: latestRun.created_at || updatedAt,
       updated_at: updatedAt,
       artifacts: artifacts
     }
