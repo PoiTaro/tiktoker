@@ -3,178 +3,145 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>爆モテ STUDIO</title>
+  <title>bakumote STUDIO</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body ontouchstart="">
-
-  <!-- ===== HEADER BAR ===== -->
+  
   <header class="app-header">
-    <div class="brand-area">
+    <div class="brand">
       <div class="brand-icon">B</div>
-      <div>
-        <div class="brand-title">爆モテ STUDIO</div>
+      <div class="brand-text">
+        <h1 class="brand-title">bakumote STUDIO</h1>
         <div class="brand-subtitle">VIDEO EDITOR</div>
       </div>
     </div>
-    <div class="header-actions">
-      <button class="btn-icon" id="btn-toggle-config" onclick="toggleConfigCard()" title="設定">&#9881;</button>
-    </div>
+    <button class="icon-btn" onclick="toggleConfigCard()" title="Settings">&#9881;</button>
   </header>
 
-  <!-- ===== ALERT BANNER ===== -->
-  <div id="alert-banner"></div>
+  <div id="alert-banner" style="display: none;"></div>
 
-  <!-- ===== GAS CONFIG (hidden accordion) ===== -->
-  <div class="config-card hidden" id="config-card">
-    <div class="config-title">&#9881; GAS Backend</div>
-    <div class="config-desc">Google Apps Script deploy URL</div>
-    <div class="form-group">
-      <label class="form-label" for="input-gas-url">GAS URL</label>
-      <input type="text" id="input-gas-url" class="form-input" value="https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec">
-    </div>
-    <div class="action-row" style="margin-bottom:0;">
-      <button class="btn btn-accent btn-sm" onclick="saveAndTestGasUrl()">Save & Test</button>
-      <button class="btn btn-outline btn-sm" onclick="toggleConfigCard(false)">Close</button>
+  <div id="config-card" class="config-card hidden">
+    <h3>Configuration</h3>
+    <label for="input-gas-url">GAS Web App URL:</label>
+    <input type="text" id="input-gas-url" value="https://script.google.com/macros/s/AKfycbzppl0o5kMi7-4yjtwlCPGdVucFpgDaq3l48ihgTaaQ9cyDeSQr37JGSeK5BkzCDE4L/exec">
+    <div class="card-actions">
+      <button onclick="saveConfig()">Save & Test</button>
+      <button onclick="toggleConfigCard()">Close</button>
     </div>
   </div>
 
-  <!-- ===== PREVIEW AREA ===== -->
-  <div class="preview-container" id="preview-container">
-    <div class="preview-placeholder-msg" id="preview-empty">
-      <div style="font-size:40px; margin-bottom:8px;">&#127916;</div>
-      <div>JSON を読み込むと<br>ここにプレビューが表示されます</div>
+  <section id="preview-container" class="preview-container">
+    <div id="preview-empty">
+      <span class="emoji">&#127902;</span> JSONを読み込むとプレビュー表示
     </div>
-    <img class="preview-image" id="preview-image" src="" alt="" style="display:none;">
-    <div class="preview-overlay" id="preview-overlay" style="display:none;">
-      <div class="preview-title" id="preview-title"></div>
-      <div class="preview-subtitle" id="preview-subtitle"></div>
+    <img id="preview-image" src="" alt="Scene Preview" style="display: none;">
+    <div id="preview-overlay" style="display: none;"></div>
+    <div id="preview-scene-num" style="display: none;"></div>
+    <div id="preview-duration" style="display: none;"></div>
+    <div id="preview-nav" style="display: none;">
+      <button class="nav-btn" onclick="navigateScene(-1)">&#9664;</button>
+      <button class="nav-btn" onclick="navigateScene(1)">&#9654;</button>
     </div>
-    <div class="preview-scene-indicator" id="preview-scene-num" style="display:none;">Scene 1/10</div>
-    <div class="preview-duration-indicator" id="preview-duration" style="display:none;">&#128266; --s</div>
-    <div class="preview-nav" id="preview-nav" style="display:none;">
-      <button class="preview-nav-btn" onclick="navigateScene(-1)">&#9664;</button>
-      <button class="preview-nav-btn" onclick="navigateScene(1)">&#9654;</button>
-    </div>
-  </div>
+  </section>
 
-  <!-- ===== TIMELINE BAR ===== -->
-  <div class="timeline-section" id="timeline-section" style="display:none;">
+  <section id="timeline-section" class="timeline-section" style="display: none;">
     <div class="timeline-header">
-      <span>TIMELINE</span>
-      <span class="timeline-total-duration" id="timeline-total">0 scenes</span>
+      <span class="timeline-label">TIMELINE</span>
+      <span id="timeline-total" class="timeline-total">0.0s</span>
     </div>
-    <div class="timeline-scroll" id="timeline-scroll"></div>
-  </div>
+    <div id="timeline-scroll" class="timeline-scroll"></div>
+  </section>
 
-  <!-- ===== TOOL TABS ===== -->
-  <div class="tool-tabs" id="tool-tabs" style="display:none;">
-    <button class="tool-tab active" data-panel="panel-script" onclick="switchToolTab('panel-script', this)">
-      <span class="tool-tab-icon">&#9997;</span>
-      <span>&#12475;&#12522;&#12501;</span>
-    </button>
-    <button class="tool-tab" data-panel="panel-media" onclick="switchToolTab('panel-media', this)">
-      <span class="tool-tab-icon">&#128247;</span>
-      <span>&#32032;&#26448;</span>
-    </button>
-    <button class="tool-tab" data-panel="panel-timing" onclick="switchToolTab('panel-timing', this)">
-      <span class="tool-tab-icon">&#9202;</span>
-      <span>&#23610;</span>
-    </button>
-    <button class="tool-tab" data-panel="panel-status" onclick="switchToolTab('panel-status', this)">
-      <span class="tool-tab-icon">&#128640;</span>
-      <span>&#29983;&#25104;</span>
-    </button>
-  </div>
+  <section id="tool-tabs" class="tool-tabs" style="display: none;">
+    <div class="tool-tabs-container">
+      <button class="tab-btn active" onclick="switchToolTab('panel-script', this)">
+        <span class="tab-icon">&#9999;</span> Script
+      </button>
+      <button class="tab-btn" onclick="switchToolTab('panel-media', this)">
+        <span class="tab-icon">&#128247;</span> Media
+      </button>
+      <button class="tab-btn" onclick="switchToolTab('panel-timing', this)">
+        <span class="tab-icon">&#128338;</span> Timing
+      </button>
+      <button class="tab-btn" onclick="switchToolTab('panel-status', this)">
+        <span class="tab-icon">&#128640;</span> Export
+      </button>
+    </div>
+  </section>
 
-  <!-- ===== EDITOR PANELS ===== -->
-
-  <!-- Panel: Script (セリフ・字幕) -->
-  <div class="editor-panel active" id="panel-script">
-    <div id="script-editor-list"></div>
-  </div>
-
-  <!-- Panel: Media (画像スロット) -->
-  <div class="editor-panel" id="panel-media">
-    <div class="media-grid" id="media-slot-grid">
-      <div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted); font-size:13px;">
-        JSON&#12434;&#35501;&#12415;&#36796;&#12416;&#12392;&#30011;&#20687;&#12473;&#12525;&#12483;&#12488;&#12364;&#34920;&#31034;&#12373;&#12428;&#12414;&#12377;
+  <section id="editor-panels">
+    <div id="panel-script" class="editor-panel active">
+      <div id="script-editor-list"></div>
+    </div>
+    
+    <div id="panel-media" class="editor-panel">
+      <div class="media-grid" id="media-slot-grid">
+        <p class="placeholder-text">Media slots will appear here after parsing JSON.</p>
       </div>
     </div>
-  </div>
-
-  <!-- Panel: Timing (尺・タイミング設定) -->
-  <div class="editor-panel" id="panel-timing">
-    <div id="timing-editor-list"></div>
-  </div>
-
-  <!-- Panel: Status (プッシュ & Actions監視) -->
-  <div class="editor-panel" id="panel-status">
-    <div class="status-card">
-      <div class="status-badge" id="status-badge" style="background:var(--bg-elevated); color:var(--text-muted);">STANDBY</div>
-      <div class="status-title" id="status-title">JSON &#12434;&#35501;&#12415;&#36796;&#12435;&#12391;&#12503;&#12483;&#12471;&#12517;&#12375;&#12390;&#12367;&#12384;&#12373;&#12356;</div>
-      <div class="status-meta" id="status-meta"></div>
-      <button class="btn btn-outline btn-sm" onclick="checkActionsStatus(true)" style="margin-top:4px;">
-        &#128260; &#12473;&#12486;&#12540;&#12479;&#12473;&#26356;&#26032;
-      </button>
-      <div class="artifact-list" id="artifact-list-area"></div>
+    
+    <div id="panel-timing" class="editor-panel">
+      <div id="timing-editor-list"></div>
     </div>
-  </div>
+    
+    <div id="panel-status" class="editor-panel">
+      <div class="status-card">
+        <div id="status-badge" class="status-badge">UNKNOWN</div>
+        <h3 id="status-title">Status Check</h3>
+        <p id="status-meta">No actions currently running.</p>
+        <button class="primary-btn" onclick="checkActionsStatus(true)">Check Status</button>
+        <div id="artifact-list-area"></div>
+      </div>
+    </div>
+  </section>
 
-  <!-- ===== JSON LOAD MODAL (Bottom Sheet) ===== -->
-  <div class="modal-overlay" id="modal-json">
+  <div id="modal-json" class="modal-overlay" style="display: none;">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
-      <div class="modal-title">&#128196; JSON &#35501;&#12415;&#36796;&#12415;</div>
-      <div class="action-row">
-        <button class="btn btn-accent" onclick="pasteFromClipboard()">&#128203; &#12463;&#12522;&#12483;&#12503;&#12508;&#12540;&#12489;</button>
-        <label class="btn btn-outline" style="cursor:pointer;">
-          &#128193; &#12501;&#12449;&#12452;&#12523;
-          <input type="file" id="input-json-file" accept=".json" class="file-input-hidden" onchange="handleFileSelect(event)">
-        </label>
+      <h3>Load JSON</h3>
+      <div class="modal-actions-top">
+        <button onclick="pasteFromClipboard()">&#128464; Paste</button>
+        <button onclick="document.getElementById('file-upload-json').click()">&#128193; File</button>
+        <input type="file" id="file-upload-json" accept=".json" style="display: none;" onchange="handleFileUpload(event)">
       </div>
-      <div class="form-group">
-        <label class="form-label" for="textarea-json-raw">JSON (Gem&#12398;&#20986;&#21147;&#12434;&#12381;&#12398;&#12414;&#12414;&#36028;&#12426;&#20184;&#12369;)</label>
-        <textarea id="textarea-json-raw" class="form-textarea" style="min-height:140px; font-family:monospace; font-size:12px;" placeholder="JSON&#12434;&#36028;&#12426;&#20184;&#12369;..."></textarea>
+      <textarea id="textarea-json-raw" placeholder="Paste JSON here..."></textarea>
+      
+      <div class="input-group">
+        <label for="meta-json-filename">JSON Filename:</label>
+        <input type="text" id="meta-json-filename" value="video_config_custom.json">
       </div>
-      <div class="form-group">
-        <label class="form-label">&#20986;&#21147;&#12501;&#12449;&#12452;&#12523;&#21517;</label>
-        <input type="text" id="meta-json-filename" class="form-input" value="video_config_custom.json">
+      
+      <div class="input-group">
+        <label for="meta-output-filename">MP4 Filename:</label>
+        <input type="text" id="meta-output-filename" value="output_custom.mp4">
       </div>
-      <div class="form-group">
-        <label class="form-label">MP4&#12501;&#12449;&#12452;&#12523;&#21517;</label>
-        <input type="text" id="meta-output-filename" class="form-input" value="output_custom.mp4">
+      
+      <div class="modal-actions-bottom">
+        <button id="btn-parse-json" class="primary-btn" onclick="parseAndRenderJson()">Parse & Render</button>
+        <button class="secondary-btn" onclick="closeModal('modal-json')">Cancel</button>
       </div>
-      <button class="btn btn-accent btn-block" id="btn-parse-json" onclick="parseAndRenderJson()" style="font-size:15px; padding:14px; font-weight:800;">
-        &#9889; &#35299;&#26512;&#12375;&#12390;&#12479;&#12452;&#12512;&#12521;&#12452;&#12531;&#12434;&#29983;&#25104;
-      </button>
-      <button class="btn btn-outline btn-block" onclick="closeModal('modal-json')" style="margin-top:8px;">&#12461;&#12515;&#12531;&#12475;&#12523;</button>
     </div>
   </div>
 
-  <!-- ===== BOTTOM ACTION BAR ===== -->
-  <div class="bottom-bar">
-    <button class="bar-btn bar-btn-default" onclick="openModal('modal-json')">
-      <span class="bar-btn-icon">&#128196;</span>
-      <span>JSON</span>
+  <nav class="bottom-bar">
+    <button class="bottom-btn" onclick="openModal('modal-json')">
+      <span class="btn-icon">&#128196;</span>
+      <span class="btn-label">JSON</span>
     </button>
-    <button class="bar-btn bar-btn-accent" id="btn-push-trigger" onclick="pushAndTriggerWorkflow()">
-      <span class="bar-btn-icon">&#128640;</span>
-      <span>&#29983;&#25104;&#38283;&#22987;</span>
+    <button id="btn-push-trigger" class="bottom-btn generate-btn" onclick="pushAndTriggerWorkflow()">
+      <span class="btn-icon">&#127909;</span>
+      <span class="btn-label">Generate</span>
     </button>
-    <button class="bar-btn bar-btn-default" onclick="switchToolTab('panel-status', null); checkActionsStatus(true)">
-      <span class="bar-btn-icon">&#128202;</span>
-      <span>&#30435;&#35222;</span>
+    <button class="bottom-btn" onclick="switchToolTab('panel-status', null); checkActionsStatus(true)">
+      <span class="btn-icon">&#128225;</span>
+      <span class="btn-label">Monitor</span>
     </button>
-  </div>
+  </nav>
 
-  <!-- Hidden fields for backward compat -->
   <input type="hidden" id="meta-title" value="">
+  <div id="toast" style="display: none;"></div>
 
-  <!-- ===== TOAST ===== -->
-  <div id="toast"></div>
-
-  <!-- ===== SCRIPT ===== -->
   <script src="app.js"></script>
 </body>
 </html>

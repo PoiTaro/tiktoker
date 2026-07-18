@@ -1,11 +1,11 @@
 /**
- * bakumote STUDIO - CapCut-style Video Editor Controller
- * GAS sandbox safe: NO backticks, NO template literals, NO arrow functions in critical paths
+ * bakumote STUDIO - Premium Apple Design compliant script
+ * GAS sandbox safe: NO backticks (`), NO template literals, NO arrow functions in code
  */
 
 window.addEventListener("error", function(e) {
   console.error("Global Error:", e.error || e.message);
-  showAlertBanner("画面エラー: " + (e.message || ""), "error");
+  showAlertBanner("Error: " + (e.message || ""), "error");
 });
 
 var state = {
@@ -29,11 +29,11 @@ function showAlertBanner(msg, type) {
   if (!banner) return;
   banner.style.display = "block";
   if (type === "error") {
-    banner.style.backgroundColor = "#FEE2E2"; banner.style.color = "#991B1B"; banner.style.border = "1px solid #F87171";
+    banner.style.backgroundColor = "#ffefe5"; banner.style.color = "#ff3b30"; banner.style.border = "0.5px solid rgba(255,59,48,0.3)";
   } else if (type === "success") {
-    banner.style.backgroundColor = "#D1FAE5"; banner.style.color = "#065F46"; banner.style.border = "1px solid #34D399";
+    banner.style.backgroundColor = "#eafaf1"; banner.style.color = "#10b981"; banner.style.border = "0.5px solid rgba(16,185,129,0.3)";
   } else {
-    banner.style.backgroundColor = "#DBEAFE"; banner.style.color = "#1E40AF"; banner.style.border = "1px solid #60A5FA";
+    banner.style.backgroundColor = "#e8f4ff"; banner.style.color = "#007aff"; banner.style.border = "0.5px solid rgba(0,122,255,0.3)";
   }
   banner.innerHTML = msg;
 }
@@ -42,8 +42,12 @@ function showToast(msg) {
   var toast = document.getElementById("toast");
   if (!toast) return;
   toast.textContent = msg;
+  toast.style.display = "block";
   toast.classList.add("show");
-  setTimeout(function() { toast.classList.remove("show"); }, 3200);
+  setTimeout(function() {
+    toast.classList.remove("show");
+    setTimeout(function() { toast.style.display = "none"; }, 300);
+  }, 2500);
 }
 
 function escapeHtml(str) {
@@ -51,65 +55,73 @@ function escapeHtml(str) {
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-/* ===== MODAL ===== */
+/* ===== MODAL & CONFIG ===== */
 
 window.openModal = function(id) {
-  var el = document.getElementById(id);
-  if (el) el.classList.add("active");
+  var modal = document.getElementById(id);
+  if (modal) {
+    modal.style.display = "flex";
+  }
 };
 
 window.closeModal = function(id) {
-  var el = document.getElementById(id);
-  if (el) el.classList.remove("active");
+  var modal = document.getElementById(id);
+  if (modal) {
+    modal.style.display = "none";
+  }
 };
 
-/* ===== CONFIG ===== */
-
-window.toggleConfigCard = function(forceShow) {
+window.toggleConfigCard = function() {
   var card = document.getElementById("config-card");
-  if (!card) return;
-  if (typeof forceShow === "boolean") {
-    forceShow ? card.classList.remove("hidden") : card.classList.add("hidden");
-  } else {
+  if (card) {
     card.classList.toggle("hidden");
   }
 };
 
-window.saveAndTestGasUrl = async function() {
+window.saveConfig = async function() {
   var urlInput = document.getElementById("input-gas-url");
   var url = urlInput ? urlInput.value.trim() : "";
-  if (!url) { showAlertBanner("URL required", "error"); return; }
+  if (!url) { showAlertBanner("URL is required.", "error"); return; }
   localStorage.setItem("bakumote_gas_url", url);
   state.gasUrl = url;
-  showAlertBanner("Connecting...", "info");
+  showAlertBanner("Testing connection...", "info");
   try {
     var res = await fetch(url + "?action=test");
     var data = await res.json();
     if (data.status === "ok") {
-      showAlertBanner("Connected!", "success");
-      setTimeout(function() { toggleConfigCard(false); }, 1500);
-    } else { showAlertBanner("Connection failed", "error"); }
-  } catch (err) { showAlertBanner("Connection error", "error"); }
+      showAlertBanner("Connected successfully!", "success");
+      setTimeout(function() { toggleConfigCard(); }, 1500);
+    } else {
+      showAlertBanner("Connection failed. Bad server response.", "error");
+    }
+  } catch (err) {
+    showAlertBanner("Connection failed. Please check the URL.", "error");
+  }
 };
 
-/* ===== TOOL TABS ===== */
+/* ===== TABS ===== */
 
 window.switchToolTab = function(panelId, btnElem) {
-  var tabs = document.querySelectorAll(".tool-tab");
+  var tabs = document.querySelectorAll(".tab-btn");
   var panels = document.querySelectorAll(".editor-panel");
   for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
   for (var j = 0; j < panels.length; j++) panels[j].classList.remove("active");
-  if (btnElem) btnElem.classList.add("active");
-  else {
+  
+  if (btnElem) {
+    btnElem.classList.add("active");
+  } else {
     for (var k = 0; k < tabs.length; k++) {
-      if (tabs[k].getAttribute("data-panel") === panelId) { tabs[k].classList.add("active"); break; }
+      if (tabs[k].getAttribute("onclick").indexOf(panelId) !== -1) {
+        tabs[k].classList.add("active");
+        break;
+      }
     }
   }
   var panel = document.getElementById(panelId);
   if (panel) panel.classList.add("active");
 };
 
-/* ===== CLIPBOARD & FILE ===== */
+/* ===== FILE UPLOADER & CLIPBOARD ===== */
 
 window.pasteFromClipboard = async function() {
   try {
@@ -117,28 +129,30 @@ window.pasteFromClipboard = async function() {
     if (text) {
       var ta = document.getElementById("textarea-json-raw");
       if (ta) ta.value = text;
-      showAlertBanner("Pasted! Auto-parsing...", "info");
+      showAlertBanner("Pasted from clipboard! Parsing...", "info");
       setTimeout(window.parseAndRenderJson, 300);
-    } else { showAlertBanner("Clipboard empty", "error"); }
+    } else {
+      showAlertBanner("Clipboard is empty.", "error");
+    }
   } catch (err) {
-    showAlertBanner("Paste failed. Please paste manually.", "error");
+    showAlertBanner("Clipboard access rejected. Please paste manually into the textarea.", "error");
   }
 };
 
-window.handleFileSelect = function(event) {
+window.handleFileUpload = function(event) {
   var file = event.target.files[0];
   if (!file) return;
   var reader = new FileReader();
   reader.onload = function(e) {
     var ta = document.getElementById("textarea-json-raw");
     if (ta) ta.value = e.target.result;
-    showAlertBanner("File loaded! Auto-parsing...", "info");
+    showAlertBanner("File loaded! Parsing...", "info");
     setTimeout(window.parseAndRenderJson, 300);
   };
   reader.readAsText(file);
 };
 
-/* ===== JSON PARSE & RENDER ===== */
+/* ===== JSON PARSER & RENDERING ===== */
 
 window.parseAndRenderJson = function() {
   var btn = document.getElementById("btn-parse-json");
@@ -148,8 +162,8 @@ window.parseAndRenderJson = function() {
   var rawText = textarea ? textarea.value.trim() : "";
 
   if (!rawText) {
-    if (btn) btn.textContent = "Parse & Generate Timeline";
-    showAlertBanner("Empty! Paste JSON first.", "error");
+    if (btn) btn.textContent = "Parse & Render";
+    showAlertBanner("No JSON data provided.", "error");
     return;
   }
 
@@ -185,22 +199,22 @@ window.parseAndRenderJson = function() {
     renderTimingPanel(data.scenes || []);
     updatePreview();
 
-    // Show hidden sections
+    // Reveal elements
     var tl = document.getElementById("timeline-section");
     if (tl) tl.style.display = "block";
     var tt = document.getElementById("tool-tabs");
     if (tt) tt.style.display = "flex";
 
-    if (btn) btn.textContent = "Parse & Generate Timeline";
+    if (btn) btn.textContent = "Parse & Render";
     closeModal("modal-json");
 
-    showAlertBanner(state.sceneCount + " scenes loaded! Timeline ready.", "success");
-    showToast("Timeline generated!");
+    showAlertBanner("Parsed " + state.sceneCount + " scenes successfully!", "success");
+    showToast("Editor generated!");
 
     if (textarea) textarea.value = JSON.stringify(data, null, 2);
   } catch (err) {
-    if (btn) btn.textContent = "Parse & Generate Timeline";
-    showAlertBanner("JSON Error: " + err.message, "error");
+    if (btn) btn.textContent = "Parse & Render";
+    showAlertBanner("JSON Parse Error: " + err.message, "error");
   }
 };
 
@@ -212,32 +226,37 @@ function renderTimeline(scenes) {
   if (!scroll) return;
   scroll.innerHTML = "";
 
-  if (totalEl) totalEl.textContent = scenes.length + " scenes";
+  var totalEst = 0;
 
   for (var i = 0; i < scenes.length; i++) {
     var scene = scenes[i];
-    var block = document.createElement("div");
-    block.className = "timeline-block" + (i === state.selectedSceneIndex ? " active" : "");
-    block.setAttribute("data-index", i);
-    block.style.width = Math.max(52, Math.min(120, 52 + (scene.narration || "").length)) + "px";
+    var card = document.createElement("div");
+    card.className = "timeline-card" + (i === state.selectedSceneIndex ? " active" : "");
+    card.setAttribute("data-index", i);
+
+    var charCount = (scene.narration || "").length;
+    var estSec = Math.max(2, Math.round(charCount * 0.12));
+    totalEst += estSec;
 
     var slotData = scene.image ? state.imageSlots.get(scene.image) : null;
     var hasPreview = slotData && slotData.base64;
 
     if (hasPreview) {
-      block.innerHTML = '<img class="timeline-block-bg" src="' + slotData.base64 + '" alt="">' +
-        '<div class="timeline-block-label">S' + (i + 1) + '</div>';
+      card.innerHTML = '<img src="' + slotData.base64 + '" alt="">' +
+        '<div class="timeline-label-num">S' + (i + 1) + '</div>';
     } else {
-      block.innerHTML = '<div class="timeline-block-no-img">' + getSceneEmoji(scene.type) + '</div>' +
-        '<div class="timeline-block-label">S' + (i + 1) + '</div>';
+      card.innerHTML = '<div class="timeline-card-empty">' + getSceneEmoji(scene.type) + '</div>' +
+        '<div class="timeline-label-num">S' + (i + 1) + '</div>';
     }
 
-    block.addEventListener("click", (function(idx) {
+    card.addEventListener("click", (function(idx) {
       return function() { selectScene(idx); };
     })(i));
 
-    scroll.appendChild(block);
+    scroll.appendChild(card);
   }
+
+  if (totalEl) totalEl.textContent = totalEst.toFixed(1) + "s (" + scenes.length + " scenes)";
 }
 
 function getSceneEmoji(type) {
@@ -258,24 +277,21 @@ window.selectScene = function(index) {
   if (index >= state.sceneCount) index = 0;
   state.selectedSceneIndex = index;
 
-  // Update timeline highlights
-  var blocks = document.querySelectorAll(".timeline-block");
-  for (var i = 0; i < blocks.length; i++) {
-    blocks[i].classList.toggle("active", i === index);
+  var cards = document.querySelectorAll(".timeline-card");
+  for (var i = 0; i < cards.length; i++) {
+    cards[i].classList.toggle("active", i === index);
   }
 
-  // Scroll timeline block into view
-  if (blocks[index]) {
-    blocks[index].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-  }
-
-  // Update script card highlights
-  var cards = document.querySelectorAll(".script-card");
-  for (var j = 0; j < cards.length; j++) {
-    cards[j].classList.toggle("selected", j === index);
-  }
   if (cards[index]) {
-    cards[index].scrollIntoView({ behavior: "smooth", block: "nearest" });
+    cards[index].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }
+
+  var scriptCards = document.querySelectorAll(".script-editor-card");
+  for (var j = 0; j < scriptCards.length; j++) {
+    scriptCards[j].classList.toggle("selected", j === index);
+  }
+  if (scriptCards[index]) {
+    scriptCards[index].scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   updatePreview();
@@ -293,13 +309,10 @@ function updatePreview() {
   var imgEl = document.getElementById("preview-image");
   var emptyEl = document.getElementById("preview-empty");
   var overlayEl = document.getElementById("preview-overlay");
-  var titleEl = document.getElementById("preview-title");
-  var subEl = document.getElementById("preview-subtitle");
   var sceneNumEl = document.getElementById("preview-scene-num");
   var durEl = document.getElementById("preview-duration");
   var navEl = document.getElementById("preview-nav");
 
-  // Show image if available
   var slotData = scene.image ? state.imageSlots.get(scene.image) : null;
   if (slotData && slotData.base64) {
     if (imgEl) { imgEl.src = slotData.base64; imgEl.style.display = "block"; }
@@ -307,30 +320,29 @@ function updatePreview() {
   } else {
     if (imgEl) imgEl.style.display = "none";
     if (emptyEl) {
-      emptyEl.style.display = "block";
-      emptyEl.innerHTML = '<div style="font-size:40px; margin-bottom:8px;">' + getSceneEmoji(scene.type) + '</div>' +
-        '<div style="font-weight:700; font-size:14px;">' + escapeHtml(scene.title || "Scene " + (state.selectedSceneIndex + 1)) + '</div>' +
-        '<div style="margin-top:4px; font-size:12px;">' + escapeHtml(scene.image || "No image") + '</div>';
+      emptyEl.style.display = "flex";
+      emptyEl.innerHTML = '<span class="emoji">' + getSceneEmoji(scene.type) + '</span>' +
+        '<div style="font-weight:700; margin-top:4px;">' + escapeHtml(scene.title || "Scene " + (state.selectedSceneIndex + 1)) + '</div>' +
+        '<div style="font-size:11px; opacity:0.7; margin-top:2px;">' + escapeHtml(scene.image || "No image") + '</div>';
     }
   }
 
-  // Overlay text
-  if (overlayEl) overlayEl.style.display = "block";
-  if (titleEl) titleEl.innerHTML = (scene.title || "").replace(/&lt;br\s*\/?&gt;/gi, "<br>").replace(/<br\s*\/?>/gi, "<br>");
-  if (subEl) subEl.textContent = scene.subtitle || scene.narration || "";
+  if (overlayEl) {
+    overlayEl.style.display = "block";
+    overlayEl.innerHTML = '<div class="preview-title">' + (scene.title || "").replace(/&lt;br\s*\/?&gt;/gi, "<br>").replace(/<br\s*\/?>/gi, "<br>") + '</div>' +
+      '<div class="preview-subtitle">' + escapeHtml(scene.subtitle || scene.narration || "") + '</div>';
+  }
 
-  // Scene indicator
   if (sceneNumEl) {
     sceneNumEl.style.display = "block";
     sceneNumEl.textContent = "Scene " + (state.selectedSceneIndex + 1) + "/" + state.sceneCount;
   }
 
-  // Duration
   if (durEl) {
     durEl.style.display = "block";
     var charCount = (scene.narration || "").length;
     var estSec = Math.max(2, Math.round(charCount * 0.12));
-    durEl.textContent = "~" + estSec + "s";
+    durEl.textContent = estSec + "s";
   }
 
   if (navEl) navEl.style.display = "flex";
@@ -346,33 +358,32 @@ function renderScriptEditor(scenes) {
   for (var i = 0; i < scenes.length; i++) {
     (function(scene, index) {
       var card = document.createElement("div");
-      card.className = "script-card" + (index === state.selectedSceneIndex ? " selected" : "");
+      card.className = "script-editor-card" + (index === state.selectedSceneIndex ? " selected" : "");
       card.setAttribute("data-scene-index", index);
 
       var html = '<div class="script-card-header">' +
-        '<span class="script-scene-badge">Scene ' + (index + 1) + '</span>' +
-        '<span class="script-scene-type">' + escapeHtml(scene.type || "standard") + '</span>' +
+        '<span class="scene-num-badge">Scene ' + (index + 1) + '</span>' +
+        '<span class="scene-type-badge">' + escapeHtml(scene.type || "standard") + '</span>' +
         '</div>';
 
-      html += '<div class="form-group">' +
-        '<label class="form-label">Title</label>' +
-        '<input type="text" class="form-input scene-title-input" value="' + escapeHtml(scene.title || "") + '" oninput="onSceneFieldChange(' + index + ', \'title\', this.value)">' +
+      html += '<div class="input-group">' +
+        '<label>Title</label>' +
+        '<input type="text" class="scene-title-input" value="' + escapeHtml(scene.title || "") + '" oninput="onSceneFieldChange(' + index + ', \'title\', this.value)">' +
         '</div>';
 
       if (scene.subtitle !== undefined) {
-        html += '<div class="form-group">' +
-          '<label class="form-label">Subtitle</label>' +
-          '<input type="text" class="form-input scene-sub-input" value="' + escapeHtml(scene.subtitle || "") + '" oninput="onSceneFieldChange(' + index + ', \'subtitle\', this.value)">' +
+        html += '<div class="input-group">' +
+          '<label>Subtitle</label>' +
+          '<input type="text" class="scene-sub-input" value="' + escapeHtml(scene.subtitle || "") + '" oninput="onSceneFieldChange(' + index + ', \'subtitle\', this.value)">' +
           '</div>';
       }
 
-      html += '<div class="form-group" style="margin-bottom:0;">' +
-        '<label class="form-label" style="color:var(--accent);">Narration</label>' +
-        '<textarea class="form-textarea scene-nar-input" style="min-height:60px;" oninput="onSceneFieldChange(' + index + ', \'narration\', this.value)">' + escapeHtml(scene.narration || "") + '</textarea>' +
+      html += '<div class="input-group" style="margin-bottom:0;">' +
+        '<label style="color:var(--accent);">Narration</label>' +
+        '<textarea class="scene-nar-input" style="min-height:54px;" oninput="onSceneFieldChange(' + index + ', \'narration\', this.value)">' + escapeHtml(scene.narration || "") + '</textarea>' +
         '</div>';
 
       card.innerHTML = html;
-
       card.addEventListener("click", function() { selectScene(index); });
       container.appendChild(card);
     })(scenes[i], i);
@@ -384,7 +395,19 @@ window.onSceneFieldChange = function(index, field, value) {
   state.configData.scenes[index][field] = value;
   syncJsonTextarea();
   if (index === state.selectedSceneIndex) updatePreview();
-  if (field === "narration") renderTimingPanel(state.configData.scenes);
+  if (field === "narration") {
+    renderTimingPanel(state.configData.scenes);
+    // Refresh timeline label calculations
+    var totalEl = document.getElementById("timeline-total");
+    if (totalEl) {
+      var totalEst = 0;
+      for (var i = 0; i < state.configData.scenes.length; i++) {
+        var charCount = (state.configData.scenes[i].narration || "").length;
+        totalEst += Math.max(2, Math.round(charCount * 0.12));
+      }
+      totalEl.textContent = totalEst.toFixed(1) + "s (" + state.sceneCount + " scenes)";
+    }
+  }
 };
 
 window.syncJsonTextarea = function() {
@@ -416,23 +439,23 @@ function extractAndRenderMediaSlots(scenes) {
   container.innerHTML = "";
 
   if (state.imageSlots.size === 0) {
-    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted); font-size:13px;">No image slots required</div>';
+    container.innerHTML = '<p class="placeholder-text">No media slots required for this JSON.</p>';
     return;
   }
 
   state.imageSlots.forEach(function(slotData, filename) {
     var slot = document.createElement("div");
-    slot.className = "media-slot";
+    slot.className = "media-slot-item";
     var safeFilename = escapeHtml(filename);
-    var sceneList = slotData.scenes.map(function(n) { return "S" + n; }).join(", ");
+    var sceneList = slotData.scenes.map(function(n) { return "Scene " + n; }).join(", ");
 
-    slot.innerHTML = '<label class="media-slot-preview">' +
-      '<div class="media-slot-placeholder">&#128247;</div>' +
+    slot.innerHTML = '<label class="media-slot-view">' +
+      '<div class="media-slot-placeholder icon-camera">&#128247;</div>' +
       '<input type="file" accept="image/*" class="file-input-hidden" data-filename="' + safeFilename + '" onchange="handleSlotImageSelect(event, \'' + safeFilename + '\')">' +
       '</label>' +
-      '<div class="media-slot-info">' +
-      '<div class="media-slot-name">' + safeFilename + '</div>' +
-      '<div class="media-slot-scenes">' + sceneList + '</div>' +
+      '<div class="media-slot-details">' +
+      '<div class="media-slot-title">' + safeFilename + '</div>' +
+      '<div class="media-slot-scenes-list">' + sceneList + '</div>' +
       '</div>';
 
     container.appendChild(slot);
@@ -442,7 +465,7 @@ function extractAndRenderMediaSlots(scenes) {
 window.handleSlotImageSelect = function(event, slotFilename) {
   var file = event.target.files[0];
   if (!file) return;
-  var slotEl = event.target.closest(".media-slot");
+  var slotEl = event.target.closest(".media-slot-item");
   processImageFile(file, slotFilename, slotEl);
 };
 
@@ -465,26 +488,24 @@ function processImageFile(file, slotFilename, slotElement) {
       var slot = state.imageSlots.get(slotFilename);
       if (slot) slot.base64 = base64Data;
 
-      // Update slot card
       if (slotElement) {
-        var preview = slotElement.querySelector(".media-slot-preview");
-        if (preview) {
+        var view = slotElement.querySelector(".media-slot-view");
+        if (view) {
           var safeFilename = escapeHtml(slotFilename);
-          preview.innerHTML = '<img src="' + base64Data + '" alt="preview">' +
-            '<div class="media-slot-check">&#10003;</div>' +
+          view.innerHTML = '<img src="' + base64Data + '" alt="preview">' +
+            '<div class="media-slot-checked">&#10003;</div>' +
             '<input type="file" accept="image/*" class="file-input-hidden" data-filename="' + safeFilename + '" onchange="handleSlotImageSelect(event, \'' + safeFilename + '\')">';
         }
       }
 
-      // Refresh timeline & preview
       if (state.configData) {
         renderTimeline(state.configData.scenes || []);
         updatePreview();
       }
 
-      showToast(slotFilename + " set!");
+      showToast("Media updated!");
     };
-    img.onerror = function() { showAlertBanner("Image load failed", "error"); };
+    img.onerror = function() { showAlertBanner("Invalid image file.", "error"); };
     img.src = e.target.result;
   };
   reader.readAsDataURL(file);
@@ -506,38 +527,28 @@ function renderTimingPanel(scenes) {
     totalEst += estSec;
 
     var card = document.createElement("div");
-    card.className = "timing-info-card";
-    card.innerHTML = '<div class="timing-row">' +
-      '<span class="timing-label">Scene ' + (i + 1) + ' (' + escapeHtml(scene.type || "std") + ')</span>' +
-      '<span class="timing-value">~' + estSec + 's</span>' +
+    card.className = "timing-item-card";
+    card.innerHTML = '<div class="timing-name">' +
+      'Scene ' + (i + 1) + '<span>' + escapeHtml(scene.type || "std") + '</span>' +
       '</div>' +
-      '<div class="timing-row">' +
-      '<span class="timing-label">Narration chars</span>' +
-      '<span class="timing-value">' + charCount + '</span>' +
-      '</div>';
+      '<div class="timing-sec">~' + estSec + 's</div>';
     container.appendChild(card);
   }
 
-  // Total summary
   var summary = document.createElement("div");
-  summary.className = "timing-info-card";
-  summary.style.borderColor = "var(--accent)";
-  summary.innerHTML = '<div class="timing-row">' +
-    '<span class="timing-label" style="font-weight:800;">Total estimated</span>' +
-    '<span class="timing-value" style="font-size:18px;">~' + totalEst + 's</span>' +
+  summary.className = "timing-item-card total";
+  summary.innerHTML = '<div class="timing-name">' +
+    'Total Estimated Duration<span>' + scenes.length + ' scenes</span>' +
     '</div>' +
-    '<div class="timing-row">' +
-    '<span class="timing-label">Scenes</span>' +
-    '<span class="timing-value">' + scenes.length + '</span>' +
-    '</div>';
+    '<div class="timing-sec">~' + totalEst + 's</div>';
   container.appendChild(summary);
 }
 
-/* ===== PUSH & TRIGGER ===== */
+/* ===== PUSH AND VIDEO TRIGGER ===== */
 
 window.pushAndTriggerWorkflow = async function() {
   if (!state.configData) {
-    showAlertBanner("Load JSON first!", "error");
+    showAlertBanner("Please load and parse JSON first.", "error");
     openModal("modal-json");
     return;
   }
@@ -548,13 +559,17 @@ window.pushAndTriggerWorkflow = async function() {
   });
 
   if (missingSlots.length > 0) {
-    var confirmMsg = "These images are not set:\n\n" + missingSlots.join("\n") + "\n\nPush anyway?";
+    var confirmMsg = "The following images are not assigned:\n\n" + missingSlots.join("\n") + "\n\nContinue anyway?";
     if (!confirm(confirmMsg)) return;
   }
 
   var pushBtn = document.getElementById("btn-push-trigger");
-  if (pushBtn) { pushBtn.disabled = true; pushBtn.querySelector(".bar-btn-icon").textContent = "..."; }
-  showAlertBanner("Pushing to GitHub & starting Actions...", "info");
+  if (pushBtn) {
+    pushBtn.disabled = true;
+    var labelEl = pushBtn.querySelector(".btn-label");
+    if (labelEl) labelEl.textContent = "Processing...";
+  }
+  showAlertBanner("Pushing files to GitHub...", "info");
 
   try {
     syncJsonTextarea();
@@ -584,28 +599,32 @@ window.pushAndTriggerWorkflow = async function() {
 
     var result = await res.json();
     if (result.status === "ok" || result.success === true || result.workflowTriggered === true) {
-      showAlertBanner("Pushed! Actions started. Monitoring...", "success");
-      if (pushBtn) pushBtn.querySelector(".bar-btn-icon").textContent = "\u2713";
+      showAlertBanner("Files pushed! Launching Actions...", "success");
+      if (pushBtn) {
+        var labelEl2 = pushBtn.querySelector(".btn-label");
+        if (labelEl2) labelEl2.textContent = "Triggered";
+      }
       switchToolTab("panel-status", null);
       setTimeout(function() {
         window.checkActionsStatus(true);
         startPollingActions();
       }, 3000);
     } else {
-      var errMsg = result.error || result.message || "Server error";
+      var errMsg = result.error || result.message || "Server upload error";
       if (result.errors && result.errors.length > 0) errMsg += " (" + result.errors.join(", ") + ")";
       throw new Error(errMsg);
     }
   } catch (err) {
-    showAlertBanner("Push failed: " + err.message, "error");
+    showAlertBanner("Upload failed: " + err.message, "error");
     if (pushBtn) {
       pushBtn.disabled = false;
-      pushBtn.querySelector(".bar-btn-icon").textContent = "\uD83D\uDE80";
+      var labelEl3 = pushBtn.querySelector(".btn-label");
+      if (labelEl3) labelEl3.textContent = "Generate";
     }
   }
 };
 
-/* ===== ACTIONS STATUS ===== */
+/* ===== ACTIONS STATUS POLING ===== */
 
 function startPollingActions() {
   if (state.pollingInterval) clearInterval(state.pollingInterval);
@@ -615,14 +634,14 @@ function startPollingActions() {
 }
 
 window.checkActionsStatus = async function(showToastOnManual) {
-  if (showToastOnManual) showAlertBanner("Checking Actions status...", "info");
+  if (showToastOnManual) showAlertBanner("Fetching latest video generation status...", "info");
 
   try {
     var res = await fetch(state.gasUrl + "?action=status");
     var data = await res.json();
 
     if (data.status !== "ok" && data.success !== true) {
-      throw new Error(data.error || data.message || "Status check failed");
+      throw new Error(data.error || data.message || "Status endpoint failed");
     }
 
     var latest = data.latestRun;
@@ -632,30 +651,32 @@ window.checkActionsStatus = async function(showToastOnManual) {
     var artArea = document.getElementById("artifact-list-area");
 
     if (!latest) {
-      if (badge) badge.textContent = "No runs";
-      if (title) title.textContent = "No workflow runs found";
+      if (badge) { badge.textContent = "STANDBY"; badge.className = "status-badge"; }
+      if (title) title.textContent = "No history found";
+      if (meta) meta.textContent = "Workflow runs haven't started yet.";
       return;
     }
 
     var createdTime = latest.created_at || latest.updated_at || new Date().toISOString();
     var timeStr = new Date(createdTime).toLocaleTimeString();
     var runNum = latest.run_number || latest.id || "?";
-    if (meta) meta.textContent = "Started: " + timeStr + " (Run #" + runNum + ")";
+    
+    if (meta) meta.textContent = "Updated: " + timeStr + " (Run #" + runNum + ")";
 
     if (latest.status === "in_progress" || latest.status === "queued") {
-      if (badge) { badge.textContent = "RENDERING..."; badge.className = "status-badge status-progress"; }
-      if (title) title.textContent = "VOICEVOX + Rendering in progress...";
+      if (badge) { badge.textContent = "RENDERING"; badge.className = "status-badge progress"; }
+      if (title) title.textContent = "Generating video and synthetic voice...";
     } else if (latest.status === "completed" && latest.conclusion === "success") {
-      if (badge) { badge.textContent = "COMPLETE"; badge.className = "status-badge status-success"; }
-      if (title) title.textContent = "Video rendered successfully!";
+      if (badge) { badge.textContent = "SUCCESS"; badge.className = "status-badge success"; }
+      if (title) title.textContent = "Video successfully generated!";
       if (state.pollingInterval) clearInterval(state.pollingInterval);
     } else if (latest.status === "completed" && latest.conclusion === "failure") {
-      if (badge) { badge.textContent = "FAILED"; badge.className = "status-badge status-error"; }
-      if (title) title.textContent = "Render failed. Check logs.";
+      if (badge) { badge.textContent = "FAILED"; badge.className = "status-badge error"; }
+      if (title) title.textContent = "Video generation failed. Please check build logs.";
       if (state.pollingInterval) clearInterval(state.pollingInterval);
     } else {
-      if (badge) badge.textContent = latest.status;
-      if (title) title.textContent = "Status: " + latest.status;
+      if (badge) { badge.textContent = latest.status.toUpperCase(); badge.className = "status-badge"; }
+      if (title) title.textContent = "Workflow status: " + latest.status;
     }
 
     if (artArea) artArea.innerHTML = "";
@@ -667,7 +688,7 @@ window.checkActionsStatus = async function(showToastOnManual) {
         a.className = "artifact-item";
         a.href = latest.html_url;
         a.target = "_blank";
-        a.innerHTML = '<span>' + escapeHtml(art.name) + ' (' + sizeMb + ' MB)</span><span>Download</span>';
+        a.innerHTML = "<span>" + escapeHtml(art.name) + " (" + sizeMb + " MB)</span><span>Download</span>";
         artArea.appendChild(a);
       }
     } else if (latest.status === "completed" && latest.conclusion === "success" && artArea) {
@@ -675,15 +696,15 @@ window.checkActionsStatus = async function(showToastOnManual) {
       link.className = "artifact-item";
       link.href = latest.html_url;
       link.target = "_blank";
-      link.innerHTML = '<span>generated-video</span><span>Open Run Page</span>';
+      link.innerHTML = "<span>Output Video File</span><span>Go to Run Page</span>";
       artArea.appendChild(link);
     }
 
     if (showToastOnManual) {
       showToast("Status updated");
-      showAlertBanner("Status updated!", "success");
+      showAlertBanner("Status is up to date.", "success");
     }
   } catch (err) {
-    if (showToastOnManual) showAlertBanner("Status error: " + err.message, "error");
+    if (showToastOnManual) showAlertBanner("Failed to retrieve status: " + err.message, "error");
   }
 };
