@@ -1,0 +1,75 @@
+{
+  "title": "メンズシェーバーの選び方 失敗しない3つの基準",
+  "brand": "爆モテメンズラボ",
+  "headerTag": "メンズシェーバー入門",
+  "footerNote": "毎朝のヒゲ剃りを、もっと快適に。\nBaku-mote Men's Lab Grooming Guide",
+  "footerYear": "2026",
+  "speakerId": 13,
+  "speedScale": 1.04,
+  "intonationScale": 1.12,
+  "pitchScale": 0.01,
+  "leadSilenceSeconds": 0.5,
+  "tailSilenceSeconds": 0.28,
+  "scenePaddingSeconds": 0.55,
+  "outputVideo": "mens_shaver_test.mp4",
+  "autoRender": true,
+  "scenes": [
+    {
+      "id": "shaver_scene1",
+      "type": "title",
+      "mainLogo": "メンズシェーバーの選び方",
+      "tagline": "失敗しない、3つのチェックポイント",
+      "narration": "メンズシェーバー選びで失敗しないために、購入前に確認したい三つのポイントを紹介します。"
+    },
+    {
+      "id": "shaver_scene2",
+      "type": "feature",
+      "num": "POINT 01 深剃り性能",
+      "numClass": "green",
+      "title": "濃いヒゲには、<br />往復式が強い。",
+      "subtitle": "内刃が左右に高速で動き、短時間でしっかり深剃り。<br />毎朝スピード重視の人にも向いています。",
+      "narration": "一つ目は深剃り性能。ヒゲが濃い人や短時間でしっかり剃りたい人には、往復式が向いています。"
+    },
+    {
+      "id": "shaver_scene3",
+      "type": "feature",
+      "num": "POINT 02 肌へのやさしさ",
+      "title": "敏感肌なら、<br />回転式も有力。",
+      "subtitle": "円を描くように剃るため、肌への圧力が分散。<br />ヒリつきや赤みが出やすい人は要チェックです。",
+      "narration": "二つ目は肌へのやさしさ。敏感肌でヒリつきやすい人には、圧力を分散しやすい回転式もおすすめです。"
+    },
+    {
+      "id": "shaver_scene4",
+      "type": "feature",
+      "num": "POINT 03 手入れのしやすさ",
+      "numClass": "green",
+      "title": "丸洗い対応なら、<br />毎日清潔。",
+      "subtitle": "防水モデルは使用後に水で洗えて管理が簡単。<br />洗浄機付きは時短重視の人に便利です。",
+      "narration": "三つ目は手入れのしやすさ。丸洗い対応なら毎日の掃除が簡単で、清潔な状態を保ちやすくなります。"
+    },
+    {
+      "id": "shaver_scene5",
+      "type": "feature",
+      "num": "購入前チェック",
+      "title": "充電方式と、<br />替刃価格も確認。",
+      "subtitle": "本体価格だけでなく、充電時間・使用可能時間・替刃代まで確認。<br />長期コストで選ぶことが大切です。",
+      "narration": "さらに、充電時間や連続使用時間、替刃の価格も確認しましょう。本体価格だけで選ばないことが大切です。"
+    },
+    {
+      "id": "shaver_scene6",
+      "type": "feature",
+      "num": "迷ったときの基準",
+      "numClass": "green",
+      "title": "濃いヒゲは往復式。<br />肌重視なら回転式。",
+      "subtitle": "剃る速さ、肌への負担、掃除の手間。<br />自分が最も重視する項目から選びましょう。",
+      "narration": "迷ったら、濃いヒゲと速さ重視なら往復式、肌へのやさしさ重視なら回転式を基準に選びましょう。"
+    },
+    {
+      "id": "shaver_scene7",
+      "type": "epilogue",
+      "title": "自分のヒゲと肌に合う一台が、<br />朝の清潔感を変える。",
+      "subtitle": "BAKU-MOTE MEN'S LAB",
+      "narration": "自分のヒゲと肌に合う一台を選べば、毎朝のヒゲ剃りはもっと快適になります。"
+    }
+  ]
+}
