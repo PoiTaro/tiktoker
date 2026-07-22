@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -35,7 +37,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg fonts-noto-cjk fonts-noto-color-emoji libgbm-dev libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libxkbcommon-x11-0 libxcomposite1 libxdamage1 libxrandr2
-
 
       - name: Install npm dependencies
         run: npm ci || npm install
@@ -60,9 +61,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-audio-
 
+      - name: Resolve video config
+        id: config
+        shell: bash
+        run: |
+          if [ -n "${{ github.event.inputs.config_file }}" ]; then
+            CONFIG_FILE="${{ github.event.inputs.config_file }}"
+          else
+            CONFIG_FILE=$(git diff --name-only HEAD^ HEAD -- 'video_config_*.json' | head -n 1)
+            CONFIG_FILE=${CONFIG_FILE:-video_config_acne.json}
+          fi
+          echo "config_file=$CONFIG_FILE" >> "$GITHUB_OUTPUT"
+          echo "Using config: $CONFIG_FILE"
+
       - name: Generate and Render Video
         run: |
-          CONFIG_FILE="${{ github.event.inputs.config_file || 'video_config_acne.json' }}"
+          CONFIG_FILE="${{ steps.config.outputs.config_file }}"
           OUTPUT_NAME="${{ github.event.inputs.output_filename || 'output_video.mp4' }}"
           echo "Executing video generation with config: $CONFIG_FILE, output: $OUTPUT_NAME"
           node generate_video.mjs --config "$CONFIG_FILE" --render --output "$OUTPUT_NAME"
